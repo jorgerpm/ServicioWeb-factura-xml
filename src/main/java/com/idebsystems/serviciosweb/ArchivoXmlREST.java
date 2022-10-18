@@ -60,7 +60,7 @@ public class ArchivoXmlREST {
     public RespuestaDTO guardarXmlDB(ArchivoXmlDTO fileDto) throws Exception {
         try {
             LOGGER.log(Level.INFO, "entroooooooooooo: {0}", fileDto);
-            String resp = service.guardarXmlToDB(fileDto.getUbicacionArchivo(), fileDto.getNombreArchivoXml(), fileDto.getNombreArchivoPdf(),
+            String resp = service.guardarXmlToDB(fileDto.getXmlBase64(), fileDto.getNombreArchivoXml(), fileDto.getNombreArchivoPdf(),
                     fileDto.getUrlArchivo(), fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento());
 
             return new RespuestaDTO(resp);

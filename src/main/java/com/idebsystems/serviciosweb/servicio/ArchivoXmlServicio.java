@@ -14,9 +14,10 @@ import com.idebsystems.serviciosweb.entities.ArchivoXml;
 import com.idebsystems.serviciosweb.entities.Usuario;
 import com.idebsystems.serviciosweb.mappers.ArchivoXmlMapper;
 import com.idebsystems.serviciosweb.util.FechaUtil;
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -77,14 +78,17 @@ public class ArchivoXmlServicio {
         }
     }
 
-    public String guardarXmlToDB(String pathFileXml, String nombreXml, String nombrePdf, String urlArchivo, Long idUsuario, String tipoDocumento) throws Exception {
+    public String guardarXmlToDB(String xmlB64, String nombreXml, String nombrePdf, String urlArchivo, Long idUsuario, String tipoDocumento) throws Exception {
         try {
-            File fileXml = new File(pathFileXml);
+            Decoder decoder = Base64.getDecoder();
+            byte[] fileBytes = decoder.decode(xmlB64);
+            InputStream targetStream = new ByteArrayInputStream(fileBytes);
+//            File fileXml = new File(pathFileXml);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(false);
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document documentXml = db.parse(fileXml);
+            Document documentXml = db.parse(targetStream);
             documentXml.getDocumentElement().normalize();
 
             StringWriter writer = new StringWriter();
