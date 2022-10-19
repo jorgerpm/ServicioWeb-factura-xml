@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -56,6 +57,7 @@ public class ArchivoXmlServicio {
     public final static String TAG_INFO_TRIBUTARIO = "infoTributaria";
     public final static String TAG_INFO_FACTURA = "infoFactura";
     public final static String TAG_RUC = "ruc";
+    public final static String TAG_FECHA_AUTORIZACON = "fechaAutorizacion";
     
     private final ArchivoXmlDAO dao = new ArchivoXmlDAO();
     private final ProveedorServicio provSrv = new ProveedorServicio();
@@ -117,23 +119,31 @@ public class ArchivoXmlServicio {
                 jsonObjComp.getJSONObject(TAG_FACTURA).remove(TAG_SIGNATURE);
                 jsonObj.put(TAG_COMPROBANTE, jsonObjComp.toString());
                 
-                LOGGER.log(Level.INFO, "fechaUat:: {0}", jsonObj.has("fechaAutorizacion"));
+                //sacar a parte la fecha de autorizacion para parsear en el formato dd/MM/yyyy
+                String fechaAutoriza = "";
+                LOGGER.log(Level.INFO, "fechaUat:: {0}", jsonObj.has(TAG_FECHA_AUTORIZACON));
                 
                 try{
-                    LOGGER.log(Level.INFO, "fechaUat:: {0}", jsonObj.getJSONObject("fechaAutorizacion"));
-                    
-                    if(jsonObj.getJSONObject("fechaAutorizacion")!=null){
+                    //LOGGER.log(Level.INFO, "fechaUat:: {0}", jsonObj.getJSONObject("fechaAutorizacion"));
+                    if(jsonObj.getJSONObject(TAG_FECHA_AUTORIZACON)!=null){
                         LOGGER.log(Level.INFO, "si tiene fechaautorizacion");
-                       String fa = jsonObj.getJSONObject("fechaAutorizacion").getString("content");
+                       String fa = jsonObj.getJSONObject(TAG_FECHA_AUTORIZACON).getString("content");
                        
-                       fa = fa.substring(0, 10);
+                       fechaAutoriza = fa.substring(0, 10);                       
                        
-                       jsonObj.put("fechaAutorizacion", fa.replace(" ", "T").replace(".0", "-05:00"));
+                       LOGGER.log(Level.INFO, "fecha de actoriz: {0}", fechaAutoriza);
+                    }
+                    else{
+                        fechaAutoriza = jsonObj.getString(TAG_FECHA_AUTORIZACON);
                     }
                     
                 }catch(org.json.JSONException exc){
-                    
+                    LOGGER.log(Level.INFO, "cayoo: {0}", exc.getMessage());
+                    fechaAutoriza = jsonObj.getString(TAG_FECHA_AUTORIZACON);
                 }
+                
+                //quitar la fecha de autorizacion
+                jsonObj.remove(TAG_FECHA_AUTORIZACON);
 
                 String json = jsonObj.toString();
                 LOGGER.log(Level.INFO, "el comprbante xml a json?::: {0}", json);
@@ -157,6 +167,14 @@ public class ArchivoXmlServicio {
                 data.setUrlArchivo(urlArchivo);
                 data.setTipoDocumento(tipoDocumento);
                 data.setFechaEmision(sdf.parse(fechaEmision));
+                
+                //colocar la fecha de autorizacion dependiendo del formato
+                try{
+                    data.setFechaAutorizacion(sdf.parse(fechaAutoriza));
+                }catch(ParseException exc){
+                    sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    data.setFechaAutorizacion(sdf.parse(fechaAutoriza));
+                }
                 
                 ArchivoXml archivoXml = convertToEntity(data, idUsuario);
                 
