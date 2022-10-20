@@ -43,15 +43,22 @@ public class ProveedorServicio {
         }
     }
     
-    public List<ProveedorDTO> listarProveedores() throws Exception {
+    public List<ProveedorDTO> listarProveedores(Integer desde, Integer hasta, String valorBusqueda) throws Exception {
         try {
-            List<ProveedorDTO> listaProveedorDto = new ArrayList<ProveedorDTO>();
+            List<ProveedorDTO> listaProveedorDto = new ArrayList();
             
-            List<Proveedor> listaProveedor = dao.listarProveedores();
+            List<Object> respuesta = dao.listarProveedores(desde, hasta, valorBusqueda);
+            
+            //sacar los resultados retornados
+            Integer totalRegistros = (Integer)respuesta.get(0);
+            List<Proveedor> listaProveedor = (List<Proveedor>)respuesta.get(1);
             
             listaProveedor.forEach(proveedor->{
                 ProveedorDTO proveedorDto = new ProveedorDTO();
                 proveedorDto = ProveedorMapper.INSTANCE.entityToDto(proveedor);
+                //agregar el total de registros
+                proveedorDto.setTotalRegistros(totalRegistros);
+                    
                 listaProveedorDto.add(proveedorDto);
             });
 

@@ -42,7 +42,7 @@ public class ArchivoXml implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCarga;
     private String urlArchivo;
-    private Long idProveedor;
+    private String codigoJDProveedor;
     private String nombreArchivoXml;
     private String nombreArchivoPdf;
 
@@ -126,12 +126,12 @@ public class ArchivoXml implements Serializable {
         this.urlArchivo = urlArchivo;
     }
 
-    public Long getIdProveedor() {
-        return idProveedor;
+    public String getCodigoJDProveedor() {
+        return codigoJDProveedor;
     }
 
-    public void setIdProveedor(Long idProveedor) {
-        this.idProveedor = idProveedor;
+    public void setCodigoJDProveedor(String codigoJDProveedor) {
+        this.codigoJDProveedor = codigoJDProveedor;
     }
 
     public String getNombreArchivoXml() {

@@ -14,6 +14,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -30,11 +31,16 @@ public class ProveedorREST {
     @Path("/listarProveedores")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public List<ProveedorDTO> listarProveedores() throws Exception {
+    public List<ProveedorDTO> listarProveedores(
+            @QueryParam(value = "desde") Integer desde,
+            @QueryParam(value = "hasta") Integer hasta,
+            @QueryParam(value = "valBusq") String valorBusqueda) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
+            LOGGER.log(Level.INFO, "desde: {0}", desde);
+            LOGGER.log(Level.INFO, "hasta: {0}", hasta);
+            LOGGER.log(Level.INFO, "valorBusqueda: {0}", valorBusqueda);
             //buscar en la bdd los proveedores
-            return service.listarProveedores();
+            return service.listarProveedores(desde, hasta, valorBusqueda);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);

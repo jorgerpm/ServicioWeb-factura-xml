@@ -25,7 +25,7 @@ public class ArchivoXmlDTO {
     private String ubicacionArchivo;
     
     private String urlArchivo;
-    private Long idProveedor;
+    private String codigoJDProveedor;
     private String nombreArchivoXml;
     private String nombreArchivoPdf;
     private String tipoDocumento;
@@ -115,12 +115,12 @@ public class ArchivoXmlDTO {
         this.urlArchivo = urlArchivo;
     }
 
-    public Long getIdProveedor() {
-        return idProveedor;
+    public String getCodigoJDProveedor() {
+        return codigoJDProveedor;
     }
 
-    public void setIdProveedor(Long idProveedor) {
-        this.idProveedor = idProveedor;
+    public void setCodigoJDProveedor(String codigoJDProveedor) {
+        this.codigoJDProveedor = codigoJDProveedor;
     }
 
     public String getNombreArchivoXml() {
@@ -176,7 +176,7 @@ public class ArchivoXmlDTO {
     
     @Override
     public String toString() {
-        return "ArchivoXmlDTO{" + "estado=" + estado + ", numeroAutorizacion=" + numeroAutorizacion + ", fechaAutorizacion=" + fechaAutorizacion + ", ambiente=" + ambiente + ", idUsuarioCarga=" + idUsuarioCarga + ", ubicacionArchivo=" + ubicacionArchivo + ", urlArchivo=" + urlArchivo + ", idProveedor=" + idProveedor + '}';
+        return "ArchivoXmlDTO{" + "estado=" + estado + ", numeroAutorizacion=" + numeroAutorizacion + ", fechaAutorizacion=" + fechaAutorizacion + ", ambiente=" + ambiente + ", idUsuarioCarga=" + idUsuarioCarga + ", ubicacionArchivo=" + ubicacionArchivo + ", urlArchivo=" + urlArchivo + ", codigoJDProveedor=" + codigoJDProveedor + '}';
     }
 
         

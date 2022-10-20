@@ -14,6 +14,8 @@ public class ProveedorDTO {
     private String nombre;
     private String ruc;
     private String codigoJD;
+    //
+    private Integer totalRegistros;
 
     public Long getId() {
         return id;
@@ -45,6 +47,14 @@ public class ProveedorDTO {
 
     public void setCodigoJD(String codigoJD) {
         this.codigoJD = codigoJD;
+    }
+
+    public Integer getTotalRegistros() {
+        return totalRegistros;
+    }
+
+    public void setTotalRegistros(Integer totalRegistros) {
+        this.totalRegistros = totalRegistros;
     }
 
     @Override

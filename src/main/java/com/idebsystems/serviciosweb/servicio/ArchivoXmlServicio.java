@@ -155,7 +155,7 @@ public class ArchivoXmlServicio {
                 String rucProveedor = jsonObjComp.getJSONObject(TAG_FACTURA).getJSONObject(TAG_INFO_TRIBUTARIO).get(TAG_RUC).toString();
                 ProveedorDTO dto = provSrv.buscarProveedorRuc(rucProveedor);
                 LOGGER.log(Level.INFO, "id del provv: {0}", dto.getId());
-                data.setIdProveedor(dto.getId());
+                data.setCodigoJDProveedor(dto.getCodigoJD());
                 
                 //obtener la fecha de emision, es importante para las busquedas
                 String fechaEmision = jsonObjComp.getJSONObject(TAG_FACTURA).getJSONObject(TAG_INFO_FACTURA).get("fechaEmision").toString();
@@ -250,7 +250,7 @@ public class ArchivoXmlServicio {
         archivoXml.setUrlArchivo(dto.getUrlArchivo());
         archivoXml.setNombreArchivoPdf(dto.getNombreArchivoPdf());
         archivoXml.setNombreArchivoXml(dto.getNombreArchivoXml());
-        archivoXml.setIdProveedor(dto.getIdProveedor());
+        archivoXml.setCodigoJDProveedor(dto.getCodigoJDProveedor());
         archivoXml.setTipoDocumento(dto.getTipoDocumento());
         archivoXml.setFechaEmision(dto.getFechaEmision());
         return archivoXml;
