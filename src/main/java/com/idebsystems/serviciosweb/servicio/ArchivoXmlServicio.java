@@ -26,6 +26,7 @@ import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -39,6 +40,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.json.JSONObject;
 import org.json.XML;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -85,18 +88,23 @@ public class ArchivoXmlServicio {
             Decoder decoder = Base64.getDecoder();
             byte[] fileBytes = decoder.decode(xmlB64);
             InputStream targetStream = new ByteArrayInputStream(fileBytes);
-//            File fileXml = new File(pathFileXml);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(false);
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document documentXml = db.parse(targetStream);
             documentXml.getDocumentElement().normalize();
+            
+            Node node = buscarTagAutorizacion(documentXml.getFirstChild());
+            
+            if(Objects.isNull(node)){
+                node = documentXml.getFirstChild();
+            }
 
             StringWriter writer = new StringWriter();
             TransformerFactory tf = TransformerFactory.newInstance();
             Transformer transformer = tf.newTransformer();
-            transformer.transform(new DOMSource(documentXml), new StreamResult(writer));
+            transformer.transform(new DOMSource(node), new StreamResult(writer));
 
             String xmlString = writer.getBuffer().toString();
 
@@ -289,6 +297,27 @@ public class ArchivoXmlServicio {
             throw new Exception(exc);
         }
     }
+    
+    private Node buscarTagAutorizacion(Node documentXml){
+        Node nodeAut = null;
+        
+        if(documentXml.hasChildNodes()){
+            for(int i=0;i<documentXml.getChildNodes().getLength();i++){
+                Node child = documentXml.getChildNodes().item(i);
+                if(child.getNodeType() == Node.ELEMENT_NODE){
+                    Element element = (Element)child;
+                    if(element.getTagName().equalsIgnoreCase(TAG_RESPUESTA_AUTORIZACION)){
+                        return child;
+                    }
+                    else{
+                        nodeAut = buscarTagAutorizacion(child);
+                    }
+                }
+            }
+        }
+        return nodeAut;
+    }
+    
 /**
  * 
     public static void main(String arg[]) {
