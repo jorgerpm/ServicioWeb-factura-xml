@@ -37,11 +37,15 @@ public class UsuarioServicio {
             Usuario user = dao.loginSistema(userDto.getUsuario(), userDto.getClave());
             
             if (Objects.nonNull(user)) {
-
                 userDto = UsuarioMapper.INSTANCE.entityToDto(user);
-
+                userDto.setRespuesta("OK");
+                
+                if(userDto.getIdEstado() != 1){//es porque no esta activo el usuario, el idestado no es 1=activo
+                    userDto.setId(0);
+                    userDto.setRespuesta("USUARIO INACTIVO");
+                }
             } else {
-                return new UsuarioDTO();
+                return new UsuarioDTO("OK");
             }
 
             return userDto;
@@ -82,8 +86,17 @@ public class UsuarioServicio {
             Usuario usuario = UsuarioMapper.INSTANCE.dtoToEntity(usuarioDto);
             Usuario usuarioRespuesta = dao.guardarUsuario(usuario);
             usuarioDto = UsuarioMapper.INSTANCE.entityToDto(usuarioRespuesta);
+            usuarioDto.setRespuesta("OK");
             return usuarioDto;
         } catch (Exception exc) {
+            if(Objects.nonNull(exc.getMessage()) && exc.getMessage().contains("usuario_usuario_key")){
+                usuarioDto.setRespuesta("YA EXISTE UN USUARIO REGISTRADO CON EL USUARIO INGRESADO. INGRESE UN USUARIO DIFERENTE.");
+                return usuarioDto;
+            }
+            if(Objects.nonNull(exc.getMessage()) && exc.getMessage().contains("usuario_correo_key")){
+                usuarioDto.setRespuesta("EL CORREO INGRESADO PERTENECE A OTRO USUARIO, INGRESE UN CORREO DIFERENTE.");
+                return usuarioDto;
+            }
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
         }

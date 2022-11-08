@@ -11,8 +11,14 @@ package com.idebsystems.serviciosweb.dto;
  */
 public class RespuestaDTO {
     private String respuesta;
+    private Object dto;
 
     public RespuestaDTO(String respuesta){this.respuesta = respuesta;}
+    
+    public RespuestaDTO(String respuesta, Object dto){
+        this.respuesta = respuesta;
+        this.dto = dto;
+    }
     
     public String getRespuesta() {
         return respuesta;
@@ -21,5 +27,14 @@ public class RespuestaDTO {
     public void setRespuesta(String respuesta) {
         this.respuesta = respuesta;
     }
+
+    public Object getDto() {
+        return dto;
+    }
+
+    public void setDto(Object dto) {
+        this.dto = dto;
+    }
+    
     
 }

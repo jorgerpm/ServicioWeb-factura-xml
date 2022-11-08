@@ -20,7 +20,16 @@ public class UsuarioDTO {
     private long idRol;
     //
     private String nombreRol;
+    private String respuesta;
 
+    public UsuarioDTO() {
+    }
+    
+    public UsuarioDTO(String respuesta) {
+        this.respuesta = respuesta;
+    }
+    
+    
     public long getId() {
         return id;
     }
@@ -85,6 +94,14 @@ public class UsuarioDTO {
 
     public void setNombreRol(String nombreRol) {
         this.nombreRol = nombreRol;
+    }
+
+    public String getRespuesta() {
+        return respuesta;
+    }
+
+    public void setRespuesta(String respuesta) {
+        this.respuesta = respuesta;
     }
 
     
