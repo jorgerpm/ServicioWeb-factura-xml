@@ -200,6 +200,11 @@ public class ArchivoXmlServicio {
                 //el archivo no tiene los datos completos, solo es el xml del comprobante, y sin la autorizacion
                 LOGGER.log(Level.INFO, "Error, Mal estructura del archivo xml.");
                 
+                if(jsonObj.isNull(TAG_FACTURA)) {
+                    System.out.println("no tienenenenenenne");
+                    return "El archivo xml no tiene la etiqueta factura.";
+                }
+                
                 jsonObj.getJSONObject(TAG_FACTURA).remove(TAG_SIGNATURE);
                 
                 JSONObject objjson = new JSONObject();
