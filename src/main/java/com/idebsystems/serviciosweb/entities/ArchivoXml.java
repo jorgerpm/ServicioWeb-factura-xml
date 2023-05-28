@@ -29,7 +29,7 @@ public class ArchivoXml implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String tipoDocumento;
-    private String estado;
+    private String estadoSri;
     @Column(name = "autorizacion")
     private String numeroAutorizacion;
     @Temporal(TemporalType.TIMESTAMP)
@@ -45,6 +45,16 @@ public class ArchivoXml implements Serializable {
     private String codigoJDProveedor;
     private String nombreArchivoXml;
     private String nombreArchivoPdf;
+    private String claveAcceso;
+    private boolean exportado;
+    private String razonAnulacion;
+    private String usuarioAnula;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaAnula;
+    private String estadoSistema;
+    private String tipoGasto;
+    private boolean esFisica;
+    private String asistentes;
 
     public Long getId() {
         return id;
@@ -62,12 +72,12 @@ public class ArchivoXml implements Serializable {
         this.tipoDocumento = tipoDocumento;
     }
 
-    public String getEstado() {
-        return estado;
+    public String getEstadoSri() {
+        return estadoSri;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setEstadoSri(String estadoSri) {
+        this.estadoSri = estadoSri;
     }
 
     public String getNumeroAutorizacion() {
@@ -156,6 +166,78 @@ public class ArchivoXml implements Serializable {
 
     public void setFechaEmision(Date fechaEmision) {
         this.fechaEmision = fechaEmision;
+    }
+
+    public String getClaveAcceso() {
+        return claveAcceso;
+    }
+
+    public void setClaveAcceso(String claveAcceso) {
+        this.claveAcceso = claveAcceso;
+    }
+
+    public boolean isExportado() {
+        return exportado;
+    }
+
+    public void setExportado(boolean exportado) {
+        this.exportado = exportado;
+    }
+
+    public String getRazonAnulacion() {
+        return razonAnulacion;
+    }
+
+    public void setRazonAnulacion(String razonAnulacion) {
+        this.razonAnulacion = razonAnulacion;
+    }
+
+    public String getUsuarioAnula() {
+        return usuarioAnula;
+    }
+
+    public void setUsuarioAnula(String usuarioAnula) {
+        this.usuarioAnula = usuarioAnula;
+    }
+
+    public Date getFechaAnula() {
+        return fechaAnula;
+    }
+
+    public void setFechaAnula(Date fechaAnula) {
+        this.fechaAnula = fechaAnula;
+    }
+
+    public String getEstadoSistema() {
+        return estadoSistema;
+    }
+
+    public void setEstadoSistema(String estadoSistema) {
+        this.estadoSistema = estadoSistema;
+    }
+
+    public String getTipoGasto() {
+        return tipoGasto;
+    }
+
+    public void setTipoGasto(String tipoGasto) {
+        this.tipoGasto = tipoGasto;
+    }
+
+    public boolean isEsFisica() {
+        return esFisica;
+    }
+
+    public void setEsFisica(boolean esFisica) {
+        this.esFisica = esFisica;
+    }
+
+    public String getAsistentes() {
+        return asistentes;
+    }
+
+    public void setAsistentes(String asistentes) {
+        this.asistentes = asistentes;
     }
 
 }

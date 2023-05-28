@@ -13,8 +13,10 @@ import java.util.Date;
  */
 public class ArchivoXmlDTO {
     
-    private String estado;
+    private Long id;
+    private String estadoSri;
     private String numeroAutorizacion;
+    private String claveAcceso;
     private Date fechaAutorizacion;
     private Date fechaEmision;
     private String ambiente;
@@ -29,16 +31,31 @@ public class ArchivoXmlDTO {
     private String nombreArchivoXml;
     private String nombreArchivoPdf;
     private String tipoDocumento;
+    private boolean exportado;
     //
     private String nombreUsuario;
     private Integer totalRegistros;
+    private String razonSocial;
+    //
+    private String razonAnulacion;
+    private String usuarioAnula;
+    private Date fechaAnula;
+    private String estadoSistema;
+    private String tipoDocumentoTexto;
+    private String tipoGasto;
+    private boolean esFisica;
+    private Date fechaCarga;
+    private String asistentes;
+    //
+    private String detalle;
+    private String precioUnitario;
 
-    public String getEstado() {
-        return estado;
+    public String getEstadoSri() {
+        return estadoSri;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setEstadoSri(String estadoSri) {
+        this.estadoSri = estadoSri;
     }
 
     public String getNumeroAutorizacion() {
@@ -171,14 +188,129 @@ public class ArchivoXmlDTO {
         this.totalRegistros = totalRegistros;
     }
 
-    
-    
+    public String getRazonSocial() {
+        return razonSocial;
+    }
+
+    public void setRazonSocial(String razonSocial) {
+        this.razonSocial = razonSocial;
+    }
+
+    public boolean isExportado() {
+        return exportado;
+    }
+
+    public void setExportado(boolean exportado) {
+        this.exportado = exportado;
+    }
+
+    public String getClaveAcceso() {
+        return claveAcceso;
+    }
+
+    public void setClaveAcceso(String claveAcceso) {
+        this.claveAcceso = claveAcceso;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getRazonAnulacion() {
+        return razonAnulacion;
+    }
+
+    public void setRazonAnulacion(String razonAnulacion) {
+        this.razonAnulacion = razonAnulacion;
+    }
+
+    public String getUsuarioAnula() {
+        return usuarioAnula;
+    }
+
+    public void setUsuarioAnula(String usuarioAnula) {
+        this.usuarioAnula = usuarioAnula;
+    }
+
+    public Date getFechaAnula() {
+        return fechaAnula;
+    }
+
+    public void setFechaAnula(Date fechaAnula) {
+        this.fechaAnula = fechaAnula;
+    }
+
+    public String getEstadoSistema() {
+        return estadoSistema;
+    }
+
+    public void setEstadoSistema(String estadoSistema) {
+        this.estadoSistema = estadoSistema;
+    }
+
+    public String getTipoDocumentoTexto() {
+        return tipoDocumentoTexto;
+    }
+
+    public void setTipoDocumentoTexto(String tipoDocumentoTexto) {
+        this.tipoDocumentoTexto = tipoDocumentoTexto;
+    }
+
+    public String getTipoGasto() {
+        return tipoGasto;
+    }
+
+    public void setTipoGasto(String tipoGasto) {
+        this.tipoGasto = tipoGasto;
+    }
+
+    public boolean isEsFisica() {
+        return esFisica;
+    }
+
+    public void setEsFisica(boolean esFisica) {
+        this.esFisica = esFisica;
+    }
+
+    public String getDetalle() {
+        return detalle;
+    }
+
+    public void setDetalle(String detalle) {
+        this.detalle = detalle;
+    }
+
+    public String getPrecioUnitario() {
+        return precioUnitario;
+    }
+
+    public void setPrecioUnitario(String precioUnitario) {
+        this.precioUnitario = precioUnitario;
+    }
+
+    public Date getFechaCarga() {
+        return fechaCarga;
+    }
+
+    public void setFechaCarga(Date fechaCarga) {
+        this.fechaCarga = fechaCarga;
+    }
+
+    public String getAsistentes() {
+        return asistentes;
+    }
+
+    public void setAsistentes(String asistentes) {
+        this.asistentes = asistentes;
+    }
     
     @Override
     public String toString() {
-        return "ArchivoXmlDTO{" + "estado=" + estado + ", numeroAutorizacion=" + numeroAutorizacion + ", fechaAutorizacion=" + fechaAutorizacion + ", ambiente=" + ambiente + ", idUsuarioCarga=" + idUsuarioCarga + ", ubicacionArchivo=" + ubicacionArchivo + ", urlArchivo=" + urlArchivo + ", codigoJDProveedor=" + codigoJDProveedor + '}';
-    }
-
-        
+        return "ArchivoXmlDTO{" + "id=" + id + ", estadoSri=" + estadoSri + ", numeroAutorizacion=" + numeroAutorizacion + ", claveAcceso=" + claveAcceso + ", fechaAutorizacion=" + fechaAutorizacion + ", fechaEmision=" + fechaEmision + ", ambiente=" + ambiente + ", comprobante=" + comprobante + ", idUsuarioCarga=" + idUsuarioCarga + ", ubicacionArchivo=" + ubicacionArchivo + ", urlArchivo=" + urlArchivo + ", codigoJDProveedor=" + codigoJDProveedor + ", nombreArchivoXml=" + nombreArchivoXml + ", nombreArchivoPdf=" + nombreArchivoPdf + ", tipoDocumento=" + tipoDocumento + ", exportado=" + exportado + ", nombreUsuario=" + nombreUsuario + ", totalRegistros=" + totalRegistros + ", razonSocial=" + razonSocial + ", razonAnulacion=" + razonAnulacion + '}';
+    } 
             
 }

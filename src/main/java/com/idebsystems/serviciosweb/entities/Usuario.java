@@ -31,6 +31,9 @@ public class Usuario implements Serializable {
     private String correo;
     private long idEstado;
     private long idRol;
+    private String cedula;
+    private String idEmpleado;
+    private String cargo;
 
     public long getId() {
         return id;
@@ -88,6 +91,30 @@ public class Usuario implements Serializable {
 
     public void setIdRol(long idRol) {
         this.idRol = idRol;
+    }
+
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
+
+    public String getIdEmpleado() {
+        return idEmpleado;
+    }
+
+    public void setIdEmpleado(String idEmpleado) {
+        this.idEmpleado = idEmpleado;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
     }
     
     

@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "rol")
 public class Rol implements Serializable {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -27,6 +27,7 @@ public class Rol implements Serializable {
     private String nombre;
     private boolean principal;
     private long idEstado;
+    private boolean autorizador;
 
     public long getId() {
         return id;
@@ -59,4 +60,13 @@ public class Rol implements Serializable {
     public void setIdEstado(long idEstado) {
         this.idEstado = idEstado;
     }
+
+    public boolean isAutorizador() {
+        return autorizador;
+    }
+
+    public void setAutorizador(boolean autorizador) {
+        this.autorizador = autorizador;
+    }
+
 }

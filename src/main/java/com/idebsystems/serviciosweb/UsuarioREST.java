@@ -88,4 +88,20 @@ public class UsuarioREST {
             return new RespuestaDTO("ERROR".concat(exc.getMessage()));
         }
     }
+    
+    
+    @GET
+    @Path("/listarUsuariosPorRol")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<UsuarioDTO> listarUsuariosPorRol(@QueryParam(value = "idRol") long idRol) throws Exception {
+        try {
+            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
+            //buscar en la bdd los roles
+            return service.listarUsuariosPorRol(idRol);
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
 }

@@ -18,9 +18,14 @@ public class UsuarioDTO {
     private String correo;
     private long idEstado;
     private long idRol;
+    private String cedula;
+    private String idEmpleado;
+    private String cargo;
     //
     private String nombreRol;
     private String respuesta;
+    private int alertaFD;
+    private String textoAlertaFD;
 
     public UsuarioDTO() {
     }
@@ -102,6 +107,46 @@ public class UsuarioDTO {
 
     public void setRespuesta(String respuesta) {
         this.respuesta = respuesta;
+    }
+
+    public int getAlertaFD() {
+        return alertaFD;
+    }
+
+    public void setAlertaFD(int alertaFD) {
+        this.alertaFD = alertaFD;
+    }
+
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
+
+    public String getIdEmpleado() {
+        return idEmpleado;
+    }
+
+    public void setIdEmpleado(String idEmpleado) {
+        this.idEmpleado = idEmpleado;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
+
+    public String getTextoAlertaFD() {
+        return textoAlertaFD;
+    }
+
+    public void setTextoAlertaFD(String textoAlertaFD) {
+        this.textoAlertaFD = textoAlertaFD;
     }
 
     

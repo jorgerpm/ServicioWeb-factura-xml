@@ -71,4 +71,24 @@ public class ParametroDAO extends Persistencia {
             closeEntityManager();
         }
     }
+    
+    
+    public Parametro buscarParametroPorNombre(String nombre) throws Exception {
+        try {
+            getEntityManager();
+
+            Query query = em.createQuery("FROM Parametro p WHERE p.nombre = :nombre ");
+            query.setParameter("nombre", nombre);
+
+            return (Parametro)query.getSingleResult();
+
+       } catch (NoResultException exc) {
+            return null;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
 }

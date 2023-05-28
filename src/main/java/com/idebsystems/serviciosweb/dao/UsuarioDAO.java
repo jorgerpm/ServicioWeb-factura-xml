@@ -138,4 +138,26 @@ public class UsuarioDAO extends Persistencia {
             closeEntityManager();
         }
     }
+    
+    
+    public List<Usuario> listarUsuariosPorRol(long idRol) throws Exception {
+        try {
+            getEntityManager();
+
+            Query query = em.createQuery("FROM Usuario u where u.idEstado = 1 and u.idRol = :idRol ");
+            query.setParameter("idRol", idRol);
+
+            List<Usuario> listaUsuario = query.getResultList();
+
+            return listaUsuario;
+
+       } catch (NoResultException exc) {
+            return null;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
 }

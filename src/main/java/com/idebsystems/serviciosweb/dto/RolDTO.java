@@ -14,6 +14,7 @@ public class RolDTO {
     private String nombre;
     private boolean principal;
     private long idEstado;
+    private boolean autorizador;
 
     public long getId() {
         return id;
@@ -45,6 +46,14 @@ public class RolDTO {
 
     public void setIdEstado(long idEstado) {
         this.idEstado = idEstado;
+    }
+
+    public boolean isAutorizador() {
+        return autorizador;
+    }
+
+    public void setAutorizador(boolean autorizador) {
+        this.autorizador = autorizador;
     }
 
     @Override

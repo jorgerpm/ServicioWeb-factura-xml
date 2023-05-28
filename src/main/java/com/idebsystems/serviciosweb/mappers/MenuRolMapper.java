@@ -1,6 +1,7 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ * Proyecto API Rest (ServiciosWeb)
+ * IdebSystems Cia. Ltda. Derechos reservados. 2022
+ * Prohibida la reproducción total o parcial de este producto
  */
 package com.idebsystems.serviciosweb.mappers;
 

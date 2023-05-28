@@ -5,6 +5,8 @@
  */
 package com.idebsystems.serviciosweb;
 
+import com.idebsystems.serviciosweb.dto.AnularArchivoXmlDTO;
+import com.idebsystems.serviciosweb.dto.ArchivoSriDTO;
 import com.idebsystems.serviciosweb.dto.ArchivoXmlDTO;
 import com.idebsystems.serviciosweb.dto.RespuestaDTO;
 import com.idebsystems.serviciosweb.servicio.ArchivoXmlServicio;
@@ -45,7 +47,7 @@ public class ArchivoXmlREST {
             String pathSaveXml = service.guardarArchivoXml(fileDto.getXmlBase64());
 
             String resp = service.guardarXmlToDB(pathSaveXml, fileDto.getNombreArchivoXml(), fileDto.getNombreArchivoPdf(),
-                    fileDto.getUrlArchivo(), fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento());
+                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true);
             return new RespuestaDTO(resp);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
@@ -61,7 +63,16 @@ public class ArchivoXmlREST {
         try {
             LOGGER.log(Level.INFO, "entroooooooooooo: {0}", fileDto);
             String resp = service.guardarXmlToDB(fileDto.getXmlBase64(), fileDto.getNombreArchivoXml(), fileDto.getNombreArchivoPdf(),
-                    fileDto.getUrlArchivo(), fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento());
+                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true);
+            
+            LOGGER.log(Level.INFO, "el path es:::: {0}", service.getPathCarpetas());
+            
+            if(resp.contains("OK")){
+                RespuestaDTO dto = new RespuestaDTO("");
+                dto.setRespuesta("OK");
+                dto.setDto(service.getPathCarpetas());//resp.split("~")[1]);
+                return dto;
+            }
 
             return new RespuestaDTO(resp);
         } catch (Exception exc) {
@@ -84,33 +95,111 @@ public class ArchivoXmlREST {
             throw new Exception(exc);
         }
     }
-    
+
     @GET
     @Path("/listarPorFecha")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public List<ArchivoXmlDTO> listarPorFecha(@QueryParam(value = "fechaInicio") String fechaInicio,
-                                              @QueryParam(value = "fechaFinal") String fechaFinal,
-                                              @QueryParam(value = "idUsuarioCarga") Long idUsuarioCarga,
-                                              @QueryParam(value = "desde") int desde,
-                                              @QueryParam(value = "hasta") int hasta) throws Exception {
+            @QueryParam(value = "fechaFinal") String fechaFinal,
+            @QueryParam(value = "idUsuarioCarga") Long idUsuarioCarga,
+            
+            @QueryParam(value = "claveacceso") String claveAcceso,
+            @QueryParam(value = "ruc") String ruc,
+            @QueryParam(value = "tipodoc") String tipoDocumento,
+            @QueryParam(value = "estadoSistema") String estadoSistema,
+            
+            @QueryParam(value = "desde") int desde,
+            @QueryParam(value = "hasta") int hasta,
+            @QueryParam(value = "seleccionados") boolean seleccionados,
+            @QueryParam(value = "conDetalles") boolean conDetalles) throws Exception {
         try {
             LOGGER.log(Level.INFO, "fechaInicio: {0}", fechaInicio);
             LOGGER.log(Level.INFO, "fechaFinal: {0}", fechaFinal);
             LOGGER.log(Level.INFO, "idUsuarioCarga: {0}", idUsuarioCarga);
+            
+            LOGGER.log(Level.INFO, "claveAcceso: {0}", claveAcceso);
+            LOGGER.log(Level.INFO, "ruc: {0}", ruc);
+            LOGGER.log(Level.INFO, "tipoDocumento: {0}", tipoDocumento);
+            LOGGER.log(Level.INFO, "estadoSistema: {0}", estadoSistema);
+            
             LOGGER.log(Level.INFO, "desde: {0}", desde);
             LOGGER.log(Level.INFO, "hasta: {0}", hasta);
+            LOGGER.log(Level.INFO, "seleccionados: {0}", seleccionados);
+            LOGGER.log(Level.INFO, "conDetalles: {0}", conDetalles);
+            
+            
             Long variable = new Date().getTime();
             LOGGER.log(Level.INFO, String.valueOf(variable));
-            
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date dateInit = sdf.parse(fechaInicio);
             Date dateFin = sdf.parse(fechaFinal);
             //buscar en la bdd los roles
-            List<ArchivoXmlDTO> listaArchivo = service.listarPorFecha(dateInit, dateFin, idUsuarioCarga, desde, hasta);
+            List<ArchivoXmlDTO> listaArchivo = service.listarPorFecha(dateInit, dateFin, idUsuarioCarga, 
+                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, conDetalles);
             LOGGER.log(Level.INFO, "tamaño: {0}", listaArchivo);
-            
+
             return listaArchivo;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
+
+    
+    @POST
+    @Path("/cargarArchivoSri")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<ArchivoSriDTO> cargarArchivoSri(List<ArchivoSriDTO> lista) throws Exception {
+        try {
+            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", lista);
+            lista.forEach(l -> LOGGER.log(Level.INFO, "uno: {0}", l));
+
+            List<ArchivoSriDTO> respuesta = service.cargarArchivoSri(lista, lista.get(0).getIdUsuarioCarga());
+
+            return respuesta;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
+    
+    @POST
+    @Path("/anularArchivosXml")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public RespuestaDTO anularArchivosXml(List<ArchivoXmlDTO> lista) throws Exception {
+        try {
+            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", lista);
+            lista.forEach(l -> LOGGER.log(Level.INFO, "uno: {0}", l));
+
+            service.anularArchivosXml(lista);
+
+            return new RespuestaDTO("OK");
+            
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
+    
+    
+    @POST
+    @Path("/anularXmlPorArchivo")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public RespuestaDTO anularXmlPorArchivo(AnularArchivoXmlDTO lista) throws Exception {
+        try {
+            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", lista);
+
+            String resp = service.anularXmlPorArchivo(lista);
+            
+            LOGGER.log(Level.INFO, "ya resp: {0}", resp);
+
+            return new RespuestaDTO(resp);
+            
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);

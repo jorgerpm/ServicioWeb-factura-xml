@@ -5,9 +5,12 @@
  */
 package com.idebsystems.serviciosweb.servicio;
 
+import com.idebsystems.serviciosweb.dao.ParametroDAO;
 import com.idebsystems.serviciosweb.dao.RolDAO;
 import com.idebsystems.serviciosweb.dao.UsuarioDAO;
+import com.idebsystems.serviciosweb.dto.FirmaDigitalDTO;
 import com.idebsystems.serviciosweb.dto.UsuarioDTO;
+import com.idebsystems.serviciosweb.entities.Parametro;
 import com.idebsystems.serviciosweb.entities.Rol;
 import com.idebsystems.serviciosweb.entities.Usuario;
 import com.idebsystems.serviciosweb.mappers.UsuarioMapper;
@@ -15,6 +18,8 @@ import com.idebsystems.serviciosweb.util.MyMD5;
 import static com.idebsystems.serviciosweb.util.MyMD5.getInstance;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -43,6 +48,53 @@ public class UsuarioServicio {
                 if(userDto.getIdEstado() != 1){//es porque no esta activo el usuario, el idestado no es 1=activo
                     userDto.setId(0);
                     userDto.setRespuesta("USUARIO INACTIVO");
+                }
+                else{//si esta activo, aqui comprobar le fecha de la firma electronica, y mostrar una alerta si esta caducada
+                    try{
+                        FirmaDigitalServicio srv = new FirmaDigitalServicio();
+                        FirmaDigitalDTO fd = srv.getFirmaActivaPorIdUsuario(user.getId());
+                        
+                        //solo se cimprueba si es una firma digital, y no una imagen
+                        if(fd.getTipoFirma() == 0){
+                            
+                            //buscar en los parametros el tiempo para caducar
+                            ParametroDAO paramDao = new ParametroDAO();
+                            Parametro prd = paramDao.buscarParametroPorNombre("DIAS_CADUCIDAD");
+                            
+                            if(Objects.isNull(prd)){
+                                return new UsuarioDTO("No existe el parametro DIAS_CADUCIDAD configurado en el sistema.");
+                            }
+                            
+                            int diasCaduca = Integer.parseInt(prd.getValor());
+                            
+                            Date fechaCaduca = new Date(fd.getFechaCaducaLong());
+
+                            Calendar cal = Calendar.getInstance();
+                            cal.set(Calendar.DAY_OF_YEAR, cal.get(Calendar.DAY_OF_YEAR) + diasCaduca);
+                            LOGGER.log(Level.INFO, "fecha actual: {0}", cal.getTime());
+                            if(cal.getTime().after(fechaCaduca)){
+                                
+                                cal = Calendar.getInstance();
+                                
+                                Calendar calFC = Calendar.getInstance();
+                                calFC.setTime(fechaCaduca);
+                                
+                                int disas = (calFC.get(Calendar.DAY_OF_YEAR) - cal.get(Calendar.DAY_OF_YEAR));
+                                
+                                LOGGER.log(Level.INFO, "dias faltantes:: {0}", disas);
+                                
+                                userDto.setAlertaFD(1);
+                                userDto.setTextoAlertaFD("Su firma digital caducar\u00e1 en " + disas + " d\u00edas.");
+                                
+                                if(disas <= 0){
+                                    userDto.setTextoAlertaFD("Su firma digital ha caducado " + (-disas) + " d\u00edas atr\u00e1s.");
+                                }
+                            }
+                            
+                        }
+                    }catch(Exception exc){
+                        //si pasa error al obtener la firma, debe igual iniciar sesion
+                    }
                 }
             } else {
                 return new UsuarioDTO("OK");
@@ -83,6 +135,12 @@ public class UsuarioServicio {
     
     public UsuarioDTO guardarUsuario(UsuarioDTO usuarioDto) throws Exception {
         try{
+            //si clave viene nula desde pantalla es porque no le cambiaron
+            if(Objects.nonNull(usuarioDto.getId()) && usuarioDto.getId() > 0 && Objects.isNull(usuarioDto.getClave())){
+                Usuario userTemp = dao.buscarUsuarioPorId(usuarioDto.getId());
+                usuarioDto.setClave(userTemp.getClave());
+            }
+            
             Usuario usuario = UsuarioMapper.INSTANCE.dtoToEntity(usuarioDto);
             Usuario usuarioRespuesta = dao.guardarUsuario(usuario);
             usuarioDto = UsuarioMapper.INSTANCE.entityToDto(usuarioRespuesta);
@@ -90,10 +148,12 @@ public class UsuarioServicio {
             return usuarioDto;
         } catch (Exception exc) {
             if(Objects.nonNull(exc.getMessage()) && exc.getMessage().contains("usuario_usuario_key")){
+                usuarioDto.setId(0);
                 usuarioDto.setRespuesta("YA EXISTE UN USUARIO REGISTRADO CON EL USUARIO INGRESADO. INGRESE UN USUARIO DIFERENTE.");
                 return usuarioDto;
             }
             if(Objects.nonNull(exc.getMessage()) && exc.getMessage().contains("usuario_correo_key")){
+                usuarioDto.setId(0);
                 usuarioDto.setRespuesta("EL CORREO INGRESADO PERTENECE A OTRO USUARIO, INGRESE UN CORREO DIFERENTE.");
                 return usuarioDto;
             }
@@ -125,6 +185,34 @@ public class UsuarioServicio {
             usuarioDto.setClave(nuevaClave);
             
             return usuarioDto;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
+    
+    
+    
+    public List<UsuarioDTO> listarUsuariosPorRol(long idRol) throws Exception {
+        try {
+            List<UsuarioDTO> listaUsuarioDto = new ArrayList();
+            
+            List<Usuario> listaUsuario = dao.listarUsuariosPorRol(idRol);
+            //buscar los roles
+            RolDAO rolDao = new RolDAO();
+            List<Rol> listaRoles = rolDao.listarRoles();
+            
+            listaUsuario.forEach(usuario->{
+                UsuarioDTO usuarioDto = new UsuarioDTO();
+                usuarioDto = UsuarioMapper.INSTANCE.entityToDto(usuario);
+                //buscar para colocar el nombre del rol
+                Rol rol = listaRoles.stream().filter(r -> r.getId() == usuario.getIdRol()).findAny().get();
+                usuarioDto.setNombreRol(rol.getNombre());
+                
+                listaUsuarioDto.add(usuarioDto);
+            });
+
+            return listaUsuarioDto;
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
