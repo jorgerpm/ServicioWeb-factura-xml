@@ -62,6 +62,7 @@ public class DocumentoReembolsos implements Serializable {
     private String numeroRetencion;
     
     private String justificacionBase64;
+    private String tipoJustificacionBase64;
 
     public Long getId() {
         return id;
@@ -301,6 +302,14 @@ public class DocumentoReembolsos implements Serializable {
 
     public void setJustificacionBase64(String justificacionBase64) {
         this.justificacionBase64 = justificacionBase64;
+    }
+
+    public String getTipoJustificacionBase64() {
+        return tipoJustificacionBase64;
+    }
+
+    public void setTipoJustificacionBase64(String tipoJustificacionBase64) {
+        this.tipoJustificacionBase64 = tipoJustificacionBase64;
     }
 
 }

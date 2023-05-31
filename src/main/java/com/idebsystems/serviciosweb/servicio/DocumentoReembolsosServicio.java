@@ -155,6 +155,11 @@ public class DocumentoReembolsosServicio {
                 objDto.setRespuesta("ERROR: No se pudo firmar el documento.");
                 return objDto;
             }
+            
+            //si es rechazado se agrega una imagen que digarechazado en tood el documento
+            if (dto.getEstado().equalsIgnoreCase("RECHAZADO")) {
+                pdfDosFirmas = fsrv.agregarImagenRechazo(pdfDosFirmas, ent.getRazonRechazo(), ent.getTipoReembolso());
+            }
 
             DocumentoReembolsos respuesta = dao.guardarDocumentoReembolsos(ent, ent.getIdsXml(), null, false);
             DocumentoReembolsosDTO objDto = DocumentoReembolsosMapper.INSTANCE.entityToDto(respuesta);
@@ -164,7 +169,7 @@ public class DocumentoReembolsosServicio {
             
             //enviar un correo electronica al usuario que genero el pdf reembolso, al usuario original
             CorreoServicio correo = new CorreoServicio();
-            correo.enviaCorreoApruebaRechaza(respuesta.getUsuarioCarga(), respuesta);
+            correo.enviaCorreoApruebaRechaza(respuesta.getUsuarioCarga(), respuesta, objDto.getArchivoBase64());
 
             return objDto;
 
@@ -228,6 +233,7 @@ public class DocumentoReembolsosServicio {
         try {
             DocumentoReembolsos ent = dao.getDocumentosPorId(dto.getId());
             ent.setJustificacionBase64(dto.getJustificacionBase64());
+            ent.setTipoJustificacionBase64(dto.getTipoJustificacionBase64());
             
             DocumentoReembolsos respuesta = dao.guardarDocumentoReembolsos(ent, "", null, false);
             

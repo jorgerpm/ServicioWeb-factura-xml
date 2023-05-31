@@ -46,6 +46,7 @@ public class DocumentoReembolsosDTO {
     private String numeroDocumento;
     private String numeroRetencion;
     private String justificacionBase64;
+    private String tipoJustificacionBase64;
     //
     private String respuesta;
     private Integer totalRegistros;
@@ -312,6 +313,14 @@ public class DocumentoReembolsosDTO {
 
     public void setJustificacionBase64(String justificacionBase64) {
         this.justificacionBase64 = justificacionBase64;
+    }
+
+    public String getTipoJustificacionBase64() {
+        return tipoJustificacionBase64;
+    }
+
+    public void setTipoJustificacionBase64(String tipoJustificacionBase64) {
+        this.tipoJustificacionBase64 = tipoJustificacionBase64;
     }
 
     @Override

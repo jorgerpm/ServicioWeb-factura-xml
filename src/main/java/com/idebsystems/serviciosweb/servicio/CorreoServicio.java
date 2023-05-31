@@ -115,7 +115,7 @@ public class CorreoServicio {
             //
 //            properties.setProperty("mail.smtp.ssl.trust", "*");
             properties.setProperty("mail.debug.auth", "true");
-            properties.setProperty("mail.debug", "true");
+//            properties.setProperty("mail.debug", "true");
 
             // creates a new session with an authenticator
             Authenticator auth = new Authenticator() {
@@ -263,7 +263,15 @@ public class CorreoServicio {
                     
                     //transformar el mensaje con los datos
                     String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
-//                    mensajeText = mensajeText.replace("[tipoReembolso]", doc.getTipoReembolso());
+                    mensajeText = mensajeText.replace("[estado]", doc.getEstado());
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                    mensajeText = mensajeText.replace("[fechaCarga]", sdf.format(doc.getFechaCarga()));
+                    if(Objects.nonNull(doc.getFechaAutoriza()))
+                        mensajeText = mensajeText.replace("[fechaAprueba]", sdf.format(doc.getFechaAutoriza()));
+                    mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
+                    mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
+                    mensajeText = mensajeText.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+                    mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
 
                     //esta parte es para controlar si el correo se envia al jefe del usuario, que es el aporbador , o se envia 
                     //al contador que es los correos en los parametros
@@ -291,7 +299,7 @@ public class CorreoServicio {
     
     
     
-    public void enviaCorreoApruebaRechaza(Long idUsuario, DocumentoReembolsos doc)  {
+    public void enviaCorreoApruebaRechaza(Long idUsuario, DocumentoReembolsos doc, String archivoBase64)  {
         try {
             Thread correo = new Thread(() -> {
                 try {
@@ -309,10 +317,38 @@ public class CorreoServicio {
                     //transformar el mensaje con los datos
                     String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
                     mensajeText = mensajeText.replace("[estado]", doc.getEstado());
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                    mensajeText = mensajeText.replace("[fechaCarga]", sdf.format(doc.getFechaCarga()));
+                    if(Objects.nonNull(doc.getFechaAutoriza()))
+                        mensajeText = mensajeText.replace("[fechaAprueba]", sdf.format(doc.getFechaAutoriza()));
+                    mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
+                    mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
+                    mensajeText = mensajeText.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+                    mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
+                    
 
                     String asunto = pasunto.getValor().replace("[estado]", doc.getEstado());
                     
-                    enviarCorreo(user.getCorreo(), asunto, mensajeText, null);
+                    
+                    //generar el pdf a adjuntar     
+                    File fileCot = File.createTempFile("reembolso",".pdf");
+                    FileOutputStream fis = new FileOutputStream(fileCot);
+                    fis.write(Base64.getDecoder().decode(archivoBase64));
+                    fis.close();
+
+                    List<File> archivosAdjuntos = new ArrayList<>();
+                    archivosAdjuntos.add(fileCot);
+            
+                    String correos = user.getCorreo();
+                    
+                    //cuando es aprobado se debe enviar tambien el correo al contador a parte del usuario que genera el pdf
+                    //al correo que esta parametrizado
+                    if(!doc.getEstado().equalsIgnoreCase("RECHAZADO")){
+                        Parametro pdestino = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("DESTINOMAIL_REEMBOLSO")).findAny().get();
+                        correos = correos + ";" + pdestino.getValor();
+                    }
+                    
+                    enviarCorreo(correos, asunto, mensajeText, archivosAdjuntos);
                     
                 } catch (Exception exc) {
                     LOGGER.log(Level.SEVERE, null, exc);
@@ -345,14 +381,19 @@ public class CorreoServicio {
             //transformar el mensaje con los datos
             String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
             mensajeText = mensajeText.replace("[estado]", doc.getEstado());
-            
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             mensajeText = mensajeText.replace("[fechaCarga]", sdf.format(doc.getFechaCarga()));
+            if(Objects.nonNull(doc.getFechaAutoriza()))
+                mensajeText = mensajeText.replace("[fechaAprueba]", sdf.format(doc.getFechaAutoriza()));
+            mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
+            mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
+            mensajeText = mensajeText.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+            mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
+            
 
             String asunto = pasunto.getValor().replace("[estado]", doc.getEstado());
             
-            //generar el pdf a adjuntar
-                    
+            //generar el pdf a adjuntar     
             File fileCot = File.createTempFile("reembolso",".pdf");
             FileOutputStream fis = new FileOutputStream(fileCot);
             fis.write(Base64.getDecoder().decode(archivoBase64));
@@ -388,15 +429,34 @@ public class CorreoServicio {
             //transformar el mensaje con los datos
             String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
             mensajeText = mensajeText.replace("[estado]", doc.getEstado());
-            
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
             mensajeText = mensajeText.replace("[fechaCarga]", sdf.format(doc.getFechaCarga()));
-
+            if(Objects.nonNull(doc.getFechaAutoriza()))
+                mensajeText = mensajeText.replace("[fechaAprueba]", sdf.format(doc.getFechaAutoriza()));
+            mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
+            mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
+            mensajeText = mensajeText.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+            mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
+            
+            
+            //asunto del correo
             String asunto = pasunto.getValor().replace("[estado]", doc.getEstado());
             
-            //generar el pdf a adjuntar
+            //generar el archivo a adjuntar
+            LOGGER.log(Level.INFO, "el tipo: {0}", doc.getTipoJustificacionBase64());
+            
+            String tipof = doc.getTipoJustificacionBase64().split("/")[1];
+            
+            if(doc.getTipoJustificacionBase64().contains("vnd.ms-excel"))
+                tipof = "xls";
+            if(doc.getTipoJustificacionBase64().contains("vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                tipof = "xlsx";
+            if(doc.getTipoJustificacionBase64().contains("text/plain"))
+                tipof = "txt";
+            
+            
                     
-            File fileCot = File.createTempFile("reembolso",".pdf");
+            File fileCot = File.createTempFile("justificativo","." + tipof);
             FileOutputStream fis = new FileOutputStream(fileCot);
             fis.write(Base64.getDecoder().decode(archivoBase64));
             fis.close();

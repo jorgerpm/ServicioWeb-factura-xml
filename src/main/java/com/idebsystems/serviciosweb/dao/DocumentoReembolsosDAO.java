@@ -38,7 +38,7 @@ public class DocumentoReembolsosDAO extends Persistencia {
             sql += " where d.fechaCarga between :fechaInicio AND :fechaFinal";
             
             if(Objects.nonNull(idAprobador)){
-                sql += " AND d.idAprobador = :idAprobador";
+                sql += " AND (d.idAprobador = :idAprobador OR d.usuarioCarga = :idAprobador)";
             }
             else if(Objects.nonNull(usuarioCarga)){
                 sql += " AND d.usuarioCarga = :usuarioCarga";
@@ -106,12 +106,15 @@ public class DocumentoReembolsosDAO extends Persistencia {
             em.flush(); //Confirmar el insert o update
             
             //actualizar el estado de los documentos
+            LOGGER.log(Level.INFO, "los id son: {0}", ids);
             String[] arrids = ids.split(",");
             for(String id : arrids){
                 if(Objects.nonNull(id) && !id.isBlank()){
                     ArchivoXml xml = em.find(ArchivoXml.class, Long.parseLong(id));
-                    xml.setEstadoSistema(data.getEstado());
-                    em.merge(xml);
+                    if(Objects.nonNull(xml)){
+                        xml.setEstadoSistema(data.getEstado());
+                        em.merge(xml);
+                    }
                 }
             }
             

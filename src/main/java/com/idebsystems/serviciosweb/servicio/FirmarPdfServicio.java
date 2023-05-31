@@ -6,8 +6,12 @@
 package com.idebsystems.serviciosweb.servicio;
 
 import com.idebsystems.serviciosweb.dto.FirmaDigitalDTO;
+import com.idebsystems.serviciosweb.dto.ParametroDTO;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
@@ -17,6 +21,7 @@ import com.itextpdf.text.pdf.security.ExternalDigest;
 import com.itextpdf.text.pdf.security.ExternalSignature;
 import com.itextpdf.text.pdf.security.MakeSignature;
 import com.itextpdf.text.pdf.security.PrivateKeySignature;
+import com.lowagie.text.Element;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -247,6 +252,90 @@ public class FirmarPdfServicio {
 
     }
 
+    
+    
+    
+    
+    public byte[] agregarImagenRechazo(byte[] archivoAFirmar, String razonRechazo, String tipoReembolso) {
+        try {
+
+            File filepout = Files.createTempFile("signed", ".pdf").toFile();
+            FileOutputStream os = new FileOutputStream(filepout);
+
+            
+
+            PdfReader reader = new PdfReader(archivoAFirmar);
+
+            PdfStamper stamp = new PdfStamper(reader, os);
+            
+
+            //obtener la imagen desde el path
+            ParametroServicio ps = new ParametroServicio();
+            ParametroDTO pi = ps.listarParametros().stream().filter(p -> p.getNombre().equalsIgnoreCase("IMAGEN_RECHAZO")).findAny().orElse(new ParametroDTO());
+            
+//            File fileImagen = new File(pi.getValor());
+            
+            
+//            byte[] imagenBytes = null;
+            Image imagen = Image.getInstance(pi.getValor());
+            
+//            imagen.setAlignment(Image.BOTTOM);
+//            imagen.scaleAbsolute(150, 50);//ANCHO XALTO
+            imagen.setAbsolutePosition(20, 20); //X Y
+            
+            //se recorre la cantidad de paginas para colocar la imagen en cada pagina
+            for(int i=1;i<=reader.getNumberOfPages();i++){
+                PdfContentByte content = stamp.getOverContent(i);
+                content.addImage(imagen);
+            }
+            
+            
+            //aca se coloca la razon de rechazo, pero solo en la ultima pagina
+            int x = 20;
+            int y = 140;
+            if(tipoReembolso.equalsIgnoreCase("VIAJES")){
+                x = 20;
+                y = 340;
+            }
+                    
+            PdfContentByte content = stamp.getOverContent(reader.getNumberOfPages());
+            BaseFont baseFont = BaseFont.createFont(BaseFont.HELVETICA, "UTF-8", true);
+            FontFactory.getFont(FontFactory.HELVETICA, Font.DEFAULTSIZE, Font.NORMAL).getBaseFont();
+            content.setFontAndSize(baseFont, 10);
+            content.beginText();
+            content.showTextAligned(Element.ALIGN_LEFT, "Motivo rechazo: " + razonRechazo, x, y, 0);
+            content.endText();
+            //ESTA ES LA RAZON DEL RECHAZO PORQUE SI POR_AUTORIZAR
+            
+            stamp.close();
+
+            FileInputStream fis = new FileInputStream(filepout);
+            //System.out.println(file.exists() + "!!");
+            //InputStream in = resource.openStream();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            try {
+                for (int readNum; (readNum = fis.read(buf)) != -1;) {
+                    bos.write(buf, 0, readNum); //no doubt here is 0
+                    //Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
+//                    System.out.println("read " + readNum + " bytes,");
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            byte[] bytes = bos.toByteArray();
+
+            return bytes;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+    
+    
+    
     public static void comprobar() {
         try {
 
