@@ -97,7 +97,7 @@ public class ConexionSriServicio {
                     + "   </soapenv:Body>\n"
                     + "</soapenv:Envelope>";
 
-            System.out.println("va a llamar");
+            System.out.println("va a llamar con claveAcceso: " + claveAcceso);
 
             byte[] buffer = new byte[xmlInput.length()];
             buffer = xmlInput.getBytes();
@@ -114,23 +114,23 @@ public class ConexionSriServicio {
             httpConn.setDoOutput(true);
             httpConn.setDoInput(true);
 
-            System.out.println("aun nop: " + bout);
+//            System.out.println("aun nop: " + bout);
 
             OutputStream out = httpConn.getOutputStream();
 
-            System.out.println("ya hizo el connecctoutputtt");
+//            System.out.println("ya hizo el connecctoutputtt");
 
-            System.out.println("httpConn.getLocalCertificates(): " + httpConn.getLocalCertificates());
+//            System.out.println("httpConn.getLocalCertificates(): " + httpConn.getLocalCertificates());
 
 //Write the content of the request to the outputstream of the HTTP Connection.
             out.write(b);
             out.close();
 //Ready with sending the request.
-            System.out.println("cerro los out");
+//            System.out.println("cerro los out");
 //Read the response.
             InputStreamReader isr
                     = new InputStreamReader(httpConn.getInputStream());
-            System.out.println("auiq hace getInputStream");
+//            System.out.println("auiq hace getInputStream");
             BufferedReader in = new BufferedReader(isr);
 
 //Write the SOAP message response to a String.
@@ -138,7 +138,7 @@ public class ConexionSriServicio {
                 outputString = outputString + responseString;
             }
 //Parse the String output to a org.w3c.dom.Document and be able to reach every node with the org.w3c.dom API.
-            System.out.println("antes del parsexml");
+//            System.out.println("antes del parsexml");
 
             if (outputString.contains("Rejected")) {
                 throw new Exception("NO SE CONECTO: " + outputString);
@@ -149,12 +149,18 @@ public class ConexionSriServicio {
 //            String weatherResult = nodeLst.item(0).getTextContent();
 //            System.out.println("Weather: " + weatherResult);
 
-            System.out.println("outputString: " + outputString);
+//            System.out.println("outputString: " + outputString);
+
+            //esto es cuando no encuentra comprobantes con la clave de acceso consultada
+            if(outputString.contains("<numeroComprobantes>0</numeroComprobantes>")){
+                throw new Exception("No existe comprobante con la clave consultada");
+            }
 
 //Write the SOAP message formatted to the console.
             String formattedSOAPResponse = formatXML(outputString);
-            System.out.println(formattedSOAPResponse);
+//            System.out.println(formattedSOAPResponse);
 
+            
             
 //            Document comprob = parseXmlFile(formattedSOAPResponse);
 //            comprob.
@@ -163,7 +169,8 @@ public class ConexionSriServicio {
             return formattedSOAPResponse;
             
         } catch (Exception exc) {
-            LOGGER.log(Level.SEVERE, null, exc);
+            if(!exc.getMessage().contains("No existe comprobante con la clave consultada"))
+                LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
         }
     }
@@ -205,7 +212,7 @@ public class ConexionSriServicio {
     private Document parseXmlFile(String in) {
         try {
 
-            System.out.println("que lego?? " + in);
+//            System.out.println("que lego?? " + in);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();

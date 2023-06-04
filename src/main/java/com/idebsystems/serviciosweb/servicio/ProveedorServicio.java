@@ -27,7 +27,7 @@ public class ProveedorServicio {
     public ProveedorDTO buscarProveedorRuc(String ruc) throws Exception {
         try {
             Proveedor data = dao.buscarProveedorRuc(ruc);
-            LOGGER.log(Level.INFO, "proveedor encontrado: {0}", data);
+//            LOGGER.log(Level.INFO, "proveedor encontrado: {0}", data);
             if(Objects.nonNull(data)){
                 ProveedorDTO dto = new ProveedorDTO();
                 dto.setCodigoJD(data.getCodigoJD());

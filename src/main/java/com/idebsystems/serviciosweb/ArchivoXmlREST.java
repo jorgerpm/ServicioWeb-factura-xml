@@ -47,7 +47,7 @@ public class ArchivoXmlREST {
             String pathSaveXml = service.guardarArchivoXml(fileDto.getXmlBase64());
 
             String resp = service.guardarXmlToDB(pathSaveXml, fileDto.getNombreArchivoXml(), fileDto.getNombreArchivoPdf(),
-                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true);
+                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true, null);
             return new RespuestaDTO(resp);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
@@ -63,7 +63,7 @@ public class ArchivoXmlREST {
         try {
             LOGGER.log(Level.INFO, "entroooooooooooo: {0}", fileDto);
             String resp = service.guardarXmlToDB(fileDto.getXmlBase64(), fileDto.getNombreArchivoXml(), fileDto.getNombreArchivoPdf(),
-                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true);
+                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true, null);
             
             LOGGER.log(Level.INFO, "el path es:::: {0}", service.getPathCarpetas());
             
@@ -114,19 +114,19 @@ public class ArchivoXmlREST {
             @QueryParam(value = "seleccionados") boolean seleccionados,
             @QueryParam(value = "conDetalles") boolean conDetalles) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "fechaInicio: {0}", fechaInicio);
-            LOGGER.log(Level.INFO, "fechaFinal: {0}", fechaFinal);
-            LOGGER.log(Level.INFO, "idUsuarioCarga: {0}", idUsuarioCarga);
-            
-            LOGGER.log(Level.INFO, "claveAcceso: {0}", claveAcceso);
-            LOGGER.log(Level.INFO, "ruc: {0}", ruc);
-            LOGGER.log(Level.INFO, "tipoDocumento: {0}", tipoDocumento);
-            LOGGER.log(Level.INFO, "estadoSistema: {0}", estadoSistema);
-            
-            LOGGER.log(Level.INFO, "desde: {0}", desde);
-            LOGGER.log(Level.INFO, "hasta: {0}", hasta);
-            LOGGER.log(Level.INFO, "seleccionados: {0}", seleccionados);
-            LOGGER.log(Level.INFO, "conDetalles: {0}", conDetalles);
+//            LOGGER.log(Level.INFO, "fechaInicio: {0}", fechaInicio);
+//            LOGGER.log(Level.INFO, "fechaFinal: {0}", fechaFinal);
+//            LOGGER.log(Level.INFO, "idUsuarioCarga: {0}", idUsuarioCarga);
+//            
+//            LOGGER.log(Level.INFO, "claveAcceso: {0}", claveAcceso);
+//            LOGGER.log(Level.INFO, "ruc: {0}", ruc);
+//            LOGGER.log(Level.INFO, "tipoDocumento: {0}", tipoDocumento);
+//            LOGGER.log(Level.INFO, "estadoSistema: {0}", estadoSistema);
+//            
+//            LOGGER.log(Level.INFO, "desde: {0}", desde);
+//            LOGGER.log(Level.INFO, "hasta: {0}", hasta);
+//            LOGGER.log(Level.INFO, "seleccionados: {0}", seleccionados);
+//            LOGGER.log(Level.INFO, "conDetalles: {0}", conDetalles);
             
             
             Long variable = new Date().getTime();
@@ -138,7 +138,7 @@ public class ArchivoXmlREST {
             //buscar en la bdd los roles
             List<ArchivoXmlDTO> listaArchivo = service.listarPorFecha(dateInit, dateFin, idUsuarioCarga, 
                     claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, conDetalles);
-            LOGGER.log(Level.INFO, "tamaño: {0}", listaArchivo);
+//            LOGGER.log(Level.INFO, "tamaño: {0}", listaArchivo);
 
             return listaArchivo;
         } catch (Exception exc) {
@@ -154,11 +154,12 @@ public class ArchivoXmlREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<ArchivoSriDTO> cargarArchivoSri(List<ArchivoSriDTO> lista) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", lista);
-            lista.forEach(l -> LOGGER.log(Level.INFO, "uno: {0}", l));
+            LOGGER.log(Level.INFO, "inicia carga archivosri: {0}");
 
             List<ArchivoSriDTO> respuesta = service.cargarArchivoSri(lista, lista.get(0).getIdUsuarioCarga());
 
+            LOGGER.log(Level.INFO, "finaliza carga archivosri: {0}");
+            
             return respuesta;
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);

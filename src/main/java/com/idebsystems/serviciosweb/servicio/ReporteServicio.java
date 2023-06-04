@@ -293,12 +293,12 @@ LOGGER.log(Level.INFO, "completo: {0}", rpdto );
     public ReporteDTO generarRidePdf(ArchivoXml archivoXml) throws Exception {
         try{
             
-            LOGGER.log(Level.INFO, "el compro: {0}", archivoXml.getComprobante());
+//            LOGGER.log(Level.INFO, "el compro: {0}", archivoXml.getComprobante());
             
             JSONObject jsonObject = new JSONObject(archivoXml.getComprobante()); 
             String xml = XML.toString(jsonObject);
             
-            LOGGER.log(Level.INFO, "el xml del comp: {0}", xml);
+//            LOGGER.log(Level.INFO, "el xml del comp: {0}", xml);
             
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 //            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -310,28 +310,28 @@ LOGGER.log(Level.INFO, "completo: {0}", rpdto );
             
             
             
-            LOGGER.log(Level.INFO, "creado el documento: {0}", documentXml);
+//            LOGGER.log(Level.INFO, "creado el documento: {0}", documentXml);
             
             List<String> datos = crearXPathYReporte(archivoXml.getTipoDocumento());
             
             String xpath = datos.get(0);
             String nombreReporte = datos.get(1);
             
-            LOGGER.log(Level.INFO, "xpath: {0}", xpath);
+//            LOGGER.log(Level.INFO, "xpath: {0}", xpath);
             
             JRXmlDataSource jrds = new JRXmlDataSource(documentXml, xpath);
             
-            LOGGER.log(Level.INFO, "creo el jrds: {0}", jrds);
+//            LOGGER.log(Level.INFO, "creo el jrds: {0}", jrds);
             
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("numeroAutorizacion", archivoXml.getNumeroAutorizacion());
             parameters.put("fechaAutorizacion", archivoXml.getFechaAutorizacion());
             
-            LOGGER.log(Level.INFO, "antes de compilar");
+//            LOGGER.log(Level.INFO, "antes de compilar");
             
             JasperPrint jasperPrint = dao.compilacionReportePdf(nombreReporte, parameters, jrds);
             
-            LOGGER.log(Level.INFO, "listo el jasperprint: {0}", jasperPrint);
+//            LOGGER.log(Level.INFO, "listo el jasperprint: {0}", jasperPrint);
             
             if (jasperPrint != null) {
                 byte[] flujo = JasperExportManager.exportReportToPdf(jasperPrint);

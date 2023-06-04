@@ -49,6 +49,15 @@ public class ArchivoXmlDTO {
     //
     private String detalle;
     private String precioUnitario;
+    //para retenciones
+    private String codDocSustento;
+    private String numDocSustento;
+    private String fechaEmisionDocSustento;
+    private String codigoRetencion;
+    private String baseImponible;
+    private String porcentajeRetener;
+    private String valorRetenido;
+    
 
     public String getEstadoSri() {
         return estadoSri;
@@ -306,6 +315,62 @@ public class ArchivoXmlDTO {
 
     public void setAsistentes(String asistentes) {
         this.asistentes = asistentes;
+    }
+
+    public String getCodDocSustento() {
+        return codDocSustento;
+    }
+
+    public void setCodDocSustento(String codDocSustento) {
+        this.codDocSustento = codDocSustento;
+    }
+
+    public String getNumDocSustento() {
+        return numDocSustento;
+    }
+
+    public void setNumDocSustento(String numDocSustento) {
+        this.numDocSustento = numDocSustento;
+    }
+
+    public String getFechaEmisionDocSustento() {
+        return fechaEmisionDocSustento;
+    }
+
+    public void setFechaEmisionDocSustento(String fechaEmisionDocSustento) {
+        this.fechaEmisionDocSustento = fechaEmisionDocSustento;
+    }
+
+    public String getCodigoRetencion() {
+        return codigoRetencion;
+    }
+
+    public void setCodigoRetencion(String codigoRetencion) {
+        this.codigoRetencion = codigoRetencion;
+    }
+
+    public String getBaseImponible() {
+        return baseImponible;
+    }
+
+    public void setBaseImponible(String baseImponible) {
+        this.baseImponible = baseImponible;
+    }
+
+    public String getPorcentajeRetener() {
+        return porcentajeRetener;
+    }
+
+    public void setPorcentajeRetener(String porcentajeRetener) {
+        this.porcentajeRetener = porcentajeRetener;
+    }
+
+    public String getValorRetenido() {
+        return valorRetenido;
+    }
+
+    public void setValorRetenido(String valorRetenido) {
+        this.valorRetenido = valorRetenido;
     }
     
     @Override

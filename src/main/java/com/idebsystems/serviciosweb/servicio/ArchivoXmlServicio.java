@@ -123,7 +123,7 @@ public class ArchivoXmlServicio {
     }
 
     public String guardarXmlToDB(String xmlB64, String nombreXml, String nombrePdf, /*String urlArchivo,*/ Long idUsuario, 
-            String tipoDocumento, boolean enviarCorreo) throws Exception {
+            String tipoDocumento, boolean enviarCorreo, Parametro paramCarpeta) throws Exception {
         try {
             //generar el tag xml segun el documento
             String tag_xml = TAG_FACTURA;
@@ -214,23 +214,23 @@ public class ArchivoXmlServicio {
 
                 //sacar a parte la fecha de autorizacion para parsear en el formato dd/MM/yyyy
                 String fechaAutoriza = "";
-                LOGGER.log(Level.INFO, "fechaUat:: {0}", jsonObj.has(TAG_FECHA_AUTORIZACON));
+//                LOGGER.log(Level.INFO, "fechaUat:: {0}", jsonObj.has(TAG_FECHA_AUTORIZACON));
 
                 try {
                     //LOGGER.log(Level.INFO, "fechaUat:: {0}", jsonObj.getJSONObject("fechaAutorizacion"));
                     if (jsonObj.getJSONObject(TAG_FECHA_AUTORIZACON) != null) {
-                        LOGGER.log(Level.INFO, "si tiene fechaautorizacion");
+//                        LOGGER.log(Level.INFO, "si tiene fechaautorizacion");
                         String fa = jsonObj.getJSONObject(TAG_FECHA_AUTORIZACON).getString("content");
 
                         fechaAutoriza = fa.substring(0, 10);
 
-                        LOGGER.log(Level.INFO, "fecha de actoriz: {0}", fechaAutoriza);
+//                        LOGGER.log(Level.INFO, "fecha de actoriz: {0}", fechaAutoriza);
                     } else {
                         fechaAutoriza = jsonObj.getString(TAG_FECHA_AUTORIZACON);
                     }
 
                 } catch (org.json.JSONException exc) {
-                    LOGGER.log(Level.INFO, "cayoo: {0}", exc.getMessage());
+//                    LOGGER.log(Level.INFO, "cayoo: {0}", exc.getMessage());
                     fechaAutoriza = jsonObj.getString(TAG_FECHA_AUTORIZACON);
                 }
 
@@ -238,10 +238,10 @@ public class ArchivoXmlServicio {
                 jsonObj.remove(TAG_FECHA_AUTORIZACON);
 
                 String json = jsonObj.toString();
-                LOGGER.log(Level.INFO, "el comprbante xml a json?::: {0}", json);
+//                LOGGER.log(Level.INFO, "el comprbante xml a json?::: {0}", json);
 
                 ArchivoXmlDTO data = new Gson().fromJson(json, ArchivoXmlDTO.class);
-                LOGGER.log(Level.INFO, "ArchivoXmlDTO::: {0}", data);
+//                LOGGER.log(Level.INFO, "ArchivoXmlDTO::: {0}", data);
                 
                 //poner el estado, en el json dice estado, pero el entity es estadoSri
                 String estadoSri = jsonObj.getString(TAG_ESTADO_SRI);
@@ -250,7 +250,7 @@ public class ArchivoXmlServicio {
                 //buscar el proveedor con el ruc del xml
                 String rucProveedor = jsonObjComp.getJSONObject(tag_xml).getJSONObject(TAG_INFO_TRIBUTARIO).get(TAG_RUC).toString();
                 ProveedorDTO dto = provSrv.buscarProveedorRuc(rucProveedor);
-                LOGGER.log(Level.INFO, "id del provv: {0}", dto.getId());
+//                LOGGER.log(Level.INFO, "id del provv: {0}", dto.getId());
                 data.setCodigoJDProveedor(dto.getCodigoJD());
 
                 //obtener la fecha de emision, es importante para las busquedas
@@ -279,10 +279,10 @@ public class ArchivoXmlServicio {
                     data.setFechaAutorizacion(sdf.parse(fechaAutoriza));
                 }
                 
-                LOGGER.log(Level.INFO, "fecha de auto completa: {0}", data.getFechaAutorizacion());
+//                LOGGER.log(Level.INFO, "fecha de auto completa: {0}", data.getFechaAutorizacion());
 
                 //aqui crear la estructura de las carpetas.
-                String pathCarpetas = crearEstructuraCarpetas(data);
+                String pathCarpetas = crearEstructuraCarpetas(data, paramCarpeta);
                 data.setUrlArchivo(paramUrlSist.getValor() + pathCarpetas);
                 setPathCarpetas(pathCarpetas);
 
@@ -301,7 +301,7 @@ public class ArchivoXmlServicio {
                 
                 setArchivoXmlAux(archivoXml);
                 
-                LOGGER.log(Level.INFO, "Tiene un id?? {0}", archivoXml.getId());
+//                LOGGER.log(Level.INFO, "Tiene un id?? {0}", archivoXml.getId());
 //                setIdTmp(archivoXml.getId());
 
                 //despues de que se guardo el archivo en bdd enviar el correo para notificar la carga
@@ -327,12 +327,12 @@ public class ArchivoXmlServicio {
                 objjson.put(TAG_COMPROBANTE, jsonObj.toString());
 
                 String json = objjson.toString();
-                LOGGER.log(Level.INFO, "el comprbante xml a json?::: {0}", json);
+//                LOGGER.log(Level.INFO, "el comprbante xml a json?::: {0}", json);
 
                 ArchivoXmlDTO data = new Gson().fromJson(json, ArchivoXmlDTO.class);
-                LOGGER.log(Level.INFO, "ArchivoXmlDTO::: {0}", data);
+//                LOGGER.log(Level.INFO, "ArchivoXmlDTO::: {0}", data);
 
-                LOGGER.log(Level.INFO, "el comprobante::: {0}", data.getComprobante());
+//                LOGGER.log(Level.INFO, "el comprobante::: {0}", data.getComprobante());
 
                 return "Error, Mal estructura del archivo xml. No tiene la etiqueta: <autorizacion>.";
             }
@@ -474,10 +474,16 @@ public class ArchivoXmlServicio {
             UsuarioDAO usdao = new UsuarioDAO();
             Usuario usersesion = usdao.buscarUsuarioPorId(idUsuario);
             
-            //la urldel sri desde la bdd
+            //la urlArchivo tomar desde la bdd de los parametros.
             ParametroDAO paramDao = new ParametroDAO();
             List<Parametro> listaParams = paramDao.listarParametros();
-
+            //DESDE esta ubicacion crear la estructura de la carpeta
+            Parametro paramCarpeta = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("CARPETA_ARCHIVOS")).findAny().get();
+            
+            //este es el path para el tomcat para giuaradar ;los archivos desde java al path del php
+            //Parametro paramPathTomcat = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("PATH_TOMCAT")).findAny().get();
+            
+            //la urldel sri desde la bdd
             Parametro paramUrl = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("URLAUTORIZACIONSRI")).findAny().get();
             String urlSri = paramUrl.getValor();
 
@@ -491,7 +497,7 @@ public class ArchivoXmlServicio {
 
                 if (Objects.isNull(archivoXml)) {
 
-                    String respXml;
+                    String respXml=null;
                     try {
                         respXml = sri.getAutorizacionComprobante(arc.getClaveAcceso(), urlSri);
                     } catch (Exception exc) {
@@ -499,7 +505,7 @@ public class ArchivoXmlServicio {
                         if(exc.getMessage() != null && exc.getMessage().contains("Connection reset")){
                             arc.setRespuesta("SIN CONEXION AL SRI");
                         }else{
-                            arc.setRespuesta("ERROR: " + exc.getMessage());
+                            arc.setRespuesta("ERROR: " + exc.getMessage().replace("java.lang.Exception:", ""));
                         }
                     }
 
@@ -512,10 +518,11 @@ public class ArchivoXmlServicio {
 
                         String tipoDoc = arc.getClaveAcceso().substring(8, 10);
 
-                        LOGGER.log(Level.INFO, "tipodoc desde clave acceso: {0}", tipoDoc);
+//                        LOGGER.log(Level.INFO, "tipodoc desde clave acceso: {0}", tipoDoc);
 
                         try {
-                            String resp = guardarXmlToDB(fileb64, (arc.getClaveAcceso() + ".xml"), (arc.getClaveAcceso() + ".pdf"), idUsuario, tipoDoc, false);
+                            String resp = guardarXmlToDB(fileb64, (arc.getClaveAcceso() + ".xml"), (arc.getClaveAcceso() + ".pdf"), 
+                                    idUsuario, tipoDoc, false, paramCarpeta);
 //                            if(resp.contains("~"))
 //                                arc.setRespuesta(resp.split("~")[0]);
 //                            else
@@ -537,11 +544,22 @@ public class ArchivoXmlServicio {
                             else{
                                 arc.setEstadoSistema("CARGADO");
                             }
+                            /*
+                            //en esta parte se procede a escribir en disco el xml y el ride para no enviar los archivos en la respuesta
+                            guardarArchivosDisco(arc, paramPathTomcat.getValor());
+                            //se les pone en null para que no viajen en el response
+                            arc.setFileBase64(null);
+                            arc.setRideBase64(null);
+                            //necesario quitar mas cosas, revisar porque toavia salio bkoen pipe
+                            arc.setPathArchivos(null);
+                            //*/
+                            
+                            
                             //si almenos uno es correcto se envia el correo
                             correcto = true;
                         } catch (Exception exc) {
                             LOGGER.log(Level.SEVERE, null, exc);
-                            arc.setRespuesta("ERROR: " + exc.getMessage());
+                            arc.setRespuesta("ERROR: " + exc.getMessage().replace("java.lang.Exception:", ""));
                         }
                     }
                 } else {
@@ -555,8 +573,8 @@ public class ArchivoXmlServicio {
             
             //despues de que se guardo el archivo en bdd enviar el correo para notificar la carga
             if(correcto){
-                CorreoServicio correoSrv = new CorreoServicio();
-                correoSrv.enviarCorreoCargaArchivo(idUsuario, null);
+//                CorreoServicio correoSrv = new CorreoServicio();
+//                correoSrv.enviarCorreoCargaArchivo(idUsuario, null);
             }
             
             
@@ -569,23 +587,25 @@ public class ArchivoXmlServicio {
         }
     }
 
-    private String crearEstructuraCarpetas(ArchivoXmlDTO data) throws Exception {
+    private String crearEstructuraCarpetas(ArchivoXmlDTO data, Parametro paramCarpeta) throws Exception {
         try {
 //    anio
 //         mes
 //            tipoDocumento
 //                    razonSocial (proveedor)
 
-            //la urlArchivo tomar desde la bdd de los parametros.
-            ParametroDAO paramDao = new ParametroDAO();
-            List<Parametro> listaParams = paramDao.listarParametros();
-            //DESDE esta ubicacion crear la estructura de la carpeta
-            Parametro paramCarpeta = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("CARPETA_ARCHIVOS")).findAny().get();
+            if(Objects.isNull(paramCarpeta)){
+                //la urlArchivo tomar desde la bdd de los parametros.
+                ParametroDAO paramDao = new ParametroDAO();
+                List<Parametro> listaParams = paramDao.listarParametros();
+                //DESDE esta ubicacion crear la estructura de la carpeta
+                paramCarpeta = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("CARPETA_ARCHIVOS")).findAny().get();
+            }
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(data.getFechaEmision());//de aqui anio y mes
             int year = cal.get(Calendar.YEAR);
-            int monthInt = cal.get(Calendar.MONTH);
+            int monthInt = (cal.get(Calendar.MONTH) + 1);//el primer mes es cero por eso se suma + 1
             String month = monthInt+"";
             if(monthInt<10){
                 month = "0"+month;
@@ -599,7 +619,7 @@ public class ArchivoXmlServicio {
 
             String pathCompleto = paramCarpeta.getValor().replaceAll("/", "") + File.separator + year + File.separator + month + File.separator + tipoDocumento + File.separator + data.getRazonSocial();
 
-            LOGGER.log(Level.INFO, "path completo: {0}", pathCompleto);
+//            LOGGER.log(Level.INFO, "path completo: {0}", pathCompleto);
 
             return pathCompleto;
 
@@ -723,5 +743,45 @@ public class ArchivoXmlServicio {
         }
     }
     
+    private void guardarArchivosDisco(ArchivoSriDTO arc, String paramPathTomcat){
+        try{
+
+            File file = new File(paramPathTomcat + arc.getPathArchivos());
+            if(!file.exists()){
+                file.mkdirs();
+            }
+
+            String[] cps = arc.getPathArchivos().split("/");
+            String pc = paramPathTomcat;
+            for(int i=0;i<cps.length;i++){
+//                System.out.println("cps.length: " +cps.length);
+                pc = pc + cps[i] + "/";
+                if(i >= cps.length-4){
+//                    System.out.println("pc: " + pc);
+                    File fc = new File(pc);
+                    fc.setReadable(true, false);
+                    fc.setWritable(true, false);
+                    fc.setExecutable(true, false);
+                }
+            }
+
+            byte[] archivByte = Base64.getDecoder().decode(arc.getRideBase64());
+            File outputFile = new File(file.getAbsolutePath(), arc.getClaveAcceso()+".pdf");
+            try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+                outputStream.write(archivByte);
+            }
+            outputFile.setReadable(true, false);
+
+            archivByte = Base64.getDecoder().decode(arc.getFileBase64());
+            outputFile = new File(file.getAbsolutePath(), arc.getClaveAcceso()+".xml");
+            try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+                outputStream.write(archivByte);
+            }
+            outputFile.setReadable(true, false);
+            
+        }catch(Exception exc){
+            LOGGER.log(Level.SEVERE, null, exc);
+        }
+    }
     
 }

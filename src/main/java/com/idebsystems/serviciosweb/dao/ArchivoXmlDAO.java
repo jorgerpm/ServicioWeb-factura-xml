@@ -289,7 +289,9 @@ public class ArchivoXmlDAO extends Persistencia {
 "a.ambiente, a.comprobante, a.urlarchivo, a.nombrearchivoxml, a.nombrearchivopdf, a.idusuariocarga,\n" +
 "a.fechacarga, a.codigojdproveedor, a.claveacceso, a.exportado, a.razonanulacion, a.usuarioanula,\n" +
 "a.fechaanula, a.estadosistema, a.tipogasto, a.esfisica,\n" +
-"d.detalle, d.preciounitario\n" +
+"d.detalle, d.preciounitario, \n" +
+"docsust.codDocSustento, docsust.numDocSustento, docsust.fechaEmisionDocSustento,\n" +
+"rets.codigoRetencion, rets.baseImponible, rets.porcentajeRetener , rets.valorRetenido\n" +
 "from archivoxml a\n" +
 "left outer join (\n" +
 "select id, replace(cast((cast(detalle as json)->'descripcion') as text), '\"', '') detalle, \n" +
@@ -306,8 +308,46 @@ public class ArchivoXmlDAO extends Persistencia {
 "from archivoxml\n" +
 "where cast(comprobante as json)->'factura'->'detalles'->'detalle'->>'descripcion' is not null\n" +
 "and tipodocumento = '01'\n" +
-") detalles\n" +
-") d on a.id = d.id";
+") detfact\n" +
+") d on a.id = d.id\n" +
+"left outer join (\n" +
+"select id,\n" +
+"replace(cast((cast(detalle as json)->'codDocSustento') as text), '\"', '') codDocSustento,\n" +
+"replace(cast((cast(detalle as json)->'numDocSustento') as text), '\"', '') numDocSustento, \n" +
+"replace(cast((cast(detalle as json)->'fechaEmisionDocSustento') as text), '\"', '') fechaEmisionDocSustento\n" +
+"from (\n" +
+"select id, \n" +
+"cast(json_array_elements(cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento') as text) detalle\n" +
+"from archivoxml\n" +
+"where cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->>'numDocSustento' is null\n" +
+"and tipodocumento = '07'\n" +
+"union\n" +
+"select id, \n" +
+"cast(cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento' as text)\n" +
+"from archivoxml\n" +
+"where cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->>'numDocSustento' is not null\n" +
+"and tipodocumento = '07'\n" +
+") detret\n" +
+") docsust on a.id = docsust.id\n" +
+"left outer join (\n" +
+"select id, cast((cast(detalle as json)->'codigoRetencion') as text) codigoRetencion, \n" +
+"cast((cast(detalle as json)->'baseImponible') as text) baseImponible,\n" +
+"cast((cast(detalle as json)->'porcentajeRetener') as text) porcentajeRetener,\n" +
+"cast((cast(detalle as json)->'valorRetenido') as text) valorRetenido\n" +
+"from (\n" +
+"select id, \n" +
+"cast(json_array_elements(cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->'retenciones'->'retencion') as text) detalle\n" +
+"from archivoxml\n" +
+"where cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->'retenciones'->'retencion'->>'codigo' is null\n" +
+"and tipodocumento = '07'\n" +
+"union\n" +
+"select id, \n" +
+"cast(cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->'retenciones'->'retencion' as text)\n" +
+"from archivoxml\n" +
+"where cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->'retenciones'->'retencion'->>'codigo' is not null\n" +
+"and tipodocumento = '07'\n" +
+") rets\n" +
+") rets on a.id = rets.id";
             
             
             if(Objects.nonNull(claveAcceso) && !claveAcceso.isBlank()){
@@ -396,6 +436,15 @@ public class ArchivoXmlDAO extends Persistencia {
                     //
                     xml.setDetalle(obj[22] != null ? obj[22].toString() : null);
                     xml.setPrecioUnitario(obj[23] != null ? obj[23].toString() : null);
+                    //para las retenciones
+                    xml.setCodDocSustento(obj[24] != null ? obj[24].toString() : null);
+                    xml.setNumDocSustento(obj[25] != null ? obj[25].toString() : null);
+                    xml.setFechaEmisionDocSustento(obj[26] != null ? obj[26].toString() : null);
+                    xml.setCodigoRetencion(obj[27] != null ? obj[27].toString() : null);
+                    xml.setBaseImponible(obj[28] != null ? obj[28].toString() : null);
+                    xml.setPorcentajeRetener(obj[29] != null ? obj[29].toString() : null);
+                    xml.setValorRetenido(obj[30] != null ? obj[30].toString() : null);
+                    
 
                     listaPorFecha.add(xml);
                 }catch(Exception exc){
