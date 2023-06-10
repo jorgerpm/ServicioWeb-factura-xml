@@ -84,6 +84,7 @@ public class ArchivoXmlServicio {
 
     private String pathCarpetas;
     private ArchivoXml archivoXmlAux;
+    private String version;
 
     public String getPathCarpetas() {
         return pathCarpetas;
@@ -99,6 +100,14 @@ public class ArchivoXmlServicio {
 
     public void setArchivoXmlAux(ArchivoXml archivoXmlAux) {
         this.archivoXmlAux = archivoXmlAux;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     
@@ -123,7 +132,7 @@ public class ArchivoXmlServicio {
     }
 
     public String guardarXmlToDB(String xmlB64, String nombreXml, String nombrePdf, /*String urlArchivo,*/ Long idUsuario, 
-            String tipoDocumento, boolean enviarCorreo, Parametro paramCarpeta) throws Exception {
+            String tipoDocumento, boolean enviarCorreo, Parametro paramCarpeta, Usuario usersesion) throws Exception {
         try {
             //generar el tag xml segun el documento
             String tag_xml = TAG_FACTURA;
@@ -160,8 +169,10 @@ public class ArchivoXmlServicio {
                 }
             }
             
-            UsuarioDAO usdao = new UsuarioDAO();
-            Usuario usersesion = usdao.buscarUsuarioPorId(idUsuario);
+            if(Objects.isNull(usersesion)){
+                UsuarioDAO usdao = new UsuarioDAO();
+                usersesion = usdao.buscarUsuarioPorId(idUsuario);
+            }
             
             //la urlArchivo tomar desde la bdd de los parametros.
             ParametroDAO paramDao = new ParametroDAO();
@@ -292,6 +303,10 @@ public class ArchivoXmlServicio {
                     data.setEstadoSistema("APROBADO");
                 }
                 
+                //obtener la version del comprobante xml
+                setVersion(jsonObjComp.getJSONObject(tag_xml).get("version").toString());
+                data.setVersion(getVersion());
+                
                 ArchivoXml archivoXml = convertToEntity(data, idUsuario);
 
                 String claveAcceso = jsonObjComp.getJSONObject(tag_xml).getJSONObject(TAG_INFO_TRIBUTARIO).get(TAG_CLAVE_ACCESO).toString();
@@ -382,6 +397,7 @@ public class ArchivoXmlServicio {
         archivoXml.setTipoDocumento(dto.getTipoDocumento());
         archivoXml.setFechaEmision(dto.getFechaEmision());
         archivoXml.setEstadoSistema(dto.getEstadoSistema());
+        archivoXml.setVersion(dto.getVersion());
         
         return archivoXml;
     }
@@ -522,13 +538,13 @@ public class ArchivoXmlServicio {
 
                         try {
                             String resp = guardarXmlToDB(fileb64, (arc.getClaveAcceso() + ".xml"), (arc.getClaveAcceso() + ".pdf"), 
-                                    idUsuario, tipoDoc, false, paramCarpeta);
+                                    idUsuario, tipoDoc, false, paramCarpeta, usersesion);
 //                            if(resp.contains("~"))
 //                                arc.setRespuesta(resp.split("~")[0]);
 //                            else
                             
                             ReporteServicio repoSrv = new ReporteServicio();
-                            ReporteDTO reporteDTO = repoSrv.generarRidePdf(getArchivoXmlAux());
+                            ReporteDTO reporteDTO = repoSrv.generarRidePdf(getArchivoXmlAux(), getVersion());
                             arc.setRideBase64(reporteDTO.getReporteBase64());
 
                             LOGGER.log(Level.INFO, "el nuevo ud:: {0}", getArchivoXmlAux().getId());

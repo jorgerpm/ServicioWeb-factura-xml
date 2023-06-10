@@ -101,7 +101,7 @@ public class CorreoServicio {
 
             String host = paramHost.getValor(); //"smtp.office365.com";
             int port = Integer.parseInt(paramPuerto.getValor()); //587;
-            String userName = paramUserMail.getValor();// "jorgep_m@hotmail.com";
+            String userName = paramUserMail.getValor();
             String password = paramClaveMail.getValor();
 
             Properties properties = new Properties();

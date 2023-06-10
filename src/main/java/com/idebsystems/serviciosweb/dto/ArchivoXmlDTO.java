@@ -57,6 +57,7 @@ public class ArchivoXmlDTO {
     private String baseImponible;
     private String porcentajeRetener;
     private String valorRetenido;
+    private String version;
     
 
     public String getEstadoSri() {
@@ -371,6 +372,14 @@ public class ArchivoXmlDTO {
 
     public void setValorRetenido(String valorRetenido) {
         this.valorRetenido = valorRetenido;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
     
     @Override

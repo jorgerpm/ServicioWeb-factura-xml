@@ -284,70 +284,7 @@ public class ArchivoXmlDAO extends Persistencia {
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
 
-            String sql = "select \n" +
-"a.id, a.tipodocumento, a.estadosri, a.autorizacion, a.fechaautorizacion, a.fechaemision,\n" +
-"a.ambiente, a.comprobante, a.urlarchivo, a.nombrearchivoxml, a.nombrearchivopdf, a.idusuariocarga,\n" +
-"a.fechacarga, a.codigojdproveedor, a.claveacceso, a.exportado, a.razonanulacion, a.usuarioanula,\n" +
-"a.fechaanula, a.estadosistema, a.tipogasto, a.esfisica,\n" +
-"d.detalle, d.preciounitario, \n" +
-"docsust.codDocSustento, docsust.numDocSustento, docsust.fechaEmisionDocSustento,\n" +
-"rets.codigoRetencion, rets.baseImponible, rets.porcentajeRetener , rets.valorRetenido\n" +
-"from archivoxml a\n" +
-"left outer join (\n" +
-"select id, replace(cast((cast(detalle as json)->'descripcion') as text), '\"', '') detalle, \n" +
-"cast((cast(detalle as json)->'precioUnitario') as text) preciounitario\n" +
-"from (\n" +
-"select id, \n" +
-"cast(json_array_elements(cast(comprobante as json)->'factura'->'detalles'->'detalle') as text) detalle\n" +
-"from archivoxml\n" +
-"where cast(comprobante as json)->'factura'->'detalles'->'detalle'->>'descripcion' is null\n" +
-"and tipodocumento = '01'\n" +
-"union\n" +
-"select id, \n" +
-"cast(cast(comprobante as json)->'factura'->'detalles'->'detalle' as text)\n" +
-"from archivoxml\n" +
-"where cast(comprobante as json)->'factura'->'detalles'->'detalle'->>'descripcion' is not null\n" +
-"and tipodocumento = '01'\n" +
-") detfact\n" +
-") d on a.id = d.id\n" +
-"left outer join (\n" +
-"select id,\n" +
-"replace(cast((cast(detalle as json)->'codDocSustento') as text), '\"', '') codDocSustento,\n" +
-"replace(cast((cast(detalle as json)->'numDocSustento') as text), '\"', '') numDocSustento, \n" +
-"replace(cast((cast(detalle as json)->'fechaEmisionDocSustento') as text), '\"', '') fechaEmisionDocSustento\n" +
-"from (\n" +
-"select id, \n" +
-"cast(json_array_elements(cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento') as text) detalle\n" +
-"from archivoxml\n" +
-"where cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->>'numDocSustento' is null\n" +
-"and tipodocumento = '07'\n" +
-"union\n" +
-"select id, \n" +
-"cast(cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento' as text)\n" +
-"from archivoxml\n" +
-"where cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->>'numDocSustento' is not null\n" +
-"and tipodocumento = '07'\n" +
-") detret\n" +
-") docsust on a.id = docsust.id\n" +
-"left outer join (\n" +
-"select id, cast((cast(detalle as json)->'codigoRetencion') as text) codigoRetencion, \n" +
-"cast((cast(detalle as json)->'baseImponible') as text) baseImponible,\n" +
-"cast((cast(detalle as json)->'porcentajeRetener') as text) porcentajeRetener,\n" +
-"cast((cast(detalle as json)->'valorRetenido') as text) valorRetenido\n" +
-"from (\n" +
-"select id, \n" +
-"cast(json_array_elements(cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->'retenciones'->'retencion') as text) detalle\n" +
-"from archivoxml\n" +
-"where cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->'retenciones'->'retencion'->>'codigo' is null\n" +
-"and tipodocumento = '07'\n" +
-"union\n" +
-"select id, \n" +
-"cast(cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->'retenciones'->'retencion' as text)\n" +
-"from archivoxml\n" +
-"where cast(comprobante as json)->'comprobanteRetencion'->'docsSustento'->'docSustento'->'retenciones'->'retencion'->>'codigo' is not null\n" +
-"and tipodocumento = '07'\n" +
-") rets\n" +
-") rets on a.id = rets.id";
+            String sql = " select * from v_detalles_documentos a";
             
             
             if(Objects.nonNull(claveAcceso) && !claveAcceso.isBlank()){

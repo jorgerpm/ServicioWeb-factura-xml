@@ -47,7 +47,7 @@ public class ArchivoXmlREST {
             String pathSaveXml = service.guardarArchivoXml(fileDto.getXmlBase64());
 
             String resp = service.guardarXmlToDB(pathSaveXml, fileDto.getNombreArchivoXml(), fileDto.getNombreArchivoPdf(),
-                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true, null);
+                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true, null, null);
             return new RespuestaDTO(resp);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
@@ -63,7 +63,7 @@ public class ArchivoXmlREST {
         try {
             LOGGER.log(Level.INFO, "entroooooooooooo: {0}", fileDto);
             String resp = service.guardarXmlToDB(fileDto.getXmlBase64(), fileDto.getNombreArchivoXml(), fileDto.getNombreArchivoPdf(),
-                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true, null);
+                    /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true, null, null);
             
             LOGGER.log(Level.INFO, "el path es:::: {0}", service.getPathCarpetas());
             

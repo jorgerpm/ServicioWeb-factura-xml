@@ -290,7 +290,7 @@ LOGGER.log(Level.INFO, "completo: {0}", rpdto );
     
     
     
-    public ReporteDTO generarRidePdf(ArchivoXml archivoXml) throws Exception {
+    public ReporteDTO generarRidePdf(ArchivoXml archivoXml, String version) throws Exception {
         try{
             
 //            LOGGER.log(Level.INFO, "el compro: {0}", archivoXml.getComprobante());
@@ -312,7 +312,7 @@ LOGGER.log(Level.INFO, "completo: {0}", rpdto );
             
 //            LOGGER.log(Level.INFO, "creado el documento: {0}", documentXml);
             
-            List<String> datos = crearXPathYReporte(archivoXml.getTipoDocumento());
+            List<String> datos = crearXPathYReporte(archivoXml.getTipoDocumento(), version);
             
             String xpath = datos.get(0);
             String nombreReporte = datos.get(1);
@@ -359,7 +359,7 @@ LOGGER.log(Level.INFO, "completo: {0}", rpdto );
     }
     
     
-    private List<String> crearXPathYReporte(String tipoDocumentoSri){
+    private List<String> crearXPathYReporte(String tipoDocumentoSri, String version){
         List<String> data = new ArrayList<>();
 
             switch (tipoDocumentoSri) {
@@ -384,8 +384,15 @@ LOGGER.log(Level.INFO, "completo: {0}", rpdto );
                     break;
                 }
                 case "07": {
-                    data.add("/comprobanteRetencion/docsSustento/docSustento/retenciones/retencion");
-                    data.add("retencion");
+                    if(version.equalsIgnoreCase("2.0.0")){
+                        data.add("/comprobanteRetencion/docsSustento/docSustento/retenciones/retencion");
+                        data.add("retencion");
+                    }
+                    else{
+                        data.add("/comprobanteRetencion/impuestos/impuesto");
+                        data.add("retencion_1");
+                    }
+                    
                     break;
                 }
                 default: {
