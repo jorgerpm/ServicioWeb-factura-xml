@@ -28,6 +28,17 @@ public class Rol implements Serializable {
     private boolean principal;
     private long idEstado;
     private boolean autorizador;
+    //
+    @Column(name = "b_factura")
+    private boolean bFactura;
+    @Column(name = "b_retencion")
+    private boolean bRetencion;
+    @Column(name = "b_nota_credito")
+    private boolean bNotaCredito;
+    @Column(name = "b_nota_debito")
+    private boolean bNotaDebito;
+    @Column(name = "b_guia_remision")
+    private boolean bGuiaRemision;
 
     public long getId() {
         return id;
@@ -67,6 +78,46 @@ public class Rol implements Serializable {
 
     public void setAutorizador(boolean autorizador) {
         this.autorizador = autorizador;
+    }
+
+    public boolean isbFactura() {
+        return bFactura;
+    }
+
+    public void setbFactura(boolean bFactura) {
+        this.bFactura = bFactura;
+    }
+
+    public boolean isbRetencion() {
+        return bRetencion;
+    }
+
+    public void setbRetencion(boolean bRetencion) {
+        this.bRetencion = bRetencion;
+    }
+
+    public boolean isbNotaCredito() {
+        return bNotaCredito;
+    }
+
+    public void setbNotaCredito(boolean bNotaCredito) {
+        this.bNotaCredito = bNotaCredito;
+    }
+
+    public boolean isbNotaDebito() {
+        return bNotaDebito;
+    }
+
+    public void setbNotaDebito(boolean bNotaDebito) {
+        this.bNotaDebito = bNotaDebito;
+    }
+
+    public boolean isbGuiaRemision() {
+        return bGuiaRemision;
+    }
+
+    public void setbGuiaRemision(boolean bGuiaRemision) {
+        this.bGuiaRemision = bGuiaRemision;
     }
 
 }

@@ -302,6 +302,10 @@ public class ArchivoXmlServicio {
                 if(usersesion.getIdRol() == 4L){
                     data.setEstadoSistema("APROBADO");
                 }
+                //si se carga una retencion el estado debe pasar directo a aprobado
+                if(data.getTipoDocumento().equalsIgnoreCase("07")){
+                    data.setEstadoSistema("APROBADO");
+                }
                 
                 //obtener la version del comprobante xml
                 setVersion(jsonObjComp.getJSONObject(tag_xml).get("version").toString());
