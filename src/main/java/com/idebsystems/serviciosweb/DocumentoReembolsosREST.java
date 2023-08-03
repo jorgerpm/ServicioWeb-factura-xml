@@ -93,9 +93,9 @@ public class DocumentoReembolsosREST {
     @Produces({MediaType.APPLICATION_JSON})
     public DocumentoReembolsosDTO aprobarDocumentoReembolsos(DocumentoReembolsosDTO dto) throws Exception {
         try {
-//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto.getArchivoBase64());
+            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto.getClaveFirma());
             //guardar en la bdd el DocumentoReembolsos
-            return service.aprobarDocumentoReembolsos(dto);
+            return service.aprobarDocumentoReembolsos(dto, dto.getClaveFirma());
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);

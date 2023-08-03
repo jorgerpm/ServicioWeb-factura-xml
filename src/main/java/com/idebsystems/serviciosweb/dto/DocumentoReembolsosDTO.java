@@ -50,6 +50,7 @@ public class DocumentoReembolsosDTO {
     //
     private String respuesta;
     private Integer totalRegistros;
+    private String claveFirma;
 
     public Long getId() {
         return id;
@@ -323,9 +324,17 @@ public class DocumentoReembolsosDTO {
         this.tipoJustificacionBase64 = tipoJustificacionBase64;
     }
 
+    public String getClaveFirma() {
+        return claveFirma;
+    }
+
+    public void setClaveFirma(String claveFirma) {
+        this.claveFirma = claveFirma;
+    }
+
     @Override
     public String toString() {
-        return "DocumentoReembolsosDTO{" + "id=" + id + ", pathArchivo=" + pathArchivo + ", usuarioCarga=" + usuarioCarga + ", fechaCargaLong=" + fechaCargaLong + ", estado=" + estado + ", usuarioAutoriza=" + usuarioAutoriza + ", fechaAutorizaLong=" + fechaAutorizaLong + ", razonRechazo=" + razonRechazo + '}';
+        return "DocumentoReembolsosDTO{" + "id=" + id + ", pathArchivo=" + pathArchivo + ", usuarioCarga=" + usuarioCarga + ", fechaCargaLong=" + fechaCargaLong + ", estado=" + estado + ", usuarioAutoriza=" + usuarioAutoriza + ", fechaAutorizaLong=" + fechaAutorizaLong + ", razonRechazo=" + razonRechazo +  ", claveFirma=" + claveFirma + '}';
     }
 
 }

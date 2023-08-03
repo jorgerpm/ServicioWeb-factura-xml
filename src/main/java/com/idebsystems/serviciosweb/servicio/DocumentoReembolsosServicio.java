@@ -124,7 +124,7 @@ public class DocumentoReembolsosServicio {
         }
     }
 
-    public DocumentoReembolsosDTO aprobarDocumentoReembolsos(DocumentoReembolsosDTO dto) throws Exception {
+    public DocumentoReembolsosDTO aprobarDocumentoReembolsos(DocumentoReembolsosDTO dto, String claveFirma) throws Exception {
         try {
             DocumentoReembolsos ent = dao.getDocumentosPorId(dto.getId());
             ent.setEstado(dto.getEstado());
@@ -136,7 +136,7 @@ public class DocumentoReembolsosServicio {
 
             //se debe enviar a firmar el documento con la firma del usuario que aprueba
             FirmaDigitalServicio fdao = new FirmaDigitalServicio();
-            FirmaDigitalDTO firmaDTO = fdao.getFirmaActivaPorIdUsuario(dto.getIdUsuarioAutoriza());
+            FirmaDigitalDTO firmaDTO = fdao.getFirmaActivaPorIdUsuario(dto.getIdUsuarioAutoriza(), false);
             //al final el documento debe quedar con dos firmas
             dto.getArchivoBase64();//aqui se tiene el pdf para volver a firmar
             byte[] pdfBytes = Base64.getDecoder().decode(dto.getArchivoBase64());
@@ -144,7 +144,8 @@ public class DocumentoReembolsosServicio {
             FirmarPdfServicio fsrv = new FirmarPdfServicio();
             byte[] pdfDosFirmas = null;
             if(firmaDTO.getTipoFirma() == 0 ){
-                pdfDosFirmas = fsrv.firmarConDigital(pdfBytes, firmaDTO, true);
+                //se coloca la clave de la firma que se envia desde la pantalla
+                pdfDosFirmas = fsrv.firmarConDigital(pdfBytes, firmaDTO, true, claveFirma);
             }
             if(firmaDTO.getTipoFirma() == 1 ){
                 pdfDosFirmas = fsrv.firmarConImagen(pdfBytes, firmaDTO, true);

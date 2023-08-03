@@ -70,10 +70,27 @@ public class FirmaDigitalREST {
         try {
             LOGGER.log(Level.INFO, "entroooooooooooo: {0}", idUsuario);
             //buscar en la bdd los FirmaDigital
-            return service.getFirmaActivaPorIdUsuario(idUsuario);
+            return service.getFirmaActivaPorIdUsuario(idUsuario, false);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
+        }
+    }
+    
+    @GET
+    @Path("/solicitarClaveFirma")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public String solicitarClaveFirma(@QueryParam(value = "idUsuario") long idUsuario) throws Exception {
+        try {
+            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", idUsuario);
+            
+            boolean f= service.solicitarClaveFirma(idUsuario);
+            LOGGER.log(Level.INFO, "respuesta : {0}", f);
+            return Boolean.toString(f);
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            return "false";
         }
     }
 }

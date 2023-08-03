@@ -15,7 +15,6 @@ public class FirmaDigitalDTO {
     private Long idUsuario;
     private UsuarioDTO usuario;
     private String archivo;
-    private String clave;
     private Long fechaCaducaLong;
     private Integer tipoFirma;
     private Integer idEstado;
@@ -42,14 +41,6 @@ public class FirmaDigitalDTO {
 
     public void setArchivo(String archivo) {
         this.archivo = archivo;
-    }
-
-    public String getClave() {
-        return clave;
-    }
-
-    public void setClave(String clave) {
-        this.clave = clave;
     }
 
     public Long getFechaCaducaLong() {
@@ -86,7 +77,7 @@ public class FirmaDigitalDTO {
 
     @Override
     public String toString() {
-        return "FirmaDigitalDTO{" + "id=" + id + ", idUsuario=" + idUsuario + ", archivo=" + archivo + ", clave=" + clave + ", fechaCaducaLong=" + fechaCaducaLong + ", idEstado=" + idEstado + '}';
+        return "FirmaDigitalDTO{" + "id=" + id + ", idUsuario=" + idUsuario + ", archivo=" + archivo + ", fechaCaducaLong=" + fechaCaducaLong + ", idEstado=" + idEstado + '}';
     }
 
     

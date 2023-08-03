@@ -153,7 +153,7 @@ public class ReporteServicio {
     
     
     public ReporteDTO generarReporteFirma(String reporte, String ids, String tiposGasto, String tipoReembolso, Long idUsuario,
-            long idAprobador, String listaAsistentes, DocumentoReembolsosDTO reembDto) throws Exception {
+            long idAprobador, String listaAsistentes, DocumentoReembolsosDTO reembDto, String claveFirma) throws Exception {
         try{
             //aqui primero guardar los tipos de gasto por cada registro
             ArchivoXmlDAO xmldao = new ArchivoXmlDAO();
@@ -199,7 +199,7 @@ public class ReporteServicio {
                     FirmaDigitalDTO firmaDto;
                     try{
                         FirmaDigitalServicio srvFD = new FirmaDigitalServicio();
-                        firmaDto = srvFD.getFirmaActivaPorIdUsuario(idUsuario);
+                        firmaDto = srvFD.getFirmaActivaPorIdUsuario(idUsuario, false);
                     }catch(Exception exc){
                         ReporteDTO rpdto = new ReporteDTO();
                         rpdto.setRespuesta("NO EXISTE LA FIRMA DIGITAL ASOCIADA AL USUARIO");
@@ -208,8 +208,9 @@ public class ReporteServicio {
 
                     try{
                         if(firmaDto.getTipoFirma() == 0){
+                            //se coloca la clave que enviaron desde la pantalla
                             FirmarPdfServicio ff=new FirmarPdfServicio();
-                            flujo = ff.firmarConDigital(flujo, firmaDto, false);
+                            flujo = ff.firmarConDigital(flujo, firmaDto, false, claveFirma);
                         }
                         if(firmaDto.getTipoFirma() == 1){
                             FirmarPdfServicio ff=new FirmarPdfServicio();

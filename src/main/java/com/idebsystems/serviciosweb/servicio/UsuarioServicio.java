@@ -52,7 +52,7 @@ public class UsuarioServicio {
                 else{//si esta activo, aqui comprobar le fecha de la firma electronica, y mostrar una alerta si esta caducada
                     try{
                         FirmaDigitalServicio srv = new FirmaDigitalServicio();
-                        FirmaDigitalDTO fd = srv.getFirmaActivaPorIdUsuario(user.getId());
+                        FirmaDigitalDTO fd = srv.getFirmaActivaPorIdUsuario(user.getId(), true);
                         
                         //solo se cimprueba si es una firma digital, y no una imagen
                         if(fd.getTipoFirma() == 0){

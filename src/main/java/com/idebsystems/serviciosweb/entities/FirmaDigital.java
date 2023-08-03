@@ -28,7 +28,6 @@ public class FirmaDigital implements Serializable {
     private Long id;
     private Long idUsuario;
     private String archivo;
-    private String clave;
     @Temporal(TemporalType.DATE)
     private Date fechaCaduca;
     private Integer tipoFirma;
@@ -56,14 +55,6 @@ public class FirmaDigital implements Serializable {
 
     public void setArchivo(String archivo) {
         this.archivo = archivo;
-    }
-
-    public String getClave() {
-        return clave;
-    }
-
-    public void setClave(String clave) {
-        this.clave = clave;
     }
 
     public Date getFechaCaduca() {

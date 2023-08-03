@@ -47,7 +47,7 @@ public class FirmarPdfServicio {
 
     private static final Logger LOGGER = Logger.getLogger(FirmarPdfServicio.class.getName());
 
-    public byte[] firmarConDigital(byte[] archivoAFirmar, FirmaDigitalDTO firmaDigital, boolean segundaFirma) throws Exception {
+    public byte[] firmarConDigital(byte[] archivoAFirmar, FirmaDigitalDTO firmaDigital, boolean segundaFirma, String claveFirma) throws Exception {
         try {
 
             Certificate[] chain = null;
@@ -61,10 +61,10 @@ public class FirmarPdfServicio {
 //            byte[] firmaBytes = DatatypeConverter.parseBase64Binary(firmaDigital.getArchivo());
             byte[] firmaBytes = Base64.getDecoder().decode(firmaDigital.getArchivo());
 
-            ks.load(new ByteArrayInputStream(firmaBytes), firmaDigital.getClave().toCharArray());
+            ks.load(new ByteArrayInputStream(firmaBytes), claveFirma.toCharArray() /*firmaDigital.getClave().toCharArray()*/);
             String alias = (String) ks.aliases().nextElement();
 //            PrivateKey pk = (PrivateKey) ks.getKey(alias, "Jorge0210074*".toCharArray());
-            PrivateKey pk = (PrivateKey) ks.getKey(alias, firmaDigital.getClave().toCharArray());
+            PrivateKey pk = (PrivateKey) ks.getKey(alias, claveFirma.toCharArray()/*firmaDigital.getClave().toCharArray()*/);
             chain = ks.getCertificateChain(alias);
 
             X509Certificate cert = (X509Certificate) ks.getCertificate(alias);
@@ -198,6 +198,9 @@ public class FirmarPdfServicio {
             LOGGER.log(Level.SEVERE, null, exc);
 //            exc.printStackTrace();
 //            return exc.getMessage().getBytes();
+            if(exc.getMessage().contains("wrong password")){
+                throw new Exception("LA CLAVE INGRESADA ES INCORRECTA");
+            }
             throw new Exception(exc);
         }
 

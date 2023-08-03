@@ -75,13 +75,15 @@ public class FirmaDigitalServicio {
     }
     
     
-    public FirmaDigitalDTO getFirmaActivaPorIdUsuario(Long idUsuario) throws Exception {
+    public FirmaDigitalDTO getFirmaActivaPorIdUsuario(Long idUsuario, boolean esLogin) throws Exception {
         try {
             
             FirmaDigital ent = dao.getFirmaActivaPorIdUsuario(idUsuario);
             FirmaDigitalDTO dto = FirmaDigitalMapper.INSTANCE.entityToDto(ent);
-            if(Objects.isNull(dto))
+            if(Objects.isNull(dto)){
+                if(esLogin) return null;
                 throw new Exception("NO EXISTE FIRMA DIGITAL REGISTRADA PARA EL USUARIO");
+            }
             
             UsuarioDAO usdao = new UsuarioDAO();
             Usuario user = usdao.buscarUsuarioPorId(dto.getIdUsuario());
@@ -89,6 +91,24 @@ public class FirmaDigitalServicio {
             
             dto.setFechaCaducaLong(ent.getFechaCaduca().getTime());
             return dto;
+       } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+        }
+    }
+    
+    public boolean solicitarClaveFirma(Long idUsuario) throws Exception {
+        try {
+            
+            FirmaDigital ent = dao.getFirmaActivaPorIdUsuario(idUsuario);
+            
+            if(Objects.isNull(ent)){
+                throw new Exception("NO EXISTE FIRMA DIGITAL REGISTRADA PARA EL USUARIO");
+            }
+            
+            return ent.getTipoFirma() == 0;
+            
        } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
