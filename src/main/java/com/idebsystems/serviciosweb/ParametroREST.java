@@ -32,7 +32,6 @@ public class ParametroREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<ParametroDTO> listarParametro() throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los parametroes
             return service.listarParametros();
         } catch (Exception exc) {
@@ -47,7 +46,6 @@ public class ParametroREST {
     @Produces({MediaType.APPLICATION_JSON})
     public ParametroDTO guardarParametro(ParametroDTO parametroDto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //guardar en la bdd el parametro
             return service.guardarParametro(parametroDto);
         } catch (Exception exc) {

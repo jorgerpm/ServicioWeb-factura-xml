@@ -38,7 +38,7 @@ public class FirmaDigitalREST {
         @QueryParam(value = "idRol") long idRol
     ) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", idUsuario);
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", idUsuario);
             //buscar en la bdd los FirmaDigital
             return service.listarFirmas(idUsuario, idRol);
         } catch (Exception exc) {
@@ -53,7 +53,7 @@ public class FirmaDigitalREST {
     @Produces({MediaType.APPLICATION_JSON})
     public FirmaDigitalDTO guardarFirmaDigital(FirmaDigitalDTO dto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
             //guardar en la bdd el FirmaDigital
             return service.guardarFirmaDigital(dto);
         } catch (Exception exc) {

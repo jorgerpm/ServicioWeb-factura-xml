@@ -210,7 +210,7 @@ public class ReporteServicio {
                         if(firmaDto.getTipoFirma() == 0){
                             //se coloca la clave que enviaron desde la pantalla
                             FirmarPdfServicio ff=new FirmarPdfServicio();
-                            flujo = ff.firmarConDigital(flujo, firmaDto, false, claveFirma);
+                            flujo = ff.firmarConDigital(flujo, firmaDto, false, claveFirma, false);
                         }
                         if(firmaDto.getTipoFirma() == 1){
                             FirmarPdfServicio ff=new FirmarPdfServicio();

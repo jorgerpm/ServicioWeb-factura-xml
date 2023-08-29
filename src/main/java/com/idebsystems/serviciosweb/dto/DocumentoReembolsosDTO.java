@@ -51,6 +51,8 @@ public class DocumentoReembolsosDTO {
     private String respuesta;
     private Integer totalRegistros;
     private String claveFirma;
+    private boolean terceraFirma;
+    private Integer tresFirmas;
 
     public Long getId() {
         return id;
@@ -330,6 +332,22 @@ public class DocumentoReembolsosDTO {
 
     public void setClaveFirma(String claveFirma) {
         this.claveFirma = claveFirma;
+    }
+
+    public boolean isTerceraFirma() {
+        return terceraFirma;
+    }
+
+    public void setTerceraFirma(boolean terceraFirma) {
+        this.terceraFirma = terceraFirma;
+    }
+
+    public Integer getTresFirmas() {
+        return tresFirmas;
+    }
+
+    public void setTresFirmas(Integer tresFirmas) {
+        this.tresFirmas = tresFirmas;
     }
 
     @Override

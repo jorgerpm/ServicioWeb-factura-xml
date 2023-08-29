@@ -33,7 +33,6 @@ public class MenuREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<MenuDTO> listarMenus() throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los roles
             return service.listarMenus();
         } catch (Exception exc) {
@@ -48,7 +47,6 @@ public class MenuREST {
     @Produces({MediaType.APPLICATION_JSON})
     public MenuDTO guardarMenu(MenuDTO menuDto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //guardar en la bdd el rol
             return service.guardarMenu(menuDto);
         } catch (Exception exc) {
@@ -63,7 +61,6 @@ public class MenuREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<MenuDTO> listarMenus(@QueryParam(value = "idRol") long idRol1) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los roles
             return service.listarMenusPorRol(idRol1);
         } catch (Exception exc) {

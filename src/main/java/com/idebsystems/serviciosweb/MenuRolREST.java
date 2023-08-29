@@ -33,7 +33,6 @@ public class MenuRolREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<MenuRolDTO> listarMenuRoles() throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los roles
             return service.listarMenuRoles();
         } catch (Exception exc) {
@@ -48,7 +47,6 @@ public class MenuRolREST {
     @Produces({MediaType.APPLICATION_JSON})
     public MenuRolDTO guardarMenuRol(MenuRolDTO menuRolDto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //guardar en la bdd el rol
             return service.guardarMenuRol(menuRolDto);
         } catch (Exception exc) {
@@ -63,7 +61,6 @@ public class MenuRolREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<MenuRolDTO> listarMenuRolesPorRol(@QueryParam(value = "idRol") long idRol) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los roles
             return service.listarMenuRolPorRol(idRol);
         } catch (Exception exc) {
@@ -78,7 +75,6 @@ public class MenuRolREST {
     @Produces({MediaType.APPLICATION_JSON})
     public String eliminarMenuRolPorRol(long idRol) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los menuRoles
             service.eliminarMenuRolPorRol(idRol);
             return "eliminado";
@@ -94,7 +90,6 @@ public class MenuRolREST {
     @Produces({MediaType.APPLICATION_JSON})
     public String guardarPermisos(List<MenuRolDTO> menuRolDtoLista) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los menuRoles
             service.guardarPermisos(menuRolDtoLista);
             return "insertado";

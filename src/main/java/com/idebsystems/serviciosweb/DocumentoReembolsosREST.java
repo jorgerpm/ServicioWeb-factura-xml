@@ -62,7 +62,7 @@ public class DocumentoReembolsosREST {
     @Produces({MediaType.APPLICATION_JSON})
     public DocumentoReembolsosDTO guardarDocumentoReembolsos(DocumentoReembolsosDTO dto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
             //guardar en la bdd el DocumentoReembolsos
             return service.guardarDocumentoReembolsos(dto);
         } catch (Exception exc) {
@@ -94,8 +94,9 @@ public class DocumentoReembolsosREST {
     public DocumentoReembolsosDTO aprobarDocumentoReembolsos(DocumentoReembolsosDTO dto) throws Exception {
         try {
             LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto.getClaveFirma());
+            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto.isTerceraFirma());
             //guardar en la bdd el DocumentoReembolsos
-            return service.aprobarDocumentoReembolsos(dto, dto.getClaveFirma());
+            return service.aprobarDocumentoReembolsos(dto, dto.getClaveFirma(), dto.isTerceraFirma());
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
@@ -110,7 +111,7 @@ public class DocumentoReembolsosREST {
     @Produces({MediaType.APPLICATION_JSON})
     public DocumentoReembolsosDTO guardarDatosContabilidad(DocumentoReembolsosDTO dto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
             //guardar en la bdd el DocumentoReembolsos
             return service.guardarDatosContabilidad(dto);
         } catch (Exception exc) {
@@ -127,7 +128,7 @@ public class DocumentoReembolsosREST {
     @Produces({MediaType.APPLICATION_JSON})
     public DocumentoReembolsosDTO enviarCorreoJustificacion(DocumentoReembolsosDTO dto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
             //guardar en la bdd el DocumentoReembolsos
             String resp = service.enviarCorreoJustificacion(dto);
             
@@ -147,7 +148,7 @@ public class DocumentoReembolsosREST {
     @Produces({MediaType.APPLICATION_JSON})
     public DocumentoReembolsosDTO cargarJustificacion(DocumentoReembolsosDTO dto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
             //guardar en la bdd el DocumentoReembolsos
             String resp = service.cargarJustificacion(dto);
             

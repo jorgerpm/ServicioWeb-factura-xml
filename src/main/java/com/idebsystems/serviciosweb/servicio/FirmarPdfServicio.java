@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -47,23 +48,22 @@ public class FirmarPdfServicio {
 
     private static final Logger LOGGER = Logger.getLogger(FirmarPdfServicio.class.getName());
 
-    public byte[] firmarConDigital(byte[] archivoAFirmar, FirmaDigitalDTO firmaDigital, boolean segundaFirma, String claveFirma) throws Exception {
+    public byte[] firmarConDigital(byte[] archivoAFirmar, FirmaDigitalDTO firmaDigital, boolean segundaFirma, String claveFirma,
+            boolean terceraFirma) throws Exception {
         try {
 
             Certificate[] chain = null;
             BouncyCastleProvider bcp = new BouncyCastleProvider();
-            //Security.addProvider(bcp);
-            Security.insertProviderAt(bcp, 1);
+            Security.addProvider(bcp);
+//            Security.insertProviderAt(bcp, 1);
 
             KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-//        ks.load(new FileInputStream("/home/jorge/Downloads/Persona-Natural-1717667842.p12"), "Jorge0210074*".toCharArray());
 
 //            byte[] firmaBytes = DatatypeConverter.parseBase64Binary(firmaDigital.getArchivo());
             byte[] firmaBytes = Base64.getDecoder().decode(firmaDigital.getArchivo());
 
             ks.load(new ByteArrayInputStream(firmaBytes), claveFirma.toCharArray() /*firmaDigital.getClave().toCharArray()*/);
             String alias = (String) ks.aliases().nextElement();
-//            PrivateKey pk = (PrivateKey) ks.getKey(alias, "Jorge0210074*".toCharArray());
             PrivateKey pk = (PrivateKey) ks.getKey(alias, claveFirma.toCharArray()/*firmaDigital.getClave().toCharArray()*/);
             chain = ks.getCertificateChain(alias);
 
@@ -74,14 +74,12 @@ public class FirmarPdfServicio {
             System.out.println("Signer ID not before " + cert.getNotBefore());
             System.out.println("Signer ID not after  " + cert.getNotAfter());
 
-//            String filepath = "/home/jorge/Desktop/propuesta pag web-plazaComercial.pdf";
             String digestAlgorithm = "SHA512";
-            MakeSignature.CryptoStandard subfilter = MakeSignature.CryptoStandard.CMS;
+//            MakeSignature.CryptoStandard subfilter = MakeSignature.CryptoStandard.CMS;
 
             // Creating the reader and the stamper
             PdfReader reader = new PdfReader(archivoAFirmar);
 
-//            File filepout = new File("/tmp", "signedNative.pdf");
             File filepout = Files.createTempFile("signed", ".pdf").toFile();
 
             FileOutputStream os = new FileOutputStream(filepout);
@@ -100,104 +98,59 @@ public class FirmarPdfServicio {
             if (segundaFirma) {
                 rectangle = new Rectangle(365, 55, 540, 140);
             }
+            if (terceraFirma) {
+                rectangle = new Rectangle(615, 55, 790, 140);
+            }
 
             System.out.println("top: " + rectangle.getTop());
             System.out.println("bottom: " + rectangle.getBottom());
             System.out.println("right: " + rectangle.getRight());
             System.out.println("left: " + rectangle.getLeft());
 
-//        rectangle.setBottom(55);
-//    rectangle.setTop(140);
-//    
-//    rectangle.setRight(240);
-//    rectangle.setLeft(65);
+
             String fieldSig = "sig";
             if (segundaFirma) {
                 fieldSig = "sigAprroved";
+            }
+            if (terceraFirma) {
+                fieldSig = "aprroved";
             }
 
             appearance.setVisibleSignature(rectangle, reader.getNumberOfPages(), fieldSig);
 
             // Creating the signature
-            ExternalSignature pks = new PrivateKeySignature(pk, digestAlgorithm, "BC");
+            ExternalSignature pks = new PrivateKeySignature(pk, digestAlgorithm, "BC");//SunJSSE
             ExternalDigest digest = new BouncyCastleDigest();
             MakeSignature.signDetached(appearance, digest, pks, chain,
                     null, null, null, 0, null);
             reader.close();
 
             FileInputStream fis = new FileInputStream(filepout);
-            //System.out.println(file.exists() + "!!");
-            //InputStream in = resource.openStream();
+            
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             byte[] buf = new byte[1024];
             try {
                 for (int readNum; (readNum = fis.read(buf)) != -1;) {
-                    bos.write(buf, 0, readNum); //no doubt here is 0
-                    //Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
-//                    System.out.println("read " + readNum + " bytes,");
+                    bos.write(buf, 0, readNum);
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
             byte[] bytes = bos.toByteArray();
 
+
+            
+            for(Provider p : Security.getProviders()){
+                System.out.println(p.getName());
+            }
+//                        Security.removeProvider("BC");
+//            System.out.println(Security.getProvider("BC").getName());
+//            System.out.println(Security.getProvider("BC"));
+            
             return bytes;
 
-            /*
-            KeyStore ks = KeyStore.getInstance("pkcs12", "SunJSSE");
-            ks.load(new FileInputStream("/home/jorge/Downloads/Persona-Natural-1717667842.p12"), "Jorge0210074*".toCharArray());
-            String alias = (String)ks.aliases().nextElement();
-            PrivateKey key = (PrivateKey)ks.getKey(alias, "Jorge0210074*".toCharArray());
-            Certificate[] chain = ks.getCertificateChain(alias);
-            // Recibimos como parámetro de entrada el nombre del archivo PDF a firmar
-            PdfReader reader = new PdfReader("/home/jorge/Desktop/factura-0395-garcos.pdf");//args[0]); 
-            FileOutputStream fout = new FileOutputStream("/home/jorge/aqui.pdf");
- 
-            // Añadimos firma al documento PDF
-            PdfSigner pdfSigner = new PdfSigner(pdfReader, result, new StampingProperties());
-            
-            PdfStamper stp = PdfStamper.createSignature(reader, fout, '\0');
-            PdfSignatureAppearance sap = stp.getSignatureAppearance();
-            sap.setCrypto(key, chain, null, PdfSignatureAppearance.VERISIGN_SIGNED);
-            
-            sap.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
-            
-            sap.setReason("Digital signature");
-            sap.setLocation("Imaginanet");
-            // Añade la firma visible. Podemos comentarla para que no sea visible.
-            Rectangle cropBox = reader.getCropBox(1);
-    float width = 50;
-    float height = 50;
-    
-            System.out.println("cropBox.getRight(): "+ cropBox.getRight());
-            System.out.println("cropBox.getTop():" + cropBox.getTop());
-            
-            System.out.println("cropBox.getRight(width): "+ cropBox.getRight(width));
-            System.out.println("cropBox.getTop(height):" + cropBox.getTop(height));
-    
-    Rectangle rectangle = new Rectangle(0,0,0,0);//cropBox.getRight(width) - 200, cropBox.getTop(height) - 20,
-            //cropBox.getRight() - 550, cropBox.getTop() - 20);
-//            cropBox.getRight(200), cropBox.getTop(), cropBox.getRight(400), cropBox.getTop(200));
-    
-    
-    rectangle.setBottom(65);
-    rectangle.setTop(120);
-    
-    rectangle.setRight(240);
-    rectangle.setLeft(65);
-    
-            sap.setVisibleSignature(rectangle,1,null);
-            //0,0,0,ancho
-            
-            stp.close();
-            
-            
-            comprobar();
-             */
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
-//            exc.printStackTrace();
-//            return exc.getMessage().getBytes();
             if(exc.getMessage().contains("wrong password")){
                 throw new Exception("LA CLAVE INGRESADA ES INCORRECTA");
             }
@@ -237,9 +190,7 @@ public class FirmarPdfServicio {
             byte[] buf = new byte[1024];
             try {
                 for (int readNum; (readNum = fis.read(buf)) != -1;) {
-                    bos.write(buf, 0, readNum); //no doubt here is 0
-                    //Writes len bytes from the specified byte array starting at offset off to this byte array output stream.
-//                    System.out.println("read " + readNum + " bytes,");
+                    bos.write(buf, 0, readNum); 
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
@@ -389,4 +340,6 @@ public class FirmarPdfServicio {
             e.printStackTrace();
         }
     }
+    
+    
 }

@@ -32,7 +32,6 @@ public class EstadoREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<EstadoDTO> listarEstado() throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los roles
             return service.listarEstado();
         } catch (Exception exc) {
@@ -47,7 +46,6 @@ public class EstadoREST {
     @Produces({MediaType.APPLICATION_JSON})
     public EstadoDTO guardarEstado(EstadoDTO estadoDto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //guardar en la bdd el rol
             return service.guardarEstado(estadoDto);
         } catch (Exception exc) {

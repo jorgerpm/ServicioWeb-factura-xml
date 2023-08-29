@@ -81,7 +81,6 @@ public class MenuDAO extends Persistencia {
 
             List<Menu> menuLista = query.getResultList();
 
-            LOGGER.log(Level.INFO, "tamaño lista: {0}", menuLista.size());
             return menuLista;
 
        } catch (NoResultException exc) {

@@ -15,6 +15,8 @@ import com.idebsystems.serviciosweb.entities.Usuario;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.Provider;
+import java.security.Security;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -169,6 +171,9 @@ public class CorreoServicio {
                 }
             }
             
+            for(Provider p : Security.getProviders()){
+                System.out.println(p.getName());
+            }
             
             msg.setContent(multipart);
 

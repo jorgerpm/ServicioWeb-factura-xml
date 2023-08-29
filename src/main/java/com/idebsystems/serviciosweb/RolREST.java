@@ -33,7 +33,6 @@ public class RolREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<RolDTO> listarRoles() throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los roles
             return service.listarRoles();
         } catch (Exception exc) {
@@ -48,7 +47,6 @@ public class RolREST {
     @Produces({MediaType.APPLICATION_JSON})
     public RolDTO guardarRol(RolDTO rolDto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //guardar en la bdd el rol
             return service.guardarRol(rolDto);
         } catch (Exception exc) {
@@ -64,7 +62,6 @@ public class RolREST {
     @Produces({MediaType.APPLICATION_JSON})
     public RolDTO buscarRolPorId(@QueryParam(value = "idRol") Long idRol) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los roles
             return service.buscarRolPorId(idRol);
         } catch (Exception exc) {

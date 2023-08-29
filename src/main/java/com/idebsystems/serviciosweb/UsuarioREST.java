@@ -36,7 +36,6 @@ public class UsuarioREST {
     @Produces({MediaType.APPLICATION_JSON})
     public UsuarioDTO loginSistema(UsuarioDTO userDto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", userDto);
             //buscar en la bdd el usuario
             return service.loginSistema(userDto);
         } catch (Exception exc) {
@@ -51,7 +50,6 @@ public class UsuarioREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<UsuarioDTO> listarUsuarios() throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los roles
             return service.listarUsuarios();
         } catch (Exception exc) {
@@ -66,7 +64,6 @@ public class UsuarioREST {
     @Produces({MediaType.APPLICATION_JSON})
     public UsuarioDTO guardarRol(UsuarioDTO usuarioDto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //guardar en la bdd el rol
             return service.guardarUsuario(usuarioDto);
         } catch (Exception exc) {
@@ -96,7 +93,6 @@ public class UsuarioREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<UsuarioDTO> listarUsuariosPorRol(@QueryParam(value = "idRol") long idRol) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
             //buscar en la bdd los roles
             return service.listarUsuariosPorRol(idRol);
         } catch (Exception exc) {

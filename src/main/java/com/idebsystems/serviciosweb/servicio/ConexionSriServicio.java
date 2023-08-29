@@ -14,9 +14,17 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.Provider;
+import java.security.Security;
+import java.security.cert.X509Certificate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -76,6 +84,37 @@ public class ConexionSriServicio {
 //            SSLContext sslContext = SSLContext.getInstance("SSL");
 //sslContext.init(null, trustManagers, null);
 //SSLContext.setDefault(sslContext);
+
+
+
+
+//System.out.println("props: "
+//                    + System.getProperty("javax.net.ssl.keyStore"));
+//            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+//                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+//                    return null;
+//                }
+//
+//                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+//                }
+//
+//                public void checkServerTrusted(X509Certificate[] certs,
+//                        String authType) {
+//                }
+//            }}; // Install the all-trusting trust manager
+//            SSLContext sc = SSLContext.getInstance("SSL");
+//            sc.init(null,
+//                    trustAllCerts, new java.security.SecureRandom());
+//            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory()); //Create all-trusting host name verifier 
+//                    HostnameVerifier allHostsValid = new HostnameVerifier() {
+//                public boolean verify(String hostname,SSLSession session) {
+//                    return true;
+//                }
+//            }; // Install the all-trusting host verifier 
+//            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+
+
             //Code to make a webservice HTTP request
             String responseString = "";
             String outputString = "";
@@ -115,6 +154,9 @@ public class ConexionSriServicio {
             httpConn.setDoInput(true);
 
 //            System.out.println("aun nop: " + bout);
+for(Provider p : Security.getProviders()){
+                System.out.println(p.getName());
+            }
 
             OutputStream out = httpConn.getOutputStream();
 
@@ -227,59 +269,96 @@ public class ConexionSriServicio {
         }
     }
 
-    /**
-     * *
-     * public void prueba2(List<ArchivoSriDTO> lista){ try{
-     * System.out.println("props: " +
-     * System.getProperty("javax.net.ssl.keyStore")); TrustManager[]
-     * trustAllCerts = new TrustManager[] {new X509TrustManager() { public
-     * java.security.cert.X509Certificate[] getAcceptedIssuers() { return null;
-     * } public void checkClientTrusted(X509Certificate[] certs, String
-     * authType) { } public void checkServerTrusted(X509Certificate[] certs,
-     * String authType) { } } }; // Install the all-trusting trust manager
-     * SSLContext sc = SSLContext.getInstance("SSL"); sc.init(null,
-     * trustAllCerts, new java.security.SecureRandom());
-     * HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory()); //
-     * Create all-trusting host name verifier HostnameVerifier allHostsValid =
-     * new HostnameVerifier() { public boolean verify(String hostname,
-     * SSLSession session) { return true; } }; // Install the all-trusting host
-     * verifier HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-     * //Code to make a webservice HTTP request String responseString = "";
-     * String outputString = ""; String wsURL =
-     * "https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline";
-     * URL url = new URL(wsURL); URLConnection connection =
-     * url.openConnection(); HttpsURLConnection httpConn = (HttpsURLConnection)
-     * connection; ByteArrayOutputStream bout = new ByteArrayOutputStream();
-     * String xmlInput = "
-     * <soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ec=\"http://ec.gob.sri.ws.autorizacion\">\n"
-     * + "   <soapenv:Header/>\n" + "   <soapenv:Body>\n" + "
-     *      <ec:autorizacionComprobante>\n" + "         <!--Optional:-->\n" + "
-     *         <claveAccesoComprobante>"+lista.get(0).getClaveAcceso()+"</claveAccesoComprobante>\n"
-     * + "      </ec:autorizacionComprobante>\n" + "   </soapenv:Body>\n" +
-     * "</soapenv:Envelope>"; byte[] buffer = new byte[xmlInput.length()];
-     * buffer = xmlInput.getBytes(); bout.write(buffer); byte[] b =
-     * bout.toByteArray(); String SOAPAction = ""; // Set the appropriate HTTP
-     * parameters. httpConn.setRequestProperty("Content-Length",
-     * String.valueOf(b.length)); httpConn.setRequestProperty("Content-Type",
-     * "text/xml; charset=utf-8"); httpConn.setRequestProperty("SOAPAction",
-     * SOAPAction); //
-     * httpConn.setRequestProperty("Access-Control-Allow-Origin", "*");
-     * httpConn.setRequestMethod("POST"); httpConn.setDoOutput(true);
-     * httpConn.setDoInput(true); OutputStream out = httpConn.getOutputStream();
-     * //Write the content of the request to the outputstream of the HTTP
-     * Connection. out.write(b); out.close(); //Ready with sending the request.
-     * //Read the response. InputStreamReader isr = new
-     * InputStreamReader(httpConn.getInputStream()); BufferedReader in = new
-     * BufferedReader(isr); //Write the SOAP message response to a String. while
-     * ((responseString = in.readLine()) != null) { outputString = outputString
-     * + responseString; } //Parse the String output to a org.w3c.dom.Document
-     * and be able to reach every node with the org.w3c.dom API. Document
-     * document = parseXmlFile(outputString); NodeList nodeLst =
-     * document.getElementsByTagName("RespuestaAutorizacionComprobante"); String
-     * weatherResult = nodeLst.item(0).getTextContent(); //Write the SOAP
-     * message formatted to the console. String formattedSOAPResponse =
-     * formatXML(outputString); System.out.println(formattedSOAPResponse); }
-     * catch(Exception exc){ exc.printStackTrace(); }
-    }*
-     */
+    
+      
+/*      public void prueba2(List<ArchivoSriDTO> lista) {
+        try {
+            System.out.println("props: "
+                    + System.getProperty("javax.net.ssl.keyStore"));
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs,
+                        String authType) {
+                }
+            }}; // Install the all-trusting trust manager
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null,
+                    trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory()); //Create all-trusting host name verifier 
+                    HostnameVerifier allHostsValid = new HostnameVerifier() {
+                public boolean verify(String hostname,SSLSession session) {
+                    return true;
+                }
+            }; // Install the all-trusting host verifier 
+                    HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+            //Code to make a webservice HTTP request String responseString = "";
+            String outputString = "";
+            String wsURL
+                    = "https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline";
+            URL url = new URL(wsURL);
+            URLConnection connection
+                    = url.openConnection();
+            HttpsURLConnection httpConn = (HttpsURLConnection) connection;
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            String xmlInput = "
+      <soapenv:
+            Envelope 
+            xmlns:soapenv =
+            \"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ec=\"http://ec.gob.sri.ws.autorizacion\">\n"
+      + "   <soapenv:Header/>\n" + "   <soapenv:Body>\n" + "
+           <ec:
+            autorizacionComprobante >\n
+            " + "         <!--Optional:
+            -- >\n" + "
+              <claveAccesoComprobante > "+lista.get(0).getClaveAcceso()+" <  / claveAccesoComprobante >\n
+            "
+      + "      </ec:autorizacionComprobante>\n" + "   </soapenv:Body>\n" +
+      "</soapenv:Envelope>"; byte[] buffer = new byte[xmlInput.length()];
+            buffer = xmlInput.getBytes();
+            bout.write(buffer);
+            byte[] b
+                    = bout.toByteArray();
+            String SOAPAction = ""; // Set the appropriate HTTP
+            parameters.httpConn.setRequestProperty("Content-Length",
+                    String.valueOf(b.length));
+            httpConn.setRequestProperty("Content-Type",
+                    "text/xml; charset=utf-8");
+            httpConn.setRequestProperty("SOAPAction",
+                    SOAPAction); //
+            httpConn.setRequestProperty("Access-Control-Allow-Origin", "");
+            httpConn.setRequestMethod("POST");
+            httpConn.setDoOutput(true);
+            httpConn.setDoInput(true);
+            OutputStream out = httpConn.getOutputStream();
+            //Write the content of the request to the outputstream of the HTTP
+            Connection.out.write(b);
+            out.close(); //Ready with sending the request.
+            //Read the response. InputStreamReader isr = new
+            InputStreamReader(httpConn.getInputStream());
+            BufferedReader in = new BufferedReader(isr); //Write the SOAP message response to a String. while
+            ((responseString = in.readLine()) != null) {
+                outputString = outputString
+                        + responseString;
+            } //Parse the String output to a org.w3c.dom.Document
+            and be able to reach every node with the org
+            .w3c.dom API
+            . Document document = parseXmlFile(outputString);
+            NodeList nodeLst
+                    = document.getElementsByTagName("RespuestaAutorizacionComprobante");
+            String weatherResult = nodeLst.item(0).getTextContent(); //Write the SOAP
+            message formatted to the console.String formattedSOAPResponse
+                    = formatXML(outputString);
+            System.out.println(formattedSOAPResponse);
+        } catch (Exception exc) {
+            exc.printStackTrace();
+        }
+    }
+*/
+     
 }

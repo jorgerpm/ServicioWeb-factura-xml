@@ -132,7 +132,7 @@ public class ArchivoXmlServicio {
     }
 
     public String guardarXmlToDB(String xmlB64, String nombreXml, String nombrePdf, /*String urlArchivo,*/ Long idUsuario, 
-            String tipoDocumento, boolean enviarCorreo, Parametro paramCarpeta, Usuario usersesion) throws Exception {
+            String tipoDocumento, boolean enviarCorreo, Parametro paramCarpeta, Usuario usersesion, Long idRechazado) throws Exception {
         try {
             //generar el tag xml segun el documento
             String tag_xml = TAG_FACTURA;
@@ -316,6 +316,10 @@ public class ArchivoXmlServicio {
                 String claveAcceso = jsonObjComp.getJSONObject(tag_xml).getJSONObject(TAG_INFO_TRIBUTARIO).get(TAG_CLAVE_ACCESO).toString();
                 archivoXml.setClaveAcceso(claveAcceso);
 
+                //aqui ver si es un rechazado el xml, si es rechazado se actualiza con el mismo id
+                if(Objects.nonNull(idRechazado))
+                    archivoXml.setId(idRechazado);
+                
                 String respuesta = dao.guardarDatosArchivo(archivoXml);
                 
                 setArchivoXmlAux(archivoXml);
@@ -515,7 +519,7 @@ public class ArchivoXmlServicio {
                 //buscar si ya existe la clave de acceso en la bdd, ya no se debe hacer nada.
                 ArchivoXml archivoXml = dao.getArchivoXmlPorClaveAcceso(arc.getClaveAcceso());
 
-                if (Objects.isNull(archivoXml)) {
+                if (Objects.isNull(archivoXml) || archivoXml.getEstadoSistema().equalsIgnoreCase("RECHAZADO")) {
 
                     String respXml=null;
                     try {
@@ -542,7 +546,7 @@ public class ArchivoXmlServicio {
 
                         try {
                             String resp = guardarXmlToDB(fileb64, (arc.getClaveAcceso() + ".xml"), (arc.getClaveAcceso() + ".pdf"), 
-                                    idUsuario, tipoDoc, false, paramCarpeta, usersesion);
+                                    idUsuario, tipoDoc, false, paramCarpeta, usersesion, (archivoXml == null ? null : archivoXml.getId()) );
 //                            if(resp.contains("~"))
 //                                arc.setRespuesta(resp.split("~")[0]);
 //                            else
@@ -583,10 +587,18 @@ public class ArchivoXmlServicio {
                         }
                     }
                 } else {
-                    //ya existe en la base de datos esa clave de acceso
-                    arc.setId(archivoXml.getId());
-                    arc.setEstadoSistema(archivoXml.getEstadoSistema());
-                    arc.setRespuesta("La clave de acceso " + arc.getClaveAcceso() + " ya existe en la base de datos");
+//                    if(archivoXml.getEstadoSistema().equalsIgnoreCase("RECHAZADO")){
+//                        arc.setId(archivoXml.getId());
+//                        arc.setEstadoSistema("CARGADO");
+//                        arc.setRespuesta("OK");
+//                        arc.setPathArchivos(archivoXml.getUrlArchivo());
+//                        correcto = true;
+//                    }else{
+                        //ya existe en la base de datos esa clave de acceso
+                        arc.setId(archivoXml.getId());
+                        arc.setEstadoSistema(archivoXml.getEstadoSistema());
+                        arc.setRespuesta("La clave de acceso " + arc.getClaveAcceso() + " ya existe en la base de datos");
+//                    }
                 }
             }
 

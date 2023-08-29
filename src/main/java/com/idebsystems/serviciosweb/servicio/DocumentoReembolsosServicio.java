@@ -124,7 +124,7 @@ public class DocumentoReembolsosServicio {
         }
     }
 
-    public DocumentoReembolsosDTO aprobarDocumentoReembolsos(DocumentoReembolsosDTO dto, String claveFirma) throws Exception {
+    public DocumentoReembolsosDTO aprobarDocumentoReembolsos(DocumentoReembolsosDTO dto, String claveFirma, boolean terceraFirma) throws Exception {
         try {
             DocumentoReembolsos ent = dao.getDocumentosPorId(dto.getId());
             ent.setEstado(dto.getEstado());
@@ -142,10 +142,23 @@ public class DocumentoReembolsosServicio {
             byte[] pdfBytes = Base64.getDecoder().decode(dto.getArchivoBase64());
 
             FirmarPdfServicio fsrv = new FirmarPdfServicio();
+            
+            //primero se agrega la imagen del rechazo y al final de todo se firma el documento.
+            //si es rechazado se agrega una imagen que digarechazado en tood el documento
+            if (dto.getEstado().equalsIgnoreCase("RECHAZADO")) {
+                pdfBytes = fsrv.agregarImagenRechazo(pdfBytes, ent.getRazonRechazo(), ent.getTipoReembolso());
+            }
+            
+            
             byte[] pdfDosFirmas = null;
             if(firmaDTO.getTipoFirma() == 0 ){
                 //se coloca la clave de la firma que se envia desde la pantalla
-                pdfDosFirmas = fsrv.firmarConDigital(pdfBytes, firmaDTO, true, claveFirma);
+                if(terceraFirma){
+                    pdfDosFirmas = fsrv.firmarConDigital(pdfBytes, firmaDTO, false, claveFirma, true);
+                    ent.setTresFirmas(1);
+                }
+                else
+                    pdfDosFirmas = fsrv.firmarConDigital(pdfBytes, firmaDTO, true, claveFirma, false);
             }
             if(firmaDTO.getTipoFirma() == 1 ){
                 pdfDosFirmas = fsrv.firmarConImagen(pdfBytes, firmaDTO, true);
@@ -155,11 +168,6 @@ public class DocumentoReembolsosServicio {
                 DocumentoReembolsosDTO objDto = new DocumentoReembolsosDTO();
                 objDto.setRespuesta("ERROR: No se pudo firmar el documento.");
                 return objDto;
-            }
-            
-            //si es rechazado se agrega una imagen que digarechazado en tood el documento
-            if (dto.getEstado().equalsIgnoreCase("RECHAZADO")) {
-                pdfDosFirmas = fsrv.agregarImagenRechazo(pdfDosFirmas, ent.getRazonRechazo(), ent.getTipoReembolso());
             }
 
             DocumentoReembolsos respuesta = dao.guardarDocumentoReembolsos(ent, ent.getIdsXml(), null, false);
