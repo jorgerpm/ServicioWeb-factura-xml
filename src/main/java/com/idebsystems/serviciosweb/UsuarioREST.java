@@ -100,4 +100,17 @@ public class UsuarioREST {
             throw new Exception(exc);
         }
     }
+    
+    @POST
+    @Path("/cambiarClave")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public UsuarioDTO cambiarClave(UsuarioDTO usuarioDto) throws Exception {
+        try {
+            return service.cambiarClave(usuarioDto);
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
 }

@@ -218,4 +218,29 @@ public class UsuarioServicio {
             throw new Exception(exc);
         }
     }
+    
+    
+    public UsuarioDTO cambiarClave(UsuarioDTO usuarioDto) throws Exception {
+        try{
+            Usuario usuario = dao.buscarUsuarioPorId(usuarioDto.getId());
+            
+            if(usuarioDto.getClave().equals(usuario.getClave())){
+                usuarioDto.setId(0);
+                usuarioDto.setRespuesta("La nueva clave es igual a la clave anterior. Ingrese una nueva clave.");
+                return usuarioDto;
+            }
+            
+            usuario.setClave(usuarioDto.getClave());
+            
+            usuario = dao.guardarUsuario(usuario);
+            
+            usuarioDto = UsuarioMapper.INSTANCE.entityToDto(usuario);
+            usuarioDto.setRespuesta("OK");
+            return usuarioDto;
+            
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
 }
