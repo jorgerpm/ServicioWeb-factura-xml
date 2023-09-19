@@ -154,9 +154,9 @@ public class ConexionSriServicio {
             httpConn.setDoInput(true);
 
 //            System.out.println("aun nop: " + bout);
-for(Provider p : Security.getProviders()){
-                System.out.println(p.getName());
-            }
+//for(Provider p : Security.getProviders()){
+//                System.out.println(p.getName());
+//            }
 
             OutputStream out = httpConn.getOutputStream();
 

@@ -528,6 +528,8 @@ public class ArchivoXmlServicio {
                         respXml = null;
                         if(exc.getMessage() != null && exc.getMessage().contains("Connection reset")){
                             arc.setRespuesta("SIN CONEXION AL SRI");
+                        }if(exc.getMessage() != null && exc.getMessage().contains("Rejected")){
+                            arc.setRespuesta("SIN CONEXION AL SRI");
                         }else{
                             arc.setRespuesta("ERROR: " + exc.getMessage().replace("java.lang.Exception:", ""));
                         }
