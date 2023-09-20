@@ -132,7 +132,7 @@ public class ArchivoXmlServicio {
     }
 
     public String guardarXmlToDB(String xmlB64, String nombreXml, String nombrePdf, /*String urlArchivo,*/ Long idUsuario, 
-            String tipoDocumento, boolean enviarCorreo, Parametro paramCarpeta, Usuario usersesion, Long idRechazado) throws Exception {
+            String tipoDocumento, boolean enviarCorreo, Parametro paramCarpeta, Usuario usersesion, Long idRechazado, boolean esUnicoArchivo) throws Exception {
         try {
             //generar el tag xml segun el documento
             String tag_xml = TAG_FACTURA;
@@ -298,8 +298,8 @@ public class ArchivoXmlServicio {
                 setPathCarpetas(pathCarpetas);
 
                 data.setEstadoSistema("CARGADO");
-                //aqui si el rol es del contador, se debe poner directo a APROBADO
-                if(usersesion.getIdRol() == 4L){
+                //aqui si el rol es del contador y auxiliar contador, se debe poner directo a APROBADO
+                if(usersesion.getIdRol() == 4L || usersesion.getIdRol() == 5L){
                     data.setEstadoSistema("APROBADO");
                 }
                 //si se carga una retencion el estado debe pasar directo a aprobado
@@ -319,6 +319,18 @@ public class ArchivoXmlServicio {
                 //aqui ver si es un rechazado el xml, si es rechazado se actualiza con el mismo id
                 if(Objects.nonNull(idRechazado))
                     archivoXml.setId(idRechazado);
+                
+                //buscar el xml que se esta cargando a ver si existe en la bdd, 
+                //si ya existe se debe ver el estado_sistema para que no deje guardar nuevamente
+                //buscar si ya existe la clave de acceso en la bdd, ya no se debe hacer nada.
+                if(esUnicoArchivo){
+                    ArchivoXml aux = dao.getArchivoXmlPorClaveAcceso(archivoXml.getClaveAcceso());
+
+                    if (Objects.nonNull(aux) && (archivoXml.getEstadoSistema().equalsIgnoreCase("RECHAZADO")
+                            || archivoXml.getEstadoSistema().equalsIgnoreCase("ANULADO")) ) {
+                        archivoXml.setId(aux.getId());
+                    }
+                }
                 
                 String respuesta = dao.guardarDatosArchivo(archivoXml);
                 
@@ -519,7 +531,8 @@ public class ArchivoXmlServicio {
                 //buscar si ya existe la clave de acceso en la bdd, ya no se debe hacer nada.
                 ArchivoXml archivoXml = dao.getArchivoXmlPorClaveAcceso(arc.getClaveAcceso());
 
-                if (Objects.isNull(archivoXml) || archivoXml.getEstadoSistema().equalsIgnoreCase("RECHAZADO")) {
+                if (Objects.isNull(archivoXml) || archivoXml.getEstadoSistema().equalsIgnoreCase("RECHAZADO")
+                        || archivoXml.getEstadoSistema().equalsIgnoreCase("ANULADO") ) {
 
                     String respXml=null;
                     try {
@@ -548,7 +561,7 @@ public class ArchivoXmlServicio {
 
                         try {
                             String resp = guardarXmlToDB(fileb64, (arc.getClaveAcceso() + ".xml"), (arc.getClaveAcceso() + ".pdf"), 
-                                    idUsuario, tipoDoc, false, paramCarpeta, usersesion, (archivoXml == null ? null : archivoXml.getId()) );
+                                    idUsuario, tipoDoc, false, paramCarpeta, usersesion, (archivoXml == null ? null : archivoXml.getId()), Boolean.FALSE );
 //                            if(resp.contains("~"))
 //                                arc.setRespuesta(resp.split("~")[0]);
 //                            else
