@@ -207,6 +207,7 @@ public class ConexionSriServicio {
 //            Document comprob = parseXmlFile(formattedSOAPResponse);
 //            comprob.
 //return weatherResult;
+//httpConn.disconnect();
 
             return formattedSOAPResponse;
             
@@ -214,6 +215,9 @@ public class ConexionSriServicio {
             if(!exc.getMessage().contains("No existe comprobante con la clave consultada"))
                 LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
+        }
+        finally{
+            //httpConn.disconnect();
         }
     }
 
@@ -253,8 +257,6 @@ public class ConexionSriServicio {
 
     private Document parseXmlFile(String in) {
         try {
-
-//            System.out.println("que lego?? " + in);
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();

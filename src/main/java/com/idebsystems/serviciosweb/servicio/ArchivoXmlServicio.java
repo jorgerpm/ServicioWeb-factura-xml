@@ -325,9 +325,10 @@ public class ArchivoXmlServicio {
                 //buscar si ya existe la clave de acceso en la bdd, ya no se debe hacer nada.
                 if(esUnicoArchivo){
                     ArchivoXml aux = dao.getArchivoXmlPorClaveAcceso(archivoXml.getClaveAcceso());
-
-                    if (Objects.nonNull(aux) && (archivoXml.getEstadoSistema().equalsIgnoreCase("RECHAZADO")
-                            || archivoXml.getEstadoSistema().equalsIgnoreCase("ANULADO")) ) {
+                    
+                    if (Objects.nonNull(aux) && (aux.getEstadoSistema().equalsIgnoreCase("RECHAZADO")
+                            || aux.getEstadoSistema().equalsIgnoreCase("ANULADO")) ) {
+                        
                         archivoXml.setId(aux.getId());
                     }
                 }
@@ -567,7 +568,8 @@ public class ArchivoXmlServicio {
 //                            else
                             
                             ReporteServicio repoSrv = new ReporteServicio();
-                            ReporteDTO reporteDTO = repoSrv.generarRidePdf(getArchivoXmlAux(), getVersion());
+                            ReporteDTO reporteDTO = repoSrv.generarRidePdf(getArchivoXmlAux(), getVersion(), respXml);
+                            
                             arc.setRideBase64(reporteDTO.getReporteBase64());
 
                             LOGGER.log(Level.INFO, "el nuevo ud:: {0}", getArchivoXmlAux().getId());

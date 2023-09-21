@@ -250,7 +250,7 @@ public class CorreoServicio {
                     ParametroDAO paramDao = new ParametroDAO();
                     List<Parametro> listaParams = paramDao.listarParametros();
                     
-                    List<Parametro> paramsMail = listaParams.stream().filter(p -> p.getNombre().contains("MAIL")).collect(Collectors.toList());
+//                    List<Parametro> paramsMail = listaParams.stream().filter(p -> p.getNombre().contains("MAIL")).collect(Collectors.toList());
                     
                     Parametro pasunto = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("ASUNTOMAIL_REEMBOLSO")).findAny().get();
                     Parametro paramMsm = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("MENSAJEMAIL_REEMBOLSO")).findAny().get();
@@ -265,6 +265,10 @@ public class CorreoServicio {
 
                     List<File> archivosAdjuntos = new ArrayList<>();
                     archivosAdjuntos.add(fileCot);
+                    
+                    String asuntoMail = pasunto.getValor();
+                    asuntoMail = asuntoMail.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+                    asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
                     
                     //transformar el mensaje con los datos
                     String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
@@ -287,7 +291,7 @@ public class CorreoServicio {
                     }
                     //hasta aca
                     
-                    enviarCorreo(correos, pasunto.getValor(), mensajeText, archivosAdjuntos);
+                    enviarCorreo(correos, asuntoMail, mensajeText, archivosAdjuntos);
                     
                 } catch (Exception exc) {
                     LOGGER.log(Level.SEVERE, null, exc);
@@ -319,6 +323,11 @@ public class CorreoServicio {
                     Parametro pasunto = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("ASUNTOMAIL_RECHAZA_REEMBOLSO")).findAny().get();
                     Parametro paramMsm = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("MENSAJEMAIL_RECHAZA_REEMBOLSO")).findAny().get();
                     
+                    String asuntoMail = pasunto.getValor();
+                    asuntoMail = asuntoMail.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+                    asuntoMail = asuntoMail.replace("[estado]", doc.getEstado());
+                    asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
+                    
                     //transformar el mensaje con los datos
                     String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
                     mensajeText = mensajeText.replace("[estado]", doc.getEstado());
@@ -332,7 +341,7 @@ public class CorreoServicio {
                     mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
                     
 
-                    String asunto = pasunto.getValor().replace("[estado]", doc.getEstado());
+                    
                     
                     
                     //generar el pdf a adjuntar     
@@ -353,7 +362,7 @@ public class CorreoServicio {
                         correos = correos + ";" + pdestino.getValor();
                     }
                     
-                    enviarCorreo(correos, asunto, mensajeText, archivosAdjuntos);
+                    enviarCorreo(correos, asuntoMail, mensajeText, archivosAdjuntos);
                     
                 } catch (Exception exc) {
                     LOGGER.log(Level.SEVERE, null, exc);
@@ -396,7 +405,10 @@ public class CorreoServicio {
             mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
             
 
-            String asunto = pasunto.getValor().replace("[estado]", doc.getEstado());
+            String asuntoMail = pasunto.getValor();
+            asuntoMail = asuntoMail.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+            asuntoMail = asuntoMail.replace("[estado]", doc.getEstado());
+            asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
             
             //generar el pdf a adjuntar     
             File fileCot = File.createTempFile("reembolso",".pdf");
@@ -407,7 +419,7 @@ public class CorreoServicio {
             List<File> archivosAdjuntos = new ArrayList<>();
             archivosAdjuntos.add(fileCot);
 
-            enviarCorreo(user.getCorreo(), asunto, mensajeText, archivosAdjuntos);
+            enviarCorreo(user.getCorreo(), asuntoMail, mensajeText, archivosAdjuntos);
 
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
@@ -445,7 +457,10 @@ public class CorreoServicio {
             
             
             //asunto del correo
-            String asunto = pasunto.getValor().replace("[estado]", doc.getEstado());
+            String asuntoMail = pasunto.getValor();
+            asuntoMail = asuntoMail.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+            asuntoMail = asuntoMail.replace("[estado]", doc.getEstado());
+            asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
             
             //generar el archivo a adjuntar
             LOGGER.log(Level.INFO, "el tipo: {0}", doc.getTipoJustificacionBase64());
@@ -469,7 +484,7 @@ public class CorreoServicio {
             List<File> archivosAdjuntos = new ArrayList<>();
             archivosAdjuntos.add(fileCot);
 
-            enviarCorreo(paramDestino.getValor(), asunto, mensajeText, archivosAdjuntos);
+            enviarCorreo(paramDestino.getValor(), asuntoMail, mensajeText, archivosAdjuntos);
 
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);

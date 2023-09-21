@@ -33,10 +33,17 @@ public class FacturaFisicaServicio {
             String claveacceso = dto.getRucProveedor() + dto.getNumeroFactura().replace("-", "");
             ArchivoXml archivoExiste = xmlDao.getArchivoXmlPorClaveAcceso(claveacceso);
             
+            Long idFacturaFisica = null;
+            
             if(Objects.nonNull(archivoExiste)){
-                dto.setId(0L);
-                dto.setRespuesta("El n\u00famero de factura ingresado ya existe para este proveedor.");
-                return dto;
+                if(archivoExiste.getEstadoSistema().equalsIgnoreCase("RECHAZADO") || archivoExiste.getEstadoSistema().equalsIgnoreCase("ANULADO")){
+                    idFacturaFisica = archivoExiste.getId();
+                }
+                else{
+                    dto.setId(0L);
+                    dto.setRespuesta("El n\u00famero de factura ingresado ya existe para este proveedor.");
+                    return dto;
+                }
             }
             
 //generar el json de la factura. para guardar en el comprobante
@@ -45,6 +52,7 @@ public class FacturaFisicaServicio {
 
 
             ArchivoXml xml = new ArchivoXml();
+            xml.setId(idFacturaFisica);
             xml.setEsFisica(true);
             xml.setAmbiente("PRODUCCION");
             xml.setClaveAcceso(claveacceso);

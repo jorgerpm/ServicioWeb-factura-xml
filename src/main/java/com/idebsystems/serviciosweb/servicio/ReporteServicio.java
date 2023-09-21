@@ -17,6 +17,7 @@ import com.idebsystems.serviciosweb.entities.DocumentoReembolsos;
 import com.idebsystems.serviciosweb.entities.Parametro;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,8 +39,6 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
-import org.json.JSONObject;
-import org.json.XML;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -290,16 +289,13 @@ LOGGER.log(Level.INFO, "completo: {0}", rpdto );
     }
     
     
-    
-    public ReporteDTO generarRidePdf(ArchivoXml archivoXml, String version) throws Exception {
+    public ReporteDTO generarRidePdf(ArchivoXml archivoXml, String version, String xmlParaRide) throws Exception {
         try{
             
-//            LOGGER.log(Level.INFO, "el compro: {0}", archivoXml.getComprobante());
+//            JSONObject jsonObject = new JSONObject(archivoXml.getComprobante()); 
+//            String xml = XML.toString(jsonObject);
             
-            JSONObject jsonObject = new JSONObject(archivoXml.getComprobante()); 
-            String xml = XML.toString(jsonObject);
-            
-//            LOGGER.log(Level.INFO, "el xml del comp: {0}", xml);
+//            LOGGER.log(Level.INFO, "el xml del comp: {0}", xmlParaRide);
             
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 //            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -307,11 +303,14 @@ LOGGER.log(Level.INFO, "completo: {0}", rpdto );
 //dbf.setValidating(true);
             DocumentBuilder db = dbf.newDocumentBuilder();
             
-            Document documentXml = db.parse(new InputSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + xml)));
+//            Document documentXml = db.parse(new InputSource(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + xml)));
+            Document documentXml = db.parse(new InputSource(new StringReader(xmlParaRide)));
             
-            
-            
-//            LOGGER.log(Level.INFO, "creado el documento: {0}", documentXml);
+            if(documentXml.getElementsByTagName("comprobante").item(0) != null){
+                documentXml = db.parse(new InputSource(new StringReader(
+                        documentXml.getElementsByTagName("comprobante").item(0).getTextContent()
+                )));
+            }
             
             List<String> datos = crearXPathYReporte(archivoXml.getTipoDocumento(), version);
             

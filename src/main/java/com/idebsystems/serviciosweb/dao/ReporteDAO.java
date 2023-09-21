@@ -58,6 +58,13 @@ public class ReporteDAO extends Persistencia {
             String urlReportes = getPathReportes();
 
             parameters.put("SUBREPORT_DIR", urlReportes);
+            
+            
+            //esta parte se utiliza para compilar el jasper con la version que esta aqui en el sistema
+            //y con eso ya toma los tamnios de las letras que no tomaba antes
+//            String jrxmlFile = urlReportes + report + ".jrxml";
+//            JasperCompileManager.compileReportToFile(jrxmlFile, (urlReportes + report + ".jasper"));
+            //hasta aca
 
             File sourceFile = new File(urlReportes + report + ".jasper");
             JasperReport jasperReport = (JasperReport) JRLoader.loadObject(sourceFile);
