@@ -113,4 +113,20 @@ public class UsuarioREST {
             throw new Exception(exc);
         }
     }
+    
+    ;
+    @GET
+    @Path("/listarUsuariosActivos")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<UsuarioDTO> listarUsuariosActivos() throws Exception {
+        try {
+            //aqui poner los activos
+            //listarUsuariosActivos
+            return service.listarUsuarios();
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
 }

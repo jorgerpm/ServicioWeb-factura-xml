@@ -25,6 +25,7 @@ public class DocumentoReembolsosDTO {
     private String archivoBase64;
     private Long idUsuarioAutoriza;
     private String tipoReembolso;
+    private Long idAprobador;
 
     private String motivoViaje;
     private String periodoViaje;
@@ -348,6 +349,14 @@ public class DocumentoReembolsosDTO {
 
     public void setTresFirmas(Integer tresFirmas) {
         this.tresFirmas = tresFirmas;
+    }
+
+    public Long getIdAprobador() {
+        return idAprobador;
+    }
+
+    public void setIdAprobador(Long idAprobador) {
+        this.idAprobador = idAprobador;
     }
 
     @Override

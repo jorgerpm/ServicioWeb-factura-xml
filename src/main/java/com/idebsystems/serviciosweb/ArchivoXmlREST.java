@@ -40,7 +40,7 @@ public class ArchivoXmlREST {
     @Produces({MediaType.APPLICATION_JSON})
     public RespuestaDTO cargarArchivoXml(ArchivoXmlDTO fileDto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", fileDto);
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", fileDto);
             //primero guardar el pdf RIDE
             service.guardarArchivoXml(fileDto.getPdfBase64());
 
@@ -61,11 +61,11 @@ public class ArchivoXmlREST {
     @Produces({MediaType.APPLICATION_JSON})
     public RespuestaDTO guardarXmlDB(ArchivoXmlDTO fileDto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", fileDto);
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", fileDto);
             String resp = service.guardarXmlToDB(fileDto.getXmlBase64(), fileDto.getNombreArchivoXml(), fileDto.getNombreArchivoPdf(),
                     /*fileDto.getUrlArchivo(),*/ fileDto.getIdUsuarioCarga(), fileDto.getTipoDocumento(), true, null, null, null, Boolean.TRUE);
             
-            LOGGER.log(Level.INFO, "el path es:::: {0}", service.getPathCarpetas());
+//            LOGGER.log(Level.INFO, "el path es:::: {0}", service.getPathCarpetas());
             
             if(resp.contains("OK")){
                 RespuestaDTO dto = new RespuestaDTO("");
@@ -87,7 +87,7 @@ public class ArchivoXmlREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<ArchivoXmlDTO> listarArchivosXml() throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
+            
             //buscar en la bdd los roles
             return service.listarArchivosXml();
         } catch (Exception exc) {
@@ -130,7 +130,7 @@ public class ArchivoXmlREST {
             
             
             Long variable = new Date().getTime();
-            LOGGER.log(Level.INFO, String.valueOf(variable));
+//            LOGGER.log(Level.INFO, String.valueOf(variable));
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date dateInit = sdf.parse(fechaInicio);
@@ -173,8 +173,8 @@ public class ArchivoXmlREST {
     @Produces({MediaType.APPLICATION_JSON})
     public RespuestaDTO anularArchivosXml(List<ArchivoXmlDTO> lista) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", lista);
-            lista.forEach(l -> LOGGER.log(Level.INFO, "uno: {0}", l));
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", lista);
+//            lista.forEach(l -> LOGGER.log(Level.INFO, "uno: {0}", l));
 
             service.anularArchivosXml(lista);
 

@@ -49,7 +49,7 @@ public class UsuarioDAO extends Persistencia {
         try {
             getEntityManager();
 
-            Query query = em.createQuery("FROM Usuario u");
+            Query query = em.createQuery("FROM Usuario u order by u.nombre");
 
             List<Usuario> listaUsuario = query.getResultList();
 
@@ -144,8 +144,29 @@ public class UsuarioDAO extends Persistencia {
         try {
             getEntityManager();
 
-            Query query = em.createQuery("FROM Usuario u where u.idEstado = 1 and u.idRol = :idRol ");
+            Query query = em.createQuery("FROM Usuario u where u.idEstado = 1 and u.idRol = :idRol order by u.nombre ");
             query.setParameter("idRol", idRol);
+
+            List<Usuario> listaUsuario = query.getResultList();
+
+            return listaUsuario;
+
+       } catch (NoResultException exc) {
+            return null;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
+    
+    
+    public List<Usuario> listarUsuariosActivos() throws Exception {
+        try {
+            getEntityManager();
+
+            Query query = em.createQuery("FROM Usuario u where u.idEstado = 1 order by u.nombre");
 
             List<Usuario> listaUsuario = query.getResultList();
 
