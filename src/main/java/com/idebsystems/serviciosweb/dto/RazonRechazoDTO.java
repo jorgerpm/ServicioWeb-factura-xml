@@ -8,10 +8,10 @@ package com.idebsystems.serviciosweb.dto;
  *
  * @author israe
  */
-public class ParametroDTO {
+public class RazonRechazoDTO {
+    
     private long id;
-    private String nombre;
-    private String valor;
+    private String razon;
     private long idEstado;
     private long idUsuarioModifica;
 
@@ -23,20 +23,12 @@ public class ParametroDTO {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getRazon() {
+        return razon;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getValor() {
-        return valor;
-    }
-
-    public void setValor(String valor) {
-        this.valor = valor;
+    public void setRazon(String razon) {
+        this.razon = razon;
     }
 
     public long getIdEstado() {
@@ -57,7 +49,7 @@ public class ParametroDTO {
 
     @Override
     public String toString() {
-        return "ParametroDTO{" + "id=" + id + ", nombre=" + nombre + ", valor=" + valor + ", idEstado=" + idEstado + ", idUsuarioModifica=" + idUsuarioModifica + '}';
+        return "RazonRechazoDTO{" + "id=" + id + ", razon=" + razon + ", idEstado=" + idEstado + ", idUsuarioModifica=" + idUsuarioModifica + '}';
     }
 
 

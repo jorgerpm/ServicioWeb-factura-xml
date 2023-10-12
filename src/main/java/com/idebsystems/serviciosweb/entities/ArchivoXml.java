@@ -56,6 +56,7 @@ public class ArchivoXml implements Serializable {
     private boolean esFisica;
     private String asistentes;
     private String version;
+    private Long idReembolso;
 
     public Long getId() {
         return id;
@@ -247,6 +248,14 @@ public class ArchivoXml implements Serializable {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public Long getIdReembolso() {
+        return idReembolso;
+    }
+
+    public void setIdReembolso(Long idReembolso) {
+        this.idReembolso = idReembolso;
     }
 
 }

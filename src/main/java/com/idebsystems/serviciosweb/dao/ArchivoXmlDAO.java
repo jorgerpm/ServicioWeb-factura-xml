@@ -85,7 +85,7 @@ public class ArchivoXmlDAO extends Persistencia {
     
     public List<Object> listarPorFecha(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
             String claveAcceso, String ruc, String tipoDocumento, String estadoSistema,
-            Integer desde, Integer hasta, boolean seleccionados) throws Exception {
+            Integer desde, Integer hasta, boolean seleccionados, long idReembolso) throws Exception {
         try {
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
@@ -95,6 +95,9 @@ public class ArchivoXmlDAO extends Persistencia {
             
             if(Objects.nonNull(claveAcceso) && !claveAcceso.isBlank()){
                 sql += " where ax.claveAcceso = :claveAcceso";
+            }
+            else if(Objects.nonNull(idReembolso) && idReembolso > 0){
+                sql += " where ax.idReembolso = :idReembolso";
             }
             else{
                 sql += " where ax.fechaEmision between :fechaInicio AND :fechaFinal";
@@ -119,6 +122,9 @@ public class ArchivoXmlDAO extends Persistencia {
                     
             if(Objects.nonNull(claveAcceso) && !claveAcceso.isBlank()){
                 query.setParameter("claveAcceso", claveAcceso);
+            }
+            else if(Objects.nonNull(idReembolso) && idReembolso > 0){
+                query.setParameter("idReembolso", idReembolso);
             }
             else{
                 query.setParameter("fechaInicio", fechaInicio);
@@ -279,7 +285,7 @@ public class ArchivoXmlDAO extends Persistencia {
     
     public List<Object> listarConDetalles(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
             String claveAcceso, String ruc, String tipoDocumento, String estadoSistema,
-            Integer desde, Integer hasta, boolean seleccionados) throws Exception {
+            Integer desde, Integer hasta, boolean seleccionados, long idReembolso) throws Exception {
         try {
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
@@ -289,6 +295,9 @@ public class ArchivoXmlDAO extends Persistencia {
             
             if(Objects.nonNull(claveAcceso) && !claveAcceso.isBlank()){
                 sql += " where a.claveAcceso = ?claveAcceso";
+            }
+            else if(Objects.nonNull(idReembolso) && idReembolso > 0){
+                sql += " where a.idReembolso = ?idReembolso";
             }
             else{
                 sql += " where a.fechaEmision between ?fechaInicio AND ?fechaFinal";
@@ -315,6 +324,9 @@ public class ArchivoXmlDAO extends Persistencia {
                     
             if(Objects.nonNull(claveAcceso) && !claveAcceso.isBlank()){
                 query.setParameter("claveAcceso", claveAcceso);
+            }
+            else if(Objects.nonNull(idReembolso) && idReembolso > 0){
+                query.setParameter("idReembolso", idReembolso);
             }
             else{
                 query.setParameter("fechaInicio", fechaInicio);
@@ -381,6 +393,7 @@ public class ArchivoXmlDAO extends Persistencia {
                     xml.setBaseImponible(obj[28] != null ? obj[28].toString() : null);
                     xml.setPorcentajeRetener(obj[29] != null ? obj[29].toString() : null);
                     xml.setValorRetenido(obj[30] != null ? obj[30].toString() : null);
+                    xml.setIdReembolso(obj[31] != null ? (Long)obj[31] : null);
                     
 
                     listaPorFecha.add(xml);

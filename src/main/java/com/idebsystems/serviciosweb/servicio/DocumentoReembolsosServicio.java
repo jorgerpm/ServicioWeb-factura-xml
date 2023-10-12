@@ -65,10 +65,16 @@ public class DocumentoReembolsosServicio {
                 if (Objects.nonNull(obj.getFechaAutoriza())) {
                     dto.setFechaAutorizaLong(obj.getFechaAutoriza().getTime());
                 }
+                if (Objects.nonNull(obj.getFechaProcesa())) {
+                    dto.setFechaProcesaLong(obj.getFechaProcesa().getTime());
+                }
 
                 Usuario user = uss.stream().filter(u -> Objects.equals(u.getId(), obj.getUsuarioCarga())).findAny().orElse(new Usuario());
                 dto.setUsuario(UsuarioMapper.INSTANCE.entityToDto(user));
                 dto.setTotalRegistros(totalRegistros);
+                
+                Usuario userAprob = uss.stream().filter(u -> Objects.equals(u.getId(), obj.getIdAprobador())).findAny().orElse(new Usuario());
+                dto.setAprobador(userAprob.getNombre());
 
                 lista.add(dto);
             });
@@ -109,9 +115,15 @@ public class DocumentoReembolsosServicio {
                 if (Objects.nonNull(obj.getFechaAutoriza())) {
                     dto.setFechaAutorizaLong(obj.getFechaAutoriza().getTime());
                 }
+                if (Objects.nonNull(obj.getFechaProcesa())) {
+                    dto.setFechaProcesaLong(obj.getFechaProcesa().getTime());
+                }
 
                 Usuario user = uss.stream().filter(u -> Objects.equals(u.getId(), obj.getUsuarioCarga())).findAny().orElse(new Usuario());
                 dto.setUsuario(UsuarioMapper.INSTANCE.entityToDto(user));
+                
+                Usuario userAprob = uss.stream().filter(u -> Objects.equals(u.getId(), obj.getIdAprobador())).findAny().orElse(new Usuario());
+                dto.setAprobador(userAprob.getNombre());
 
                 lista.add(dto);
             });
@@ -127,11 +139,26 @@ public class DocumentoReembolsosServicio {
     public DocumentoReembolsosDTO aprobarDocumentoReembolsos(DocumentoReembolsosDTO dto, String claveFirma, boolean terceraFirma) throws Exception {
         try {
             DocumentoReembolsos ent = dao.getDocumentosPorId(dto.getId());
+            
+            //en base al estado se debe cambiar la url de la ubicacion del archivo pdf. inicialmente esta dentro 
+            //de POR_AUTORIZAR, y aqui debe cambiar por el estado
+            String urlCarpeta = ent.getPathArchivo().replace(ent.getEstado(), dto.getEstado());
+            ent.setPathArchivo(urlCarpeta);
+            
+            //ahora colocar el estado que viene desde pantalla
             ent.setEstado(dto.getEstado());
-            ent.setFechaAutoriza(new Date());
-            ent.setUsuarioAutoriza(dto.getUsuarioAutoriza());
+            
             if (dto.getEstado().equalsIgnoreCase("RECHAZADO")) {
                 ent.setRazonRechazo(dto.getRazonRechazo());
+            }
+            //si el ESTADO = aprobado se guarda solo el del usuarioproueba
+            if (dto.getEstado().equalsIgnoreCase("APROBADO")) {
+                ent.setFechaAutoriza(new Date());
+                ent.setUsuarioAutoriza(dto.getUsuarioAutoriza());
+            }
+            else{//si el estadoes procesado se guarda el usuario de procesado y no autorizado
+                ent.setUsuarioProcesa(dto.getUsuarioAutoriza());
+                ent.setFechaProcesa(new Date());
             }
 
             //se debe enviar a firmar el documento con la firma del usuario que aprueba
@@ -169,10 +196,10 @@ public class DocumentoReembolsosServicio {
                 objDto.setRespuesta("ERROR: No se pudo firmar el documento.");
                 return objDto;
             }
-
+            
             DocumentoReembolsos respuesta = dao.guardarDocumentoReembolsos(ent, ent.getIdsXml(), null, false);
             DocumentoReembolsosDTO objDto = DocumentoReembolsosMapper.INSTANCE.entityToDto(respuesta);
-
+            objDto.setPathArchivo(urlCarpeta);
             objDto.setArchivoBase64(Base64.getEncoder().encodeToString(pdfDosFirmas));
             objDto.setRespuesta("OK");
             

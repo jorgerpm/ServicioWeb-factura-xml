@@ -140,9 +140,9 @@ public class FirmarPdfServicio {
 
 
             
-            for(Provider p : Security.getProviders()){
-                System.out.println(p.getName());
-            }
+//            for(Provider p : Security.getProviders()){
+//                System.out.println(p.getName());
+//            }
 //                        Security.removeProvider("BC");
 //            System.out.println(Security.getProvider("BC").getName());
 //            System.out.println(Security.getProvider("BC"));
@@ -151,7 +151,7 @@ public class FirmarPdfServicio {
 
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
-            if(exc.getMessage().contains("wrong password")){
+            if(exc.getMessage().contains("wrong password") || exc.getMessage().contains("keystore password was incorrect")){
                 throw new Exception("LA CLAVE INGRESADA ES INCORRECTA");
             }
             throw new Exception(exc);

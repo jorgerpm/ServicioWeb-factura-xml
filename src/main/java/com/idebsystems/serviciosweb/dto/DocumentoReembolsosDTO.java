@@ -54,6 +54,10 @@ public class DocumentoReembolsosDTO {
     private String claveFirma;
     private boolean terceraFirma;
     private Integer tresFirmas;
+    private String numeroRC;
+    private String aprobador;
+    private String usuarioProcesa;
+    private Long fechaProcesaLong;
 
     public Long getId() {
         return id;
@@ -357,6 +361,38 @@ public class DocumentoReembolsosDTO {
 
     public void setIdAprobador(Long idAprobador) {
         this.idAprobador = idAprobador;
+    }
+
+    public String getNumeroRC() {
+        return numeroRC;
+    }
+
+    public void setNumeroRC(String numeroRC) {
+        this.numeroRC = numeroRC;
+    }
+
+    public String getAprobador() {
+        return aprobador;
+    }
+
+    public void setAprobador(String aprobador) {
+        this.aprobador = aprobador;
+    }
+
+    public String getUsuarioProcesa() {
+        return usuarioProcesa;
+    }
+
+    public void setUsuarioProcesa(String usuarioProcesa) {
+        this.usuarioProcesa = usuarioProcesa;
+    }
+
+    public Long getFechaProcesaLong() {
+        return fechaProcesaLong;
+    }
+
+    public void setFechaProcesaLong(Long fechaProcesaLong) {
+        this.fechaProcesaLong = fechaProcesaLong;
     }
 
     @Override

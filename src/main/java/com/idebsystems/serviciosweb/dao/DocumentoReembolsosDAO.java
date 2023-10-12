@@ -113,6 +113,7 @@ public class DocumentoReembolsosDAO extends Persistencia {
                     ArchivoXml xml = em.find(ArchivoXml.class, Long.parseLong(id));
                     if(Objects.nonNull(xml)){
                         xml.setEstadoSistema(data.getEstado());
+                        xml.setIdReembolso(data.getId());
                         em.merge(xml);
                     }
                 }

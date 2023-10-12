@@ -64,6 +64,10 @@ public class DocumentoReembolsos implements Serializable {
     private String justificacionBase64;
     private String tipoJustificacionBase64;
     private Integer tresFirmas;
+    private String numeroRC;
+    private String usuarioProcesa;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaProcesa;
 
     public Long getId() {
         return id;
@@ -319,6 +323,30 @@ public class DocumentoReembolsos implements Serializable {
 
     public void setTresFirmas(Integer tresFirmas) {
         this.tresFirmas = tresFirmas;
+    }
+
+    public String getNumeroRC() {
+        return numeroRC;
+    }
+
+    public void setNumeroRC(String numeroRC) {
+        this.numeroRC = numeroRC;
+    }
+
+    public String getUsuarioProcesa() {
+        return usuarioProcesa;
+    }
+
+    public void setUsuarioProcesa(String usuarioProcesa) {
+        this.usuarioProcesa = usuarioProcesa;
+    }
+
+    public Date getFechaProcesa() {
+        return fechaProcesa;
+    }
+
+    public void setFechaProcesa(Date fechaProcesa) {
+        this.fechaProcesa = fechaProcesa;
     }
 
 }

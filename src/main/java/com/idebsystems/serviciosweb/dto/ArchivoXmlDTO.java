@@ -58,6 +58,7 @@ public class ArchivoXmlDTO {
     private String porcentajeRetener;
     private String valorRetenido;
     private String version;
+    private Long idReembolso;
     
 
     public String getEstadoSri() {
@@ -380,6 +381,14 @@ public class ArchivoXmlDTO {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public Long getIdReembolso() {
+        return idReembolso;
+    }
+
+    public void setIdReembolso(Long idReembolso) {
+        this.idReembolso = idReembolso;
     }
     
     @Override

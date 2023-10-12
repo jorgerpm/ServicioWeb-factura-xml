@@ -89,7 +89,8 @@ public class ReporteREST {
             @QueryParam(value = "fondoEntregado") double fondoEntregado,
             @QueryParam(value = "observaciones") String observaciones,
             @QueryParam(value = "seleccion") String seleccion,
-            @QueryParam(value = "claveFirma") String claveFirma
+            @QueryParam(value = "claveFirma") String claveFirma,
+            @QueryParam(value = "numeroRC") String numeroRC
     ) throws Exception {
         try {
             LOGGER.log(Level.INFO, "reporte: {0}", reporte);
@@ -99,6 +100,7 @@ public class ReporteREST {
             LOGGER.log(Level.INFO, "idUsuario: {0}", idUsuario);
             LOGGER.log(Level.INFO, "idAprobador: {0}", idAprobador);
             LOGGER.log(Level.INFO, "claveFirma: {0}", claveFirma);
+            LOGGER.log(Level.INFO, "numeroRC: {0}", numeroRC);
             
             DocumentoReembolsosDTO reembDto = new DocumentoReembolsosDTO();
             reembDto.setMotivoViaje(motivoViaje);
@@ -107,6 +109,7 @@ public class ReporteREST {
             reembDto.setFondoEntregado(new BigDecimal(fondoEntregado));
             reembDto.setObservaciones(observaciones);
             reembDto.setSeleccion(seleccion);
+            reembDto.setNumeroRC(numeroRC);
                     
             //buscar en la bdd los roles
             return service.generarReporteFirma(reporte, ids, tiposGasto, tipoReembolso, idUsuario, idAprobador, listaAsistentes, reembDto, claveFirma);

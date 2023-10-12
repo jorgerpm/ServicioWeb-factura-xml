@@ -168,6 +168,7 @@ public class ReporteServicio {
             parameters.put("p_motivoViaje", reembDto.getMotivoViaje());
             parameters.put("p_periodoViaje", reembDto.getPeriodoViaje());
             parameters.put("p_lugarViaje", reembDto.getLugarViaje());
+            parameters.put("p_numeroRC", reembDto.getNumeroRC());
             
             //segun el tipo de reembolso generar el formato pdf
             String nombreReporte = "rp_gastoreembolso";
@@ -234,7 +235,7 @@ public class ReporteServicio {
                     ParametroDAO pdao = new ParametroDAO();
                     List<Parametro> params = pdao.listarParametros();
                     
-                    Parametro purl = params.stream().filter(p -> p.getNombre().equalsIgnoreCase("URL_SISTEMA")).findAny().get();
+//                    Parametro purl = params.stream().filter(p -> p.getNombre().equalsIgnoreCase("URL_SISTEMA")).findAny().get();
                     Parametro pcarp = params.stream().filter(p -> p.getNombre().equalsIgnoreCase("CARPETA_REEMBOLSOS")).findAny().get();
                     
                     DocumentoReembolsos doc = new DocumentoReembolsos();
@@ -242,28 +243,34 @@ public class ReporteServicio {
     //                doc.setFechaAutoriza(fechaAutoriza);
                     doc.setFechaCarga(new Date());
     //                doc.setId(idUsuario);
-                    doc.setPathArchivo(purl.getValor() + pcarp.getValor() + doc.getFechaCarga().getTime()+".pdf");
     //                doc.setRazonRechazo(reporte);
     //                doc.setUsuarioAutoriza(reporte);
                     doc.setUsuarioCarga(idUsuario);
                     doc.setIdsXml(ids);
                     doc.setTipoReembolso(tipoReembolso);
                     doc.setIdAprobador(idAprobador);
-                
-                    
                     doc.setMotivoViaje(reembDto.getMotivoViaje());
                     doc.setPeriodoViaje(reembDto.getPeriodoViaje());
                     doc.setLugarViaje(reembDto.getLugarViaje());
                     doc.setFondoEntregado(reembDto.getFondoEntregado());
                     doc.setObservaciones(reembDto.getObservaciones());
                     doc.setSeleccion(reembDto.getSeleccion());
-                
-                
+                    doc.setNumeroRC(reembDto.getNumeroRC());
+                    
+                    //generar el numero del reembolso
+                    //y abajo en el nombre del pdf en lugar del gettime poner el numero del reembolso
+                    
+                    //generar la carpeta donde se va a guardar, pero con la url para la descarga posterior
+                    //como es la primera generacion se pone dentro de la carpeta POR_AUTORIZAR
+                    //aqui ya no se utiliza la url del sistema, esto se toma desde el mismo PHP, esto toma de la url que esta
+                    //en el navegador, si ponen https://ip:puerto/sistema esto se genera automaticamente en el lado del cliente
+                    String urlCarpeta =  pcarp.getValor() + "/" + tipoReembolso + "/POR_AUTORIZAR/" + doc.getFechaCarga().getTime()+".pdf";
+                    doc.setPathArchivo(urlCarpeta.replace("//", "/"));
+                    
+                    rpdto.setPathArchivo(doc.getPathArchivo());
                     
                     DocumentoReembolsosDAO docdao = new DocumentoReembolsosDAO();
                     docdao.guardarDocumentoReembolsos(doc, ids, idUsuario, true);
-                    
-                    rpdto.setPathArchivo(pcarp.getValor() + doc.getFechaCarga().getTime()+".pdf");
                     
                     //aqui enviar el correo de que se genero el nuevo reembolso
                     CorreoServicio remsrv = new CorreoServicio();

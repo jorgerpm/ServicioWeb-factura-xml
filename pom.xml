@@ -149,6 +149,28 @@
     <artifactId>itextpdf</artifactId>
     <version>5.5.11</version>
 </dependency>
+
+<!--dependency>
+        <groupId>com.itextpdf</groupId>
+        <artifactId>kernel</artifactId>
+        <version>7.2.3</version>
+    </dependency>
+<dependency>
+        <groupId>com.itextpdf</groupId>
+        <artifactId>barcodes</artifactId>
+        <version>7.2.3</version>
+    </dependency>
+    <dependency>
+        <groupId>com.itextpdf</groupId>
+        <artifactId>io</artifactId>
+        <version>7.2.3</version>
+    </dependency>
+    <dependency>
+        <groupId>com.itextpdf</groupId>
+        <artifactId>layout</artifactId>
+        <version>7.2.3</version>
+    </dependency-->
+    
 <!--dependency>
     <groupId>com.lowagie</groupId>
     <artifactId>itext</artifactId>
@@ -202,6 +224,19 @@ sin esta libreria  -->
     <artifactId>javassist</artifactId>
     <version>3.25.0-GA</version>
 </dependency>
+
+<!--estos dos es para generar el codigo qr -->
+<!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
+<dependency>
+    <groupId>com.google.zxing</groupId>
+    <artifactId>core</artifactId>
+    <version>3.3.0</version>
+</dependency>
+<dependency>
+        <groupId>com.google.zxing</groupId>
+        <artifactId>javase</artifactId>
+        <version>3.3.0</version>
+    </dependency>
 
 
     </dependencies>

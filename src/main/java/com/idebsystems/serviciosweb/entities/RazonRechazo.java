@@ -13,24 +13,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
  * @author israe
  */
 @Entity
-@Table(name = "parametro")
-public class Parametro implements Serializable {
+@Table(name = "razonRechazo")
+public class RazonRechazo implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
-    private String nombre;
-    private String valor;
+    private String razon;
     private long idEstado;
     private long idUsuarioModifica;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaModifica;
 
     public long getId() {
@@ -41,20 +39,12 @@ public class Parametro implements Serializable {
         this.id = id;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getRazon() {
+        return razon;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getValor() {
-        return valor;
-    }
-
-    public void setValor(String valor) {
-        this.valor = valor;
+    public void setRazon(String razon) {
+        this.razon = razon;
     }
 
     public long getIdEstado() {
@@ -80,6 +70,6 @@ public class Parametro implements Serializable {
     public void setFechaModifica(Date fechaModifica) {
         this.fechaModifica = fechaModifica;
     }
-    
+
     
 }

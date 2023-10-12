@@ -425,7 +425,7 @@ public class ArchivoXmlServicio {
 
     public List<ArchivoXmlDTO> listarPorFecha(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
             String claveAcceso, String ruc, String tipoDocumento, String estadoSistema,
-            Integer desde, Integer hasta, boolean seleccionados, boolean conDetalles) throws Exception {
+            Integer desde, Integer hasta, boolean seleccionados, boolean conDetalles, long idReembolso) throws Exception {
         try {
 
             final List<ArchivoXmlDTO> listaArchivoXmlDto = new ArrayList();
@@ -434,11 +434,11 @@ public class ArchivoXmlServicio {
             
             if(conDetalles){
                 respuesta = dao.listarConDetalles(FechaUtil.fechaInicial(fechaInicio), FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, 
-                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados);
+                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso);
             }
             else{
                 respuesta = dao.listarPorFecha(FechaUtil.fechaInicial(fechaInicio), FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, 
-                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados);
+                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso);
             }
 
             //sacar los resultados retornados
@@ -449,6 +449,7 @@ public class ArchivoXmlServicio {
             List<Usuario> listaUser = userDao.listarUsuarios();
             
             if(conDetalles){
+                //aquie el respuesta.get(1) si trae del tipo ArchivoXmlDTO porque el select es de una function
                 List<ArchivoXmlDTO> listaDtos = (List<ArchivoXmlDTO>) respuesta.get(1);
                 listaDtos.forEach(archivoXmlDto -> {
                     

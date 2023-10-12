@@ -9,6 +9,7 @@ import com.idebsystems.serviciosweb.dto.ParametroDTO;
 import com.idebsystems.serviciosweb.entities.Parametro;
 import com.idebsystems.serviciosweb.mappers.ParametroMapper;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +45,7 @@ public class ParametroServicio {
     public ParametroDTO guardarParametro(ParametroDTO parametroDto) throws Exception {
         try{
             Parametro parametro = ParametroMapper.INSTANCE.dtoToEntity(parametroDto);
+            parametro.setFechaModifica(new Date());
             Parametro parametroRespuesta = dao.guardarParametro(parametro);
             parametroDto = ParametroMapper.INSTANCE.entityToDto(parametroRespuesta);
             return parametroDto;
