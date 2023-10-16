@@ -207,4 +207,43 @@ public class ArchivoXmlREST {
             throw new Exception(exc);
         }
     }
+    
+    
+    
+    @GET
+    @Path("/eliminarXmlCargado")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public ArchivoXmlDTO eliminarXmlCargado(@QueryParam(value = "idXml") Long idXml) throws Exception {
+        try {
+            LOGGER.log(Level.INFO, "idXml: {0}", idXml);
+
+            ArchivoXmlDTO dto = service.eliminarXmlCargado(idXml);
+
+            return dto;
+            
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
+    
+    @POST
+    @Path("/guardarMiscelaneo")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public ArchivoXmlDTO guardarMiscelaneo(ArchivoXmlDTO dto) throws Exception {
+        try {
+            LOGGER.log(Level.INFO, "inicia guardarMiscelaneo: {0}");
+
+            dto = service.guardarMiscelaneo(dto);
+            
+            return dto;
+            
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            dto.setRespuesta("Error: " + exc.getMessage());
+            return dto;
+        }
+    }
 }

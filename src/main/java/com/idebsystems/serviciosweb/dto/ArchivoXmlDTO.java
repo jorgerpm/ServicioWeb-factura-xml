@@ -60,6 +60,9 @@ public class ArchivoXmlDTO {
     private String version;
     private Long idReembolso;
     
+    //para enviar al frontend
+    private String respuesta;
+    
 
     public String getEstadoSri() {
         return estadoSri;
@@ -390,10 +393,18 @@ public class ArchivoXmlDTO {
     public void setIdReembolso(Long idReembolso) {
         this.idReembolso = idReembolso;
     }
+
+    public String getRespuesta() {
+        return respuesta;
+    }
+
+    public void setRespuesta(String respuesta) {
+        this.respuesta = respuesta;
+    }
     
     @Override
     public String toString() {
-        return "ArchivoXmlDTO{" + "id=" + id + ", estadoSri=" + estadoSri + ", numeroAutorizacion=" + numeroAutorizacion + ", claveAcceso=" + claveAcceso + ", fechaAutorizacion=" + fechaAutorizacion + ", fechaEmision=" + fechaEmision + ", ambiente=" + ambiente + ", comprobante=" + comprobante + ", idUsuarioCarga=" + idUsuarioCarga + ", ubicacionArchivo=" + ubicacionArchivo + ", urlArchivo=" + urlArchivo + ", codigoJDProveedor=" + codigoJDProveedor + ", nombreArchivoXml=" + nombreArchivoXml + ", nombreArchivoPdf=" + nombreArchivoPdf + ", tipoDocumento=" + tipoDocumento + ", exportado=" + exportado + ", nombreUsuario=" + nombreUsuario + ", totalRegistros=" + totalRegistros + ", razonSocial=" + razonSocial + ", razonAnulacion=" + razonAnulacion + '}';
+        return "ArchivoXmlDTO{" + "id=" + id + ", estadoSri=" + estadoSri + ", numeroAutorizacion=" + numeroAutorizacion + ", claveAcceso=" + claveAcceso + ", fechaAutorizacion=" + fechaAutorizacion + ", fechaEmision=" + fechaEmision + ", ambiente=" + ambiente + ", idUsuarioCarga=" + idUsuarioCarga + ", ubicacionArchivo=" + ubicacionArchivo + ", urlArchivo=" + urlArchivo + ", codigoJDProveedor=" + codigoJDProveedor + ", nombreArchivoXml=" + nombreArchivoXml + ", nombreArchivoPdf=" + nombreArchivoPdf + ", tipoDocumento=" + tipoDocumento + ", exportado=" + exportado + ", nombreUsuario=" + nombreUsuario + ", totalRegistros=" + totalRegistros + ", razonSocial=" + razonSocial + ", razonAnulacion=" + razonAnulacion + '}';
     } 
             
 }

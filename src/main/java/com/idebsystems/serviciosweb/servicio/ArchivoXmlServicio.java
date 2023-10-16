@@ -178,7 +178,7 @@ public class ArchivoXmlServicio {
             ParametroDAO paramDao = new ParametroDAO();
             List<Parametro> listaParams = paramDao.listarParametros();
             //IP con la url del sistema
-            Parametro paramUrlSist = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("URL_SISTEMA")).findAny().get();
+            //Parametro paramUrlSist = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("URL_SISTEMA")).findAny().get();
 
             Decoder decoder = Base64.getDecoder();
             byte[] fileBytes = decoder.decode(xmlB64);
@@ -294,7 +294,7 @@ public class ArchivoXmlServicio {
 
                 //aqui crear la estructura de las carpetas.
                 String pathCarpetas = crearEstructuraCarpetas(data, paramCarpeta);
-                data.setUrlArchivo(paramUrlSist.getValor() + pathCarpetas);
+                data.setUrlArchivo(/*paramUrlSist.getValor() +*/ pathCarpetas);
                 setPathCarpetas(pathCarpetas);
 
                 data.setEstadoSistema("CARGADO");
@@ -737,6 +737,10 @@ public class ArchivoXmlServicio {
                     tipoDocumento = "NOTA_VENTA";
                     break;
                 }
+                case "MS": {
+                    tipoDocumento = "MISCELANEO";
+                    break;
+                }
                 default: {
                     tipoDocumento = tipoDocumentoSri;
                 }
@@ -831,6 +835,58 @@ public class ArchivoXmlServicio {
             
         }catch(Exception exc){
             LOGGER.log(Level.SEVERE, null, exc);
+        }
+    }
+
+    public ArchivoXmlDTO eliminarXmlCargado(Long idXml) throws Exception {
+        try{
+
+            ArchivoXml ent = dao.eliminarXmlCargado(idXml);
+            
+            ArchivoXmlDTO dto = ArchivoXmlMapper.INSTANCE.entityToDto(ent);
+            
+            return dto;
+            
+        }catch(Exception exc){
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
+    
+    
+    public ArchivoXmlDTO guardarMiscelaneo(ArchivoXmlDTO dto) throws Exception {
+        try{
+            //aqui crear la estructura de las carpetas. solo si si cargaron un archivo en la pantalla
+            //en esta pantalla solo suben un archivo que es el respaldo, por eso
+            //se toma solo el nombrePDF
+            String pathCarpetasPdf = null;
+            if(Objects.nonNull(dto.getNombreArchivoPdf())){
+                ParametroDAO paramDao = new ParametroDAO();
+                List<Parametro> listaParams = paramDao.listarParametros();
+                Parametro paramCarpeta = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("CARPETA_ARCHIVOS")).findAny().get();
+    //            Parametro paramUrlSist = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("URL_SISTEMA")).findAny().get();
+
+                pathCarpetasPdf = crearEstructuraCarpetas(dto, paramCarpeta);
+                dto.setUrlArchivo(/*paramUrlSist.getValor() +*/ pathCarpetasPdf);
+            }
+                
+            ArchivoXml ent = ArchivoXmlMapper.INSTANCE.dtoToEntity(dto);
+            
+            String resp = dao.guardarDatosArchivo(ent);
+            
+            dto = ArchivoXmlMapper.INSTANCE.entityToDto(ent);
+            
+            if(Objects.nonNull(pathCarpetasPdf)){
+                dto.setUbicacionArchivo(pathCarpetasPdf);
+            }
+            
+            dto.setRespuesta(resp);
+            
+            return dto;
+            
+        }catch(Exception exc){
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
         }
     }
     

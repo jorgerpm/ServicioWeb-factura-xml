@@ -508,4 +508,32 @@ public class ArchivoXmlDAO extends Persistencia {
             closeEntityManager();
         }
     }
+    
+    public ArchivoXml eliminarXmlCargado(Long idXml) throws Exception {
+        try {
+
+            getEntityManager();
+
+            em.getTransaction().begin();
+
+            ArchivoXml ent = em.find(ArchivoXml.class, idXml);
+            
+            em.remove(ent);
+
+            em.getTransaction().commit();
+            
+            return ent;
+
+        } catch (SQLException exc) {
+            rollbackTransaction();
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } catch (Exception exc) {
+            rollbackTransaction();
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
 }
