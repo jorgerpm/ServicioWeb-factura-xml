@@ -88,6 +88,8 @@ public class JsonFacturaServicio {
 //            infoFactura.setSeguroInternacional(Double.NEGATIVE_INFINITY);
 //            infoFactura.setSeguroInternacional(Double.NEGATIVE_INFINITY);
             infoFactura.setTipoIdentificacionComprador(dto.getTipoIdentCliente());
+            if(Objects.nonNull(dto.getDireccionCliente()) && !dto.getDireccionCliente().isBlank())
+                infoFactura.setDireccionComprador(dto.getDireccionCliente());
 //            infoFactura.setTotalBaseImponibleReembolso(Double.POSITIVE_INFINITY);
 //            infoFactura.setTotalComprobantesReembolso(Double.MIN_NORMAL);
             
@@ -140,14 +142,27 @@ public class JsonFacturaServicio {
                 detalle.setDescuento(Double.parseDouble(obj.getDescuento()));
 
                 List<Impuesto> listaImpuestos = new ArrayList<>();
-                Impuesto impuesto = new Impuesto();
-                impuesto.setBaseImponible(Double.parseDouble(obj.getValorTotal()));
-                impuesto.setCodigo("2");
-                impuesto.setCodigoPorcentaje("2");
-                impuesto.setTarifa(12);
-                impuesto.setValor(Double.parseDouble(obj.getValorTotal()) * 12/100);
                 
-                listaImpuestos.add(impuesto);
+                if(Objects.nonNull(dto.getSubtotal()) && !dto.getSubtotal().isEmpty() && Double.parseDouble(dto.getSubtotal()) > 0 ){
+                    Impuesto impuesto = new Impuesto();
+                    impuesto.setBaseImponible(Double.parseDouble(obj.getValorTotal()));
+                    impuesto.setCodigo("2");
+                    impuesto.setCodigoPorcentaje("2");
+                    impuesto.setTarifa(12);
+                    impuesto.setValor(Double.parseDouble(obj.getValorTotal()) * 12/100);
+
+                    listaImpuestos.add(impuesto);
+                }
+                else{
+                    Impuesto impuesto = new Impuesto();
+                    impuesto.setBaseImponible(Double.parseDouble(obj.getValorTotal()));
+                    impuesto.setCodigo("2");
+                    impuesto.setCodigoPorcentaje("0");
+                    impuesto.setTarifa(0);
+                    impuesto.setValor(0D);
+
+                    listaImpuestos.add(impuesto);
+                }
 
                 Impuestos impuestos = new Impuestos();
                 impuestos.setImpuesto(listaImpuestos);

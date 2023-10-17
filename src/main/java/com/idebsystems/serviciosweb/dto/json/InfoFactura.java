@@ -17,6 +17,7 @@ public class InfoFactura {
     private Double totalImpuestoReembolso;
     private String identificacionComprador;
     private String razonSocialComprador;
+    private String direccionComprador;
     private Integer contribuyenteEspecial;
     private String obligadoContabilidad;
     private String fechaEmision;
@@ -229,6 +230,14 @@ public class InfoFactura {
 
     public void setTotalSinImpuestos(Double totalSinImpuestos) {
         this.totalSinImpuestos = totalSinImpuestos;
+    }
+
+    public String getDireccionComprador() {
+        return direccionComprador;
+    }
+
+    public void setDireccionComprador(String direccionComprador) {
+        this.direccionComprador = direccionComprador;
     }
     
     
