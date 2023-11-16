@@ -115,7 +115,10 @@ public class ReporteREST {
             return service.generarReporteFirma(reporte, ids, tiposGasto, tipoReembolso, idUsuario, idAprobador, listaAsistentes, reembDto, claveFirma);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
-            throw new Exception(exc);
+//            throw new Exception(exc);
+            ReporteDTO dto = new ReporteDTO();
+            dto.setRespuesta(exc.getMessage().replace("java.lang.Exception:", ""));
+            return dto;
         }
     }
 }

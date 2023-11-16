@@ -48,6 +48,7 @@ public class RolREST {
     public RolDTO guardarRol(RolDTO rolDto) throws Exception {
         try {
             //guardar en la bdd el rol
+            LOGGER.log(Level.INFO, "guarda rol: {0}", rolDto);
             return service.guardarRol(rolDto);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);

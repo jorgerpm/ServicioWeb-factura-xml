@@ -8,7 +8,7 @@ package com.idebsystems.serviciosweb.dao;
 import com.idebsystems.serviciosweb.dto.ArchivoXmlDTO;
 import com.idebsystems.serviciosweb.entities.ArchivoXml;
 import com.idebsystems.serviciosweb.entities.Usuario;
-import com.idebsystems.serviciosweb.mappers.ArchivoXmlMapper;
+import com.idebsystems.serviciosweb.servicio.ArchivoXmlServicio;
 import com.idebsystems.serviciosweb.util.Persistencia;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -84,13 +84,13 @@ public class ArchivoXmlDAO extends Persistencia {
     }
     
     public List<Object> listarPorFecha(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
-            String claveAcceso, String ruc, String tipoDocumento, String estadoSistema,
-            Integer desde, Integer hasta, boolean seleccionados, long idReembolso) throws Exception {
+            String claveAcceso, String ruc, String tipoDocumento, String estadoSistema,Integer desde, Integer hasta, 
+            boolean seleccionados, long idReembolso, String exportado, String rucEmisor) throws Exception {
         try {
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
 
-            String sql = "FROM ArchivoXml ax "; //WHERE ax.fechaEmision between :fechaInicio AND :fechaFinal";
+            String sql = "SELECT ax FROM ArchivoXml ax ";
             
             
             if(Objects.nonNull(claveAcceso) && !claveAcceso.isBlank()){
@@ -110,15 +110,21 @@ public class ArchivoXmlDAO extends Persistencia {
                 sql += " AND ax.tipoDocumento = :tipoDocumento";
             }
             if(Objects.nonNull(ruc) && !ruc.isBlank()){
-                sql += " AND ax.comprobante like '%"+ruc.toUpperCase()+"%'";
+                sql += " AND ax.comprobante LIKE '%"+ruc.toUpperCase()+"%'";
             }
             if(Objects.nonNull(estadoSistema) && !estadoSistema.isBlank()){
                 sql += " AND ax.estadoSistema = :estadoSistema";
             }
+            if(Objects.nonNull(exportado) && !exportado.isBlank()){
+                sql += " AND ax.exportado = :exportado";
+            }
+            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
+                sql += " AND ax.rucEmisor = :rucEmisor";
+            }
             
             sql += " order by ax.fechaEmision";
             
-            Query query = em.createQuery(sql);
+            Query query = em.createQuery(sql, ArchivoXml.class);
                     
             if(Objects.nonNull(claveAcceso) && !claveAcceso.isBlank()){
                 query.setParameter("claveAcceso", claveAcceso);
@@ -140,6 +146,13 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(estadoSistema) && !estadoSistema.isBlank()){
                 query.setParameter("estadoSistema", estadoSistema);
             }
+            if(Objects.nonNull(exportado) && !exportado.isBlank()){
+                query.setParameter("exportado", Boolean.parseBoolean(exportado));
+            }
+            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
+                query.setParameter("rucEmisor", rucEmisor);
+            }
+
 
             //para obtener el total de los registros a buscar
             Integer totalRegistros = query.getResultList().size();
@@ -163,15 +176,15 @@ public class ArchivoXmlDAO extends Persistencia {
 
             //aqui si el valor de "hasta" es mayor a mil, se los debe marcar como que fueron exportados.
             //esta parte es asi porque se les llama para exportar a excel, y aqui se les debe marcar
-            if(hasta > 1000 && !seleccionados){
-                em.getTransaction().begin();
-                for(ArchivoXml xml : listaPorFecha) {
-                    LOGGER.log(Level.INFO, "se va a actualizar el exportado a true {0}", xml.getId());
-                    xml.setExportado(true);
-                    em.merge(xml);
-                }
-                em.getTransaction().commit();
-            }
+//            if(hasta > 1000 && !seleccionados){
+//                em.getTransaction().begin();
+//                for(ArchivoXml xml : listaPorFecha) {
+//                    LOGGER.log(Level.INFO, "se va a actualizar el exportado a true {0}", xml.getId());
+//                    xml.setExportado(true);
+//                    em.merge(xml);
+//                }
+//                em.getTransaction().commit();
+//            }
 
             return respuesta;
 
@@ -284,8 +297,8 @@ public class ArchivoXmlDAO extends Persistencia {
     
     
     public List<Object> listarConDetalles(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
-            String claveAcceso, String ruc, String tipoDocumento, String estadoSistema,
-            Integer desde, Integer hasta, boolean seleccionados, long idReembolso) throws Exception {
+            String claveAcceso, String ruc, String tipoDocumento, String estadoSistema, Integer desde, Integer hasta, 
+            boolean seleccionados, long idReembolso, String exportado, String rucEmisor) throws Exception {
         try {
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
@@ -315,6 +328,12 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(estadoSistema) && !estadoSistema.isBlank()){
                 sql += " AND a.estadoSistema = ?estadoSistema";
             }
+            if(Objects.nonNull(exportado) && !exportado.isBlank()){
+                sql += " AND a.exportado = ?exportado";
+            }
+            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
+                sql += " AND a.rucEmisor = ?rucEmisor";
+            }
             
             sql += " order by a.fechaEmision";
             
@@ -342,6 +361,13 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(estadoSistema) && !estadoSistema.isBlank()){
                 query.setParameter("estadoSistema", estadoSistema);
             }
+            if(Objects.nonNull(exportado) && !exportado.isBlank()){
+                query.setParameter("exportado", Boolean.parseBoolean(exportado));
+            }
+            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
+                query.setParameter("rucEmisor", rucEmisor);
+            }
+            
 
             //para obtener el total de los registros a buscar
             Integer totalRegistros = query.getResultList().size();
@@ -394,7 +420,9 @@ public class ArchivoXmlDAO extends Persistencia {
                     xml.setPorcentajeRetener(obj[29] != null ? obj[29].toString() : null);
                     xml.setValorRetenido(obj[30] != null ? obj[30].toString() : null);
                     xml.setIdReembolso(obj[31] != null ? (Long)obj[31] : null);
-                    
+                    xml.setRucEmisor(obj[32] != null ? obj[32].toString() : null);
+                    xml.setNumeroReembolso(obj[33] != null ? obj[33].toString() : null);
+                    xml.setTipoReembolso(obj[34] != null ? obj[34].toString() : null);
 
                     listaPorFecha.add(xml);
                 }catch(Exception exc){
@@ -419,9 +447,9 @@ public class ArchivoXmlDAO extends Persistencia {
                 em.getTransaction().begin();
                 for(ArchivoXmlDTO dto : listaPorFecha) {
                     LOGGER.log(Level.INFO, "se va a actualizar el exportado a true {0}", dto.getId());
-                    dto.setExportado(true);
                     
-                    ArchivoXml archivoXml = ArchivoXmlMapper.INSTANCE.dtoToEntity(dto);
+                    ArchivoXml archivoXml = em.find(ArchivoXml.class, dto.getId());
+                    archivoXml.setExportado(true);
                     
                     em.merge(archivoXml);
                 }
@@ -534,6 +562,43 @@ public class ArchivoXmlDAO extends Persistencia {
             throw new Exception(exc);
         } finally {
             closeEntityManager();
+        }
+    }
+    
+    private String formarSqlRucEmpresa(String rucEmpresa){
+        try{
+            
+            return " AND ( "
++" ( "
++" cast(comprobante as json) -> '"+ArchivoXmlServicio.TAG_FACTURA+"' is not null "
++" and cast (comprobante as json) -> '"+ArchivoXmlServicio.TAG_FACTURA+"'->'infoTributaria'->>'ruc' = '"+rucEmpresa+"' "
++" ) "
++" or "
++" ( "
++" cast(comprobante as json) -> '"+ArchivoXmlServicio.TAG_RETENCION+"' is not null "
++" and cast (comprobante as json) -> '"+ArchivoXmlServicio.TAG_RETENCION+"'->'infoTributaria'->>'ruc' = '"+rucEmpresa+"' "
++" ) "
++" or "
++" ( "
++" cast(comprobante as json) -> '"+ArchivoXmlServicio.TAG_NOTACREDITO+"' is not null "
++" and cast (comprobante as json) -> '"+ArchivoXmlServicio.TAG_NOTACREDITO+"'->'infoTributaria'->>'ruc' = '"+rucEmpresa+"' "
++" ) "
++" or "
++" ( "
++" cast(comprobante as json) -> '"+ArchivoXmlServicio.TAG_NOTADEBITO+"' is not null "
++" and cast (comprobante as json) -> '"+ArchivoXmlServicio.TAG_NOTADEBITO+"'->'infoTributaria'->>'ruc' = '"+rucEmpresa+"' "
++" ) "
++" or "
++" ( "
++" cast(comprobante as json) -> '"+ArchivoXmlServicio.TAG_GUIAREMISION+"' is not null "
++" and cast (comprobante as json) -> '"+ArchivoXmlServicio.TAG_GUIAREMISION+"'->'infoTributaria'->>'ruc' = '"+rucEmpresa+"' "
++" ) "
++" ) ";
+            
+        }
+        catch(Exception exc){
+            LOGGER.log(Level.SEVERE, null, exc);
+            return "";
         }
     }
 }

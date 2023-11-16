@@ -5,14 +5,19 @@
 package com.idebsystems.serviciosweb.servicio;
 
 import com.idebsystems.serviciosweb.dao.RolDAO;
+import com.idebsystems.serviciosweb.dao.UsuarioDAO;
 import com.idebsystems.serviciosweb.dto.RolDTO;
 import com.idebsystems.serviciosweb.entities.Rol;
+import com.idebsystems.serviciosweb.entities.RolEmpresa;
 import com.idebsystems.serviciosweb.mappers.RolMapper;
+import com.idebsystems.serviciosweb.mappers.UsuarioMapper;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -37,9 +42,25 @@ public class RolServicio {
                 listaRolDto.add(rolDto);
             }*/
             
+            UsuarioDAO udao = new UsuarioDAO();
+            
             listaRol.forEach(rol->{
                 RolDTO rolDto = new RolDTO();
                 rolDto = RolMapper.INSTANCE.entityToDto(rol);
+                try{
+                    rolDto.setUsuario(UsuarioMapper.INSTANCE.entityToDto(udao.buscarUsuarioPorId(rol.getIdUsuarioModifica())));
+                    
+                    List<RolEmpresa> lista = dao.buscarRolEmpresasPorRol(rol.getId());
+                    List<String> listaIdEmpresas = new ArrayList();
+                    lista.forEach(re -> {
+                        listaIdEmpresas.add(String.valueOf(re.getIdEmpresa()));
+                    });
+                    rolDto.setListaIdEmpresas(listaIdEmpresas.stream().map(l->String.valueOf(l)).collect(Collectors.joining(",")) );
+                
+                }catch(Exception exc){
+                    LOGGER.log(Level.SEVERE, null, exc);
+                }
+                        
                 listaRolDto.add(rolDto);
             });
             
@@ -59,8 +80,21 @@ public class RolServicio {
     public RolDTO guardarRol(RolDTO rolDto) throws Exception {
         try{
             Rol rol = RolMapper.INSTANCE.dtoToEntity(rolDto);
-            Rol rolRespuesta = dao.guardarRol(rol);
+            rol.setFechaModifica(new Date());
+            
+            List<RolEmpresa> listRolEmp = new ArrayList();
+            if(!rolDto.getListaIdEmpresas().isEmpty()){
+                String[] listEmp = rolDto.getListaIdEmpresas().split(",");
+                for(String id : listEmp){
+                    RolEmpresa re = new RolEmpresa();
+                    re.setIdEmpresa(Long.parseLong(id));
+                    listRolEmp.add(re);
+                }
+            }
+            
+            Rol rolRespuesta = dao.guardarRol(rol, listRolEmp);
             rolDto = RolMapper.INSTANCE.entityToDto(rolRespuesta);
+            
             return rolDto;
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
@@ -76,6 +110,15 @@ public class RolServicio {
             
             if(Objects.nonNull(rol)){
                 RolDTO rolDto = RolMapper.INSTANCE.entityToDto(rol);
+                
+                List<RolEmpresa> lista = dao.buscarRolEmpresasPorRol(rolDto.getId());
+                
+                List<String> listaIdEmpresas = new ArrayList();
+                lista.forEach(re -> {
+                    listaIdEmpresas.add(String.valueOf(re.getIdEmpresa()));
+                });
+                rolDto.setListaIdEmpresas(listaIdEmpresas.stream().map(l->String.valueOf(l)).collect(Collectors.joining(",")) );
+                
                 return rolDto;
             }
             else{

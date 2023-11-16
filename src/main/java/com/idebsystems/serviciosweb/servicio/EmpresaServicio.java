@@ -56,4 +56,23 @@ public class EmpresaServicio {
             throw new Exception(exc);
         }
     }
+    
+    public List<EmpresaDTO> listarEmpresasPorRol(long idRol) throws Exception {
+        try {
+            List<EmpresaDTO> lista = new ArrayList();
+            
+            List<Empresa> data = dao.listarEmpresasPorRol(idRol);
+            
+            data.forEach(ent ->{
+                EmpresaDTO dto = EmpresaMapper.INSTANCE.entityToDto(ent);
+                lista.add(dto);
+            });
+
+            return lista;
+            
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
 }

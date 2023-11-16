@@ -7,8 +7,10 @@ package com.idebsystems.serviciosweb.servicio;
 
 import com.idebsystems.serviciosweb.dao.ArchivoXmlDAO;
 import com.idebsystems.serviciosweb.dao.FacturaFisicaDAO;
+import com.idebsystems.serviciosweb.dto.ArchivoXmlDTO;
 import com.idebsystems.serviciosweb.dto.FacturaFisicaDTO;
 import com.idebsystems.serviciosweb.entities.ArchivoXml;
+import com.idebsystems.serviciosweb.mappers.ArchivoXmlMapper;
 import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -76,10 +78,25 @@ public class FacturaFisicaServicio {
 //            xml.setUrlArchivo(urlArchivo);
 //            xml.setUsuarioAnula(usuarioAnula);
             
+            //si cargaron algun archivo en la pantalla de la factura fisica
+            //aqui se debe crear el path de las carpetas para guardar
+            if(Objects.nonNull(dto.getNombreArchivo()) && !dto.getNombreArchivo().isBlank()){
+                ArchivoXmlDTO xmlDto = ArchivoXmlMapper.INSTANCE.entityToDto(xml);
+                xmlDto.setRazonSocial(dto.getProveedor());
+                ArchivoXmlServicio srvxml = new ArchivoXmlServicio();
+                String pathcarpetas = srvxml.crearEstructuraCarpetas(xmlDto, null);
+                xml.setUrlArchivo(pathcarpetas);
+                xml.setNombreArchivoPdf(dto.getNombreArchivo());
+                
+                //aqui para el retorno, para que se guarde en disco
+                dto.setPathArchivo(pathcarpetas);
+            }
+            
             xmlDao.guardarDatosArchivo(xml);
             
             dto.setId(xml.getId());
             dto.setRespuesta("OK");
+            
             
             return dto;
             

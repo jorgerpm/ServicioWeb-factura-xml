@@ -6,11 +6,13 @@
 package com.idebsystems.serviciosweb.servicio;
 
 import com.idebsystems.serviciosweb.dao.ParametroDAO;
+import com.idebsystems.serviciosweb.dao.TipoReembolsoDAO;
 import com.idebsystems.serviciosweb.dao.UsuarioDAO;
 import com.idebsystems.serviciosweb.dto.UsuarioDTO;
 import com.idebsystems.serviciosweb.entities.ArchivoXml;
 import com.idebsystems.serviciosweb.entities.DocumentoReembolsos;
 import com.idebsystems.serviciosweb.entities.Parametro;
+import com.idebsystems.serviciosweb.entities.TipoReembolso;
 import com.idebsystems.serviciosweb.entities.Usuario;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -172,7 +174,7 @@ public class CorreoServicio {
             }
             
             for(Provider p : Security.getProviders()){
-                System.out.println(p.getName());
+//                System.out.println(p.getName());
             }
             
             msg.setContent(multipart);
@@ -266,8 +268,12 @@ public class CorreoServicio {
                     List<File> archivosAdjuntos = new ArrayList<>();
                     archivosAdjuntos.add(fileCot);
                     
+                    //obtener los tipos de reembolso en base al id
+                    TipoReembolsoDAO trdao = new TipoReembolsoDAO();
+                    TipoReembolso tirem = trdao.getTipoReembolsoPorId(Long.parseLong(doc.getTipoReembolso()));
+                    
                     String asuntoMail = pasunto.getValor();
-                    asuntoMail = asuntoMail.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+                    asuntoMail = asuntoMail.replace("[tipoReembolso]", tirem.getTipo());
                     asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
                     
                     //transformar el mensaje con los datos
@@ -279,7 +285,7 @@ public class CorreoServicio {
                         mensajeText = mensajeText.replace("[fechaAprueba]", sdf.format(doc.getFechaAutoriza()));
                     mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
                     mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
-                    mensajeText = mensajeText.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+                    mensajeText = mensajeText.replace("[tipoReembolso]", tirem.getTipo());
                     mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
 
                     //esta parte es para controlar si el correo se envia al jefe del usuario, que es el aporbador , o se envia 
@@ -323,8 +329,12 @@ public class CorreoServicio {
                     Parametro pasunto = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("ASUNTOMAIL_RECHAZA_REEMBOLSO")).findAny().get();
                     Parametro paramMsm = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("MENSAJEMAIL_RECHAZA_REEMBOLSO")).findAny().get();
                     
+                    //obtener los tipos de reembolso en base al id
+                    TipoReembolsoDAO trdao = new TipoReembolsoDAO();
+                    TipoReembolso tirem = trdao.getTipoReembolsoPorId(Long.parseLong(doc.getTipoReembolso()));
+                    
                     String asuntoMail = pasunto.getValor();
-                    asuntoMail = asuntoMail.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+                    asuntoMail = asuntoMail.replace("[tipoReembolso]", tirem.getTipo());
                     asuntoMail = asuntoMail.replace("[estado]", doc.getEstado());
                     asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
                     
@@ -337,7 +347,7 @@ public class CorreoServicio {
                         mensajeText = mensajeText.replace("[fechaAprueba]", sdf.format(doc.getFechaAutoriza()));
                     mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
                     mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
-                    mensajeText = mensajeText.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+                    mensajeText = mensajeText.replace("[tipoReembolso]", tirem.getTipo());
                     mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
                     
 
@@ -392,6 +402,11 @@ public class CorreoServicio {
             Parametro pasunto = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("ASUNTOMAIL_SOLICITA_JUSTIFICACION")).findAny().get();
             Parametro paramMsm = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("MENSAJEMAIL_SOLICITA_JUSTIFICACION")).findAny().get();
 
+            //obtener los tipos de reembolso en base al id
+            TipoReembolsoDAO trdao = new TipoReembolsoDAO();
+            TipoReembolso tirem = trdao.getTipoReembolsoPorId(Long.parseLong(doc.getTipoReembolso()));
+                    
+                    
             //transformar el mensaje con los datos
             String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
             mensajeText = mensajeText.replace("[estado]", doc.getEstado());
@@ -401,12 +416,12 @@ public class CorreoServicio {
                 mensajeText = mensajeText.replace("[fechaAprueba]", sdf.format(doc.getFechaAutoriza()));
             mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
             mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
-            mensajeText = mensajeText.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+            mensajeText = mensajeText.replace("[tipoReembolso]", tirem.getTipo());
             mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
             
 
             String asuntoMail = pasunto.getValor();
-            asuntoMail = asuntoMail.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+            asuntoMail = asuntoMail.replace("[tipoReembolso]", tirem.getTipo());
             asuntoMail = asuntoMail.replace("[estado]", doc.getEstado());
             asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
             
@@ -443,6 +458,11 @@ public class CorreoServicio {
             Parametro paramMsm = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("MENSAJEMAIL_CARGA_JUSTIFICACION")).findAny().get();
             Parametro paramDestino = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("DESTINOMAIL_CARGA_JUSTIFICACION")).findAny().get();
 
+            //obtener los tipos de reembolso en base al id
+            TipoReembolsoDAO trdao = new TipoReembolsoDAO();
+            TipoReembolso tirem = trdao.getTipoReembolsoPorId(Long.parseLong(doc.getTipoReembolso()));
+            
+            
             //transformar el mensaje con los datos
             String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
             mensajeText = mensajeText.replace("[estado]", doc.getEstado());
@@ -452,13 +472,13 @@ public class CorreoServicio {
                 mensajeText = mensajeText.replace("[fechaAprueba]", sdf.format(doc.getFechaAutoriza()));
             mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
             mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
-            mensajeText = mensajeText.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+            mensajeText = mensajeText.replace("[tipoReembolso]", tirem.getTipo());
             mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
             
             
             //asunto del correo
             String asuntoMail = pasunto.getValor();
-            asuntoMail = asuntoMail.replace("[tipoReembolso]", (doc.getTipoReembolso().equalsIgnoreCase("VIAJES") ? "LIQUIDACION DE GASTO DE VIAJES" : (doc.getTipoReembolso().equalsIgnoreCase("GASTOS") ? "REEMBOLSO DE GASTOS" : doc.getTipoReembolso())));
+            asuntoMail = asuntoMail.replace("[tipoReembolso]", tirem.getTipo());
             asuntoMail = asuntoMail.replace("[estado]", doc.getEstado());
             asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
             

@@ -15,6 +15,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -50,6 +51,21 @@ public class EmpresaREST {
         try {
             //guardar en la bdd el parametro
             return service.guardarEmpresa(dto);
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
+    
+    
+    @GET
+    @Path("/listarEmpresasPorRol")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<EmpresaDTO> listarEmpresasPorRol(@QueryParam(value = "idRol") long idRol) throws Exception {
+        try {
+            //buscar en la bdd los parametroes
+            return service.listarEmpresasPorRol(idRol);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);

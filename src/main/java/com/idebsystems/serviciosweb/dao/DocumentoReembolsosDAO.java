@@ -27,16 +27,15 @@ public class DocumentoReembolsosDAO extends Persistencia {
     private static final Logger LOGGER = Logger.getLogger(DocumentoReembolsosDAO.class.getName());
     
     public List<Object> listarDocumentos(Date fechaInicio, Date fechaFinal, Long usuarioCarga, 
-            String estado, Integer desde, Integer hasta, Long idAprobador) throws Exception {
+            String estado, Integer desde, Integer hasta, Long idAprobador, String numeroRC, String tipoReembolso,
+            String numeroReembolso) throws Exception {
         try {
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
             
+            String sql = "FROM DocumentoReembolsos d WHERE d.id > 0 ";
             
-
-            String sql = "FROM DocumentoReembolsos d ";
-            sql += " where d.fechaCarga between :fechaInicio AND :fechaFinal";
-            
+            //el idAprobar y el usuariocarga son obligaorios como unicos como primer filtro
             if(Objects.nonNull(idAprobador)){
                 sql += " AND (d.idAprobador = :idAprobador OR d.usuarioCarga = :idAprobador)";
             }
@@ -44,16 +43,26 @@ public class DocumentoReembolsosDAO extends Persistencia {
                 sql += " AND d.usuarioCarga = :usuarioCarga";
             }
             
-            if(Objects.nonNull(estado) && !estado.isBlank()){
-                sql += " AND d.estado = :estado";
+            if(Objects.nonNull(numeroReembolso) && !numeroReembolso.isBlank()){
+                sql += " AND d.numeroReembolso = :numeroReembolso";
+            }
+            else{
+                sql += " AND d.fechaCarga between :fechaInicio AND :fechaFinal";
+                
+                if(Objects.nonNull(estado) && !estado.isBlank()){
+                    sql += " AND d.estado = :estado";
+                }
+                if(Objects.nonNull(numeroRC) && !numeroRC.isBlank()){
+                    sql += " AND d.numeroRC = :numeroRC";
+                }
+                if(Objects.nonNull(tipoReembolso) && !tipoReembolso.isBlank()){
+                    sql += " AND d.tipoReembolso = :tipoReembolso";
+                }
             }
             
             sql += " order by d.fechaCarga";
             
             Query query = em.createQuery(sql);
-            
-            query.setParameter("fechaInicio", fechaInicio);
-            query.setParameter("fechaFinal", fechaFinal);
             
             if(Objects.nonNull(idAprobador)){
                 query.setParameter("idAprobador", idAprobador);
@@ -62,10 +71,23 @@ public class DocumentoReembolsosDAO extends Persistencia {
                 query.setParameter("usuarioCarga", usuarioCarga);
             }
             
-            if(Objects.nonNull(estado) && !estado.isBlank()){
-                query.setParameter("estado", estado);
+            if(Objects.nonNull(numeroReembolso) && !numeroReembolso.isBlank()){
+                query.setParameter("numeroReembolso", numeroReembolso);
             }
+            else{
+                query.setParameter("fechaInicio", fechaInicio);
+                query.setParameter("fechaFinal", fechaFinal);
             
+                if(Objects.nonNull(estado) && !estado.isBlank()){
+                    query.setParameter("estado", estado);
+                }
+                if(Objects.nonNull(numeroRC) && !numeroRC.isBlank()){
+                    query.setParameter("numeroRC", numeroRC);
+                }
+                if(Objects.nonNull(tipoReembolso) && !tipoReembolso.isBlank()){
+                    query.setParameter("tipoReembolso", tipoReembolso);
+                }
+            }
             
             //para obtener el total de los registros a buscar
             Integer totalRegistros = query.getResultList().size();
@@ -137,6 +159,9 @@ public class DocumentoReembolsosDAO extends Persistencia {
         } catch (Exception exc) {
             rollbackTransaction();
             LOGGER.log(Level.SEVERE, null, exc);
+            if(exc.getMessage().contains("documentoreembolsos_numero_uk")){
+                throw new Exception("El n\u00famero de reembolso "+data.getNumeroReembolso()+" ya existe, revise la configuraci\u00f3n en la pantalla secuenciales de reembolsos.");
+            }
             throw new Exception(exc);
         } finally {
             closeEntityManager();

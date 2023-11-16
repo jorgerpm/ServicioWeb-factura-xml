@@ -8,6 +8,7 @@ package com.idebsystems.serviciosweb.servicio;
 import com.google.gson.Gson;
 import com.idebsystems.serviciosweb.dao.ArchivoXmlDAO;
 import com.idebsystems.serviciosweb.dao.ParametroDAO;
+import com.idebsystems.serviciosweb.dao.TipoReembolsoDAO;
 import com.idebsystems.serviciosweb.dao.UsuarioDAO;
 import com.idebsystems.serviciosweb.dto.AnularArchivoXmlDTO;
 import com.idebsystems.serviciosweb.dto.ArchivoSriDTO;
@@ -16,6 +17,7 @@ import com.idebsystems.serviciosweb.dto.ProveedorDTO;
 import com.idebsystems.serviciosweb.dto.ReporteDTO;
 import com.idebsystems.serviciosweb.entities.ArchivoXml;
 import com.idebsystems.serviciosweb.entities.Parametro;
+import com.idebsystems.serviciosweb.entities.TipoReembolso;
 import com.idebsystems.serviciosweb.entities.Usuario;
 import com.idebsystems.serviciosweb.mappers.ArchivoXmlMapper;
 import com.idebsystems.serviciosweb.util.FechaUtil;
@@ -149,7 +151,7 @@ public class ArchivoXmlServicio {
                     break;
                 }
                 case "05": {
-                    tag_xml = TAG_NOTACREDITO;
+                    tag_xml = TAG_NOTADEBITO;
                     tagInfoDoc = "infoNotaDebito";
                     break;
                 }
@@ -312,6 +314,7 @@ public class ArchivoXmlServicio {
                 data.setVersion(getVersion());
                 
                 ArchivoXml archivoXml = convertToEntity(data, idUsuario);
+                archivoXml.setRucEmisor(rucProveedor);//aqui se guarda el ruc que esta dentro del comprobante , este se obtuvo mas arriba
 
                 String claveAcceso = jsonObjComp.getJSONObject(tag_xml).getJSONObject(TAG_INFO_TRIBUTARIO).get(TAG_CLAVE_ACCESO).toString();
                 archivoXml.setClaveAcceso(claveAcceso);
@@ -425,7 +428,8 @@ public class ArchivoXmlServicio {
 
     public List<ArchivoXmlDTO> listarPorFecha(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
             String claveAcceso, String ruc, String tipoDocumento, String estadoSistema,
-            Integer desde, Integer hasta, boolean seleccionados, boolean conDetalles, long idReembolso) throws Exception {
+            Integer desde, Integer hasta, boolean seleccionados, boolean conDetalles, long idReembolso,
+            String exportado, String rucEmpresa) throws Exception {
         try {
 
             final List<ArchivoXmlDTO> listaArchivoXmlDto = new ArrayList();
@@ -434,11 +438,11 @@ public class ArchivoXmlServicio {
             
             if(conDetalles){
                 respuesta = dao.listarConDetalles(FechaUtil.fechaInicial(fechaInicio), FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, 
-                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso);
+                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso, exportado, rucEmpresa);
             }
             else{
                 respuesta = dao.listarPorFecha(FechaUtil.fechaInicial(fechaInicio), FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, 
-                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso);
+                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso, exportado, rucEmpresa);
             }
 
             //sacar los resultados retornados
@@ -447,6 +451,7 @@ public class ArchivoXmlServicio {
             //buscar los usuarios
             UsuarioDAO userDao = new UsuarioDAO();
             List<Usuario> listaUser = userDao.listarUsuarios();
+            
             
             if(conDetalles){
                 //aquie el respuesta.get(1) si trae del tipo ArchivoXmlDTO porque el select es de una function
@@ -461,10 +466,18 @@ public class ArchivoXmlServicio {
                     archivoXmlDto.setTipoDocumentoTexto(crearTipoDocumentoTexto(archivoXmlDto.getTipoDocumento()));
                    
                     listaArchivoXmlDto.add(archivoXmlDto);
+                    
                 });
             }
             else{
+                //obtener los tipos de reembolsos
+                TipoReembolsoDAO trd = new TipoReembolsoDAO();
+                List<TipoReembolso> listTiposReem = trd.listarTipoReembolso(null);
+            
                 List<ArchivoXml> listaArchivoXml = (List<ArchivoXml>) respuesta.get(1);
+                
+                LOGGER.log(Level.INFO, "tamanio listaArchivoXml: {0}", listaArchivoXml.size());
+                
                 listaArchivoXml.forEach(archivoXml -> {
                     ArchivoXmlDTO archivoXmlDto = new ArchivoXmlDTO();
                     archivoXmlDto = ArchivoXmlMapper.INSTANCE.entityToDto(archivoXml);
@@ -475,8 +488,16 @@ public class ArchivoXmlServicio {
                     archivoXmlDto.setTotalRegistros(totalRegistros);
 
                     archivoXmlDto.setTipoDocumentoTexto(crearTipoDocumentoTexto(archivoXmlDto.getTipoDocumento()));
-
+                    
+                    if(archivoXml.getReembolso() != null){
+//                        LOGGER.log(Level.INFO, "archivoXml.getNumeroReembolso(): {0}", archivoXml.getReembolso().getNumeroReembolso());
+                        archivoXmlDto.setNumeroReembolso(archivoXml.getReembolso().getNumeroReembolso());
+                        TipoReembolso entTR = listTiposReem.stream().filter(tr -> tr.getId() == Long.parseLong(archivoXml.getReembolso().getTipoReembolso())).findAny().orElse(new TipoReembolso());
+                        archivoXmlDto.setTipoReembolso(entTR.getTipo());
+                    }
+                    
                     listaArchivoXmlDto.add(archivoXmlDto);
+                    
                 });
             }
 
@@ -637,7 +658,7 @@ public class ArchivoXmlServicio {
         }
     }
 
-    private String crearEstructuraCarpetas(ArchivoXmlDTO data, Parametro paramCarpeta) throws Exception {
+    public String crearEstructuraCarpetas(ArchivoXmlDTO data, Parametro paramCarpeta) throws Exception {
         try {
 //    anio
 //         mes
@@ -887,6 +908,54 @@ public class ArchivoXmlServicio {
         }catch(Exception exc){
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
+        }
+    }
+
+    private boolean filtrarPorRucEmpresa(String rucEmpresa, String tipoDocumentoSri, String comprobante){
+        try{
+            
+            JSONObject json = new JSONObject(comprobante);
+            JSONObject jsonTipoDoc = null;
+            
+            switch (tipoDocumentoSri) {
+                case "01": {
+                    jsonTipoDoc = json.getJSONObject(TAG_FACTURA);
+                    break;
+                }
+                case "04": {
+                    jsonTipoDoc = json.getJSONObject(TAG_NOTACREDITO);
+                    break;
+                }
+                case "05": {
+                    jsonTipoDoc = json.getJSONObject(TAG_NOTADEBITO);
+                    break;
+                }
+                case "06": {
+                    jsonTipoDoc = json.getJSONObject(TAG_GUIAREMISION);
+                    break;
+                }
+                case "07": {
+                    jsonTipoDoc = json.getJSONObject(TAG_RETENCION);
+                    break;
+                }
+                default: {
+                    jsonTipoDoc = json.getJSONObject(TAG_FACTURA);
+                }
+            }
+            
+            
+            if(jsonTipoDoc.has(TAG_INFO_TRIBUTARIO)){
+                JSONObject jsonInfo = jsonTipoDoc.getJSONObject(TAG_INFO_TRIBUTARIO);
+                if(jsonInfo.get(TAG_RUC).toString().equalsIgnoreCase(rucEmpresa)){
+                    return true;
+                }
+            }
+            
+            return false;
+            
+        }catch(Exception exc){
+            LOGGER.log(Level.SEVERE, null, exc);
+            return false;
         }
     }
     

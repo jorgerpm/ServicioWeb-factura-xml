@@ -5,9 +5,11 @@
 package com.idebsystems.serviciosweb.servicio;
 
 import com.idebsystems.serviciosweb.dao.ParametroDAO;
+import com.idebsystems.serviciosweb.dao.UsuarioDAO;
 import com.idebsystems.serviciosweb.dto.ParametroDTO;
 import com.idebsystems.serviciosweb.entities.Parametro;
 import com.idebsystems.serviciosweb.mappers.ParametroMapper;
+import com.idebsystems.serviciosweb.mappers.UsuarioMapper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,9 +31,18 @@ public class ParametroServicio {
             
             List<Parametro> listaParametro = dao.listarParametros();
             
+            UsuarioDAO udao = new UsuarioDAO();
+            
             listaParametro.forEach(parametro->{
                 ParametroDTO parametroDto = new ParametroDTO();
                 parametroDto = ParametroMapper.INSTANCE.entityToDto(parametro);
+                
+                try{
+                    parametroDto.setUsuario(UsuarioMapper.INSTANCE.entityToDto(udao.buscarUsuarioPorId(parametro.getIdUsuarioModifica())));
+                }catch(Exception exc){
+                    LOGGER.log(Level.SEVERE, null, exc);
+                }
+                
                 listaParametroDto.add(parametroDto);
             });
 

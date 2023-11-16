@@ -5,6 +5,7 @@
 package com.idebsystems.serviciosweb.dao;
 
 import com.idebsystems.serviciosweb.entities.Rol;
+import com.idebsystems.serviciosweb.entities.RolEmpresa;
 import com.idebsystems.serviciosweb.util.Persistencia;
 import java.sql.SQLException;
 import java.util.List;
@@ -41,7 +42,7 @@ public class RolDAO extends Persistencia {
         }
     }
     
-    public Rol guardarRol(Rol rol) throws Exception {
+    public Rol guardarRol(Rol rol, List<RolEmpresa> listaEmpresas) throws Exception {
         try {
 
             getEntityManager();
@@ -53,6 +54,19 @@ public class RolDAO extends Persistencia {
             } else {
                 em.persist(rol); //insert
             }
+            
+            //primero se debe eliminar de la tabla rolempresa lo que esta asociado al rol
+            Query query = em.createQuery("delete from RolEmpresa re where re.idRol = :idRol");
+            query.setParameter("idRol", rol.getId());
+            query.executeUpdate();
+            //guardar segun las empresas
+            listaEmpresas.stream().map(re -> {
+                re.setIdRol(rol.getId());
+                return re;
+            }).forEachOrdered(re -> {
+                em.persist(re);
+            });
+            
             em.flush(); //Confirmar el insert o update
 
             em.getTransaction().commit();
@@ -83,6 +97,28 @@ public class RolDAO extends Persistencia {
             Rol rol = (Rol)query.getSingleResult();
 
             return rol;
+
+       } catch (NoResultException exc) {
+            return null;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
+    
+    
+    public List<RolEmpresa> buscarRolEmpresasPorRol(long idRol) throws Exception {
+        try {
+            getEntityManager();
+
+            Query query = em.createQuery("FROM RolEmpresa r WHERE r.idRol = :idRol order by r.idEmpresa");
+            query.setParameter("idRol", idRol);
+
+            List<RolEmpresa> lista = query.getResultList();
+
+            return lista;
 
        } catch (NoResultException exc) {
             return null;

@@ -113,7 +113,9 @@ public class ArchivoXmlREST {
             @QueryParam(value = "hasta") int hasta,
             @QueryParam(value = "seleccionados") boolean seleccionados,
             @QueryParam(value = "conDetalles") boolean conDetalles,
-            @QueryParam(value = "idReembolso") long idReembolso) throws Exception {
+            @QueryParam(value = "idReembolso") long idReembolso,
+            @QueryParam(value = "exportado") String exportado,
+            @QueryParam(value = "rucEmpresa") String rucEmpresa) throws Exception {
         try {
 //            LOGGER.log(Level.INFO, "fechaInicio: {0}", fechaInicio);
 //            LOGGER.log(Level.INFO, "fechaFinal: {0}", fechaFinal);
@@ -127,7 +129,7 @@ public class ArchivoXmlREST {
 //            LOGGER.log(Level.INFO, "desde: {0}", desde);
 //            LOGGER.log(Level.INFO, "hasta: {0}", hasta);
 //            LOGGER.log(Level.INFO, "seleccionados: {0}", seleccionados);
-            LOGGER.log(Level.INFO, "idReembolso: {0}", idReembolso);
+            LOGGER.log(Level.INFO, "rucEmpresa: {0}", rucEmpresa);
             
             
             //Long variable = new Date().getTime();
@@ -138,7 +140,8 @@ public class ArchivoXmlREST {
             Date dateFin = sdf.parse(fechaFinal);
             //buscar en la bdd los roles
             List<ArchivoXmlDTO> listaArchivo = service.listarPorFecha(dateInit, dateFin, idUsuarioCarga, 
-                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, conDetalles, idReembolso);
+                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, conDetalles, 
+                    idReembolso, exportado, rucEmpresa);
 //            LOGGER.log(Level.INFO, "tamaño: {0}", listaArchivo);
 
             return listaArchivo;

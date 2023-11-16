@@ -1,12 +1,12 @@
 /*
  * Proyecto API Rest (ServiciosWeb)
- * IdebSystems Cia. Ltda. Derechos reservados. 2022
+ * IdebSystems Cia. Ltda. Derechos reservados. 2023
  * Prohibida la reproducción total o parcial de este producto
  */
 package com.idebsystems.serviciosweb;
 
-import com.idebsystems.serviciosweb.dto.RazonRechazoDTO;
-import com.idebsystems.serviciosweb.servicio.RazonRechazoServicio;
+import com.idebsystems.serviciosweb.dto.TipoReembolsoDTO;
+import com.idebsystems.serviciosweb.servicio.TipoReembolsoServicio;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,21 +22,22 @@ import javax.ws.rs.core.MediaType;
  *
  * @author jorge
  */
-@Path("/razonRechazo")
-public class RazonRechazoREST {
+@Path("/tipoReembolso")
+public class TipoReembolsoREST {
     
-    private static final Logger LOGGER = Logger.getLogger(RazonRechazoREST.class.getName());
-
-    private final RazonRechazoServicio service = new RazonRechazoServicio();
+    private static final Logger LOGGER = Logger.getLogger(TipoReembolsoREST.class.getName());
+    
+    private final TipoReembolsoServicio service = new TipoReembolsoServicio();
     
     @GET
-    @Path("/listarRazonesRechazo")
+    @Path("/listarTipoReembolso")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public List<RazonRechazoDTO> listarRazonesRechazo(@QueryParam(value = "estado") boolean estado) throws Exception {
+    public List<TipoReembolsoDTO> listarTipoReembolso(@QueryParam(value = "esPrincipal") String esPrincipal) throws Exception {
         try {
             //buscar en la bdd los parametroes
-            return service.listarRazonesRechazo(estado);
+            LOGGER.log(Level.INFO, "esPrincipal: {0}", esPrincipal);
+            return service.listarTipoReembolso(esPrincipal);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
@@ -44,17 +45,17 @@ public class RazonRechazoREST {
     }
     
     @POST
-    @Path("/guardarRazonRechazo")
+    @Path("/guardarTipoReembolso")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public RazonRechazoDTO guardarRazonRechazo(RazonRechazoDTO razonDto) throws Exception {
+    public TipoReembolsoDTO guardarTipoReembolso(TipoReembolsoDTO dto) throws Exception {
         try {
             //guardar en la bdd el parametro
-            return service.guardarRazonRechazo(razonDto);
+            return service.guardarTipoReembolso(dto);
+            
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
         }
     }
-    
 }

@@ -59,7 +59,10 @@ public class ArchivoXmlDTO {
     private String valorRetenido;
     private String version;
     private Long idReembolso;
+    private String rucEmisor;
     
+    private String numeroReembolso;
+    private String tipoReembolso;
     //para enviar al frontend
     private String respuesta;
     
@@ -400,6 +403,30 @@ public class ArchivoXmlDTO {
 
     public void setRespuesta(String respuesta) {
         this.respuesta = respuesta;
+    }
+
+    public String getRucEmisor() {
+        return rucEmisor;
+    }
+
+    public void setRucEmisor(String rucEmisor) {
+        this.rucEmisor = rucEmisor;
+    }
+
+    public String getNumeroReembolso() {
+        return numeroReembolso;
+    }
+
+    public void setNumeroReembolso(String numeroReembolso) {
+        this.numeroReembolso = numeroReembolso;
+    }
+
+    public String getTipoReembolso() {
+        return tipoReembolso;
+    }
+
+    public void setTipoReembolso(String tipoReembolso) {
+        this.tipoReembolso = tipoReembolso;
     }
     
     @Override

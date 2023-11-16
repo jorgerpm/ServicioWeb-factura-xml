@@ -46,6 +46,8 @@ public class FacturaFisicaDTO {
     //los detalles
     private List<FacturaFisicaDetalleDTO> listaDetalles;
     private String respuesta;
+    private String pathArchivo;
+    private String nombreArchivo;
 
     public Long getId() {
         return id;
@@ -221,6 +223,22 @@ public class FacturaFisicaDTO {
 
     public void setRespuesta(String respuesta) {
         this.respuesta = respuesta;
+    }
+
+    public String getPathArchivo() {
+        return pathArchivo;
+    }
+
+    public void setPathArchivo(String pathArchivo) {
+        this.pathArchivo = pathArchivo;
+    }
+
+    public String getNombreArchivo() {
+        return nombreArchivo;
+    }
+
+    public void setNombreArchivo(String nombreArchivo) {
+        this.nombreArchivo = nombreArchivo;
     }
 
     @Override

@@ -1,12 +1,11 @@
 /*
  * Proyecto API Rest (ServiciosWeb)
- * IdebSystems Cia. Ltda. Derechos reservados. 2022
+ * IdebSystems Cia. Ltda. Derechos reservados. 2023
  * Prohibida la reproducción total o parcial de este producto
  */
 package com.idebsystems.serviciosweb.dao;
 
-
-import com.idebsystems.serviciosweb.entities.Empresa;
+import com.idebsystems.serviciosweb.entities.TipoReembolso;
 import com.idebsystems.serviciosweb.util.Persistencia;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,20 +19,30 @@ import javax.persistence.Query;
  *
  * @author jorge
  */
-public class EmpresaDAO extends Persistencia {
+public class TipoReembolsoDAO extends Persistencia {
     
-    private static final Logger LOGGER = Logger.getLogger(EmpresaDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TipoReembolsoDAO.class.getName());
     
-    
-    public List<Empresa> listarEmpresas() throws Exception {
+    public List<TipoReembolso> listarTipoReembolso(String esPrincipal) throws Exception {
         try {
             getEntityManager();
+            
+            StringBuilder sql = new StringBuilder("FROM TipoReembolso t ");
+            
+            if(Objects.nonNull(esPrincipal) && !esPrincipal.isBlank()){
+                sql.append(" WHERE t.esPrincipal = :esPrincipal ");
+            }
+            sql.append(" order by t.tipo");
+            
+            Query query = em.createQuery(sql.toString());
+            
+            if(Objects.nonNull(esPrincipal) && !esPrincipal.isBlank()){
+                query.setParameter("esPrincipal", Boolean.parseBoolean(esPrincipal));
+            }
 
-            Query query = em.createQuery("FROM Empresa e order by e.razonSocial");
+            List<TipoReembolso> lista = query.getResultList();
 
-            List<Empresa> data = query.getResultList();
-
-            return data;
+            return lista;
 
        } catch (NoResultException exc) {
             return null;
@@ -45,23 +54,23 @@ public class EmpresaDAO extends Persistencia {
         }
     }
     
-    public Empresa guardarEmpresa(Empresa empresa) throws Exception {
+    public TipoReembolso guardarTipoReembolso(TipoReembolso ent) throws Exception {
         try {
 
             getEntityManager();
 
             em.getTransaction().begin();
 
-            if (Objects.nonNull(empresa.getId()) && empresa.getId() > 0) {
-                em.merge(empresa); //update
+            if (Objects.nonNull(ent.getId()) && ent.getId() > 0) {
+                em.merge(ent); //update
             } else {
-                em.persist(empresa); //insert
+                em.persist(ent); //insert
             }
             em.flush(); //Confirmar el insert o update
 
             em.getTransaction().commit();
 
-            return empresa;
+            return ent;
 
         } catch (SQLException exc) {
             rollbackTransaction();
@@ -76,16 +85,22 @@ public class EmpresaDAO extends Persistencia {
         }
     }
     
-    public List<Empresa> listarEmpresasPorRol(long idRol) throws Exception {
+    
+    public TipoReembolso getTipoReembolsoPorId(Long id) throws Exception {
         try {
             getEntityManager();
+            
+            Query query = em.createQuery("FROM TipoReembolso t WHERE t.id = :id ");
+            query.setParameter("id", id);
 
-            Query query = em.createQuery("SELECT e FROM Empresa e JOIN RolEmpresa r ON e.id = r.idEmpresa WHERE r.idRol = :idRol order by e.razonSocial");
-            query.setParameter("idRol", idRol);
-
-            List<Empresa> data = query.getResultList();
-
-            return data;
+            List<TipoReembolso> lista = query.getResultList();
+            
+            if(lista.isEmpty()){
+                return null;
+            }
+            else{
+                return lista.get(0);
+            }
 
        } catch (NoResultException exc) {
             return null;

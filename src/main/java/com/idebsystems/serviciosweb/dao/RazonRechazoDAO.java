@@ -21,11 +21,17 @@ import javax.persistence.Query;
 public class RazonRechazoDAO extends Persistencia {
     private static final Logger LOGGER = Logger.getLogger(RazonRechazoDAO.class.getName());
     
-    public List<RazonRechazo> listarRazonesRechazo() throws Exception {
+    public List<RazonRechazo> listarRazonesRechazo(boolean estado) throws Exception {
         try {
             getEntityManager();
 
-            Query query = em.createQuery("FROM RazonRechazo r order by r.razon");
+            String sql = "FROM RazonRechazo r ";
+            if(estado){
+                sql += " WHERE r.idEstado = 1 ";
+            }
+            sql += " order by r.razon";
+            
+            Query query = em.createQuery(sql);
 
             List<RazonRechazo> listaRazonRechazo = query.getResultList();
 

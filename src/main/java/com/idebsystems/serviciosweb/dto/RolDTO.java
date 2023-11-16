@@ -4,6 +4,9 @@
  */
 package com.idebsystems.serviciosweb.dto;
 
+import java.util.Date;
+import javax.persistence.Temporal;
+
 /**
  *
  * @author israe
@@ -21,6 +24,12 @@ public class RolDTO {
     private boolean bNotaCredito;
     private boolean bNotaDebito;
     private boolean bGuiaRemision;
+    //
+    private boolean datosContable;
+    private long idUsuarioModifica;
+    private Date fechaModifica;
+    private UsuarioDTO usuario;
+    private String listaIdEmpresas;
 
     public long getId() {
         return id;
@@ -102,8 +111,50 @@ public class RolDTO {
         this.bGuiaRemision = bGuiaRemision;
     }
 
+    public boolean isDatosContable() {
+        return datosContable;
+    }
+
+    public void setDatosContable(boolean datosContable) {
+        this.datosContable = datosContable;
+    }
+
+    public long getIdUsuarioModifica() {
+        return idUsuarioModifica;
+    }
+
+    public void setIdUsuarioModifica(long idUsuarioModifica) {
+        this.idUsuarioModifica = idUsuarioModifica;
+    }
+
+    public Date getFechaModifica() {
+        return fechaModifica;
+    }
+
+    public void setFechaModifica(Date fechaModifica) {
+        this.fechaModifica = fechaModifica;
+    }
+
+    public UsuarioDTO getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UsuarioDTO usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getListaIdEmpresas() {
+        return listaIdEmpresas;
+    }
+
+    public void setListaIdEmpresas(String listaIdEmpresas) {
+        this.listaIdEmpresas = listaIdEmpresas;
+    }
+
     @Override
     public String toString() {
-        return "RolDTO{" + "id=" + id + ", nombre=" + nombre + ", principal=" + principal + ", idEstado=" + idEstado + '}';
+        return "RolDTO{" + "id=" + id + ", nombre=" + nombre + ", principal=" + principal + ", idEstado=" + idEstado + ", autorizador=" + autorizador + ", bFactura=" + bFactura + ", bRetencion=" + bRetencion + ", bNotaCredito=" + bNotaCredito + ", bNotaDebito=" + bNotaDebito + ", bGuiaRemision=" + bGuiaRemision + ", datosContable=" + datosContable + ", idUsuarioModifica=" + idUsuarioModifica + ", listaIdEmpresas=" + listaIdEmpresas + '}';
     }
+
+    
 }

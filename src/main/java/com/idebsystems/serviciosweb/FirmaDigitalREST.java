@@ -93,4 +93,20 @@ public class FirmaDigitalREST {
             return "false";
         }
     }
+    
+    
+    
+    @POST
+    @Path("/validarFirmaNueva")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public FirmaDigitalDTO validarFirmaNueva(FirmaDigitalDTO dto) throws Exception {
+        try {
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
+            return service.validarFirmaNueva(dto);
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
 }

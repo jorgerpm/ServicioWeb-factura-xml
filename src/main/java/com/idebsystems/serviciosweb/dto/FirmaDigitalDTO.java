@@ -18,6 +18,9 @@ public class FirmaDigitalDTO {
     private Long fechaCaducaLong;
     private Integer tipoFirma;
     private Integer idEstado;
+    private String clave;
+    //
+    private String respuesta;
 
     public Long getId() {
         return id;
@@ -73,6 +76,22 @@ public class FirmaDigitalDTO {
 
     public void setTipoFirma(Integer tipoFirma) {
         this.tipoFirma = tipoFirma;
+    }
+
+    public String getRespuesta() {
+        return respuesta;
+    }
+
+    public void setRespuesta(String respuesta) {
+        this.respuesta = respuesta;
+    }
+
+    public String getClave() {
+        return clave;
+    }
+
+    public void setClave(String clave) {
+        this.clave = clave;
     }
 
     @Override

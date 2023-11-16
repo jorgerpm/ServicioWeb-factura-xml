@@ -5,12 +5,14 @@
 package com.idebsystems.serviciosweb.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
 
 /**
  *
@@ -39,6 +41,10 @@ public class Rol implements Serializable {
     private boolean bNotaDebito;
     @Column(name = "b_guia_remision")
     private boolean bGuiaRemision;
+    private boolean datosContable;
+    private long idUsuarioModifica;
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date fechaModifica;
 
     public long getId() {
         return id;
@@ -118,6 +124,30 @@ public class Rol implements Serializable {
 
     public void setbGuiaRemision(boolean bGuiaRemision) {
         this.bGuiaRemision = bGuiaRemision;
+    }
+
+    public boolean isDatosContable() {
+        return datosContable;
+    }
+
+    public void setDatosContable(boolean datosContable) {
+        this.datosContable = datosContable;
+    }
+
+    public long getIdUsuarioModifica() {
+        return idUsuarioModifica;
+    }
+
+    public void setIdUsuarioModifica(long idUsuarioModifica) {
+        this.idUsuarioModifica = idUsuarioModifica;
+    }
+
+    public Date getFechaModifica() {
+        return fechaModifica;
+    }
+
+    public void setFechaModifica(Date fechaModifica) {
+        this.fechaModifica = fechaModifica;
     }
 
 }

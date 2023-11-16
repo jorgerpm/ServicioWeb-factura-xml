@@ -24,11 +24,11 @@ public class RazonRechazoServicio {
     
     private final RazonRechazoDAO dao = new RazonRechazoDAO();
     
-    public List<RazonRechazoDTO> listarRazonesRechazo() throws Exception {
+    public List<RazonRechazoDTO> listarRazonesRechazo(boolean estado) throws Exception {
         try {
             List<RazonRechazoDTO> listaRazonesDto = new ArrayList();
             
-            List<RazonRechazo> listaRazones = dao.listarRazonesRechazo();
+            List<RazonRechazo> listaRazones = dao.listarRazonesRechazo(estado);
             
             listaRazones.forEach(ent ->{
                 RazonRechazoDTO dto = RazonRechazoMapper.INSTANCE.entityToDto(ent);

@@ -10,6 +10,9 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.google.zxing.qrcode.encoder.Encoder;
+import com.google.zxing.qrcode.encoder.QRCode;
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.pdf.qrcode.BitMatrix;
 import com.itextpdf.text.pdf.qrcode.QRCodeWriter;
 import com.itextpdf.text.pdf.security.BouncyCastleDigest;
@@ -44,6 +47,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import jersey.repackaged.com.google.common.collect.ImmutableMap;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.jce.PrincipalUtil;
 //import com.itextpdf.barcodes.BarcodeQRCode;
@@ -191,7 +195,13 @@ FileOutputStream fout = new FileOutputStream("/home/jorge/Desktop/prueba.pdf");
                     + "\r\nValida hasta: " + cert.getNotAfter());
             com.itextpdf.text.Image imagen = com.itextpdf.text.Image.getInstance("/home/jorge/Desktop/demo.png");
             imagen.setAbsolutePosition(10, 55); //X Y
-            imagen.scaleAbsolute(75, 75);//ANCHO XALTO
+//            imagen.scaleAbsolute(75, 75);//ANCHO XALTO
+//            imagen.setBackgroundColor(BaseColor.);
+//            imagen.setBorderWidth(1);
+//            imagen.setBorder(1);
+//            imagen.setTransparency(new int[100]);
+            imagen.scalePercent(50);
+            
             
             com.itextpdf.text.pdf.PdfContentByte content = stamper.getOverContent(reader.getNumberOfPages());
             content.addImage(imagen);
@@ -332,21 +342,40 @@ FileOutputStream fout = new FileOutputStream("/home/jorge/Desktop/prueba.pdf");
  
             
         
-        Map<EncodeHintType, ErrorCorrectionLevel> hashMap
-            = new HashMap<EncodeHintType,
-                          ErrorCorrectionLevel>();
+        Map<EncodeHintType, Object> hints = new HashMap<EncodeHintType,Object>();
  
-        hashMap.put(EncodeHintType.ERROR_CORRECTION,
-                    ErrorCorrectionLevel.L);
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        hints.put(EncodeHintType.MARGIN, 0);
         
             com.google.zxing.common.BitMatrix matrix = new MultiFormatWriter().encode(
             new String(data.getBytes(charset), charset),
-            BarcodeFormat.QR_CODE, 125, 125);
- 
+            BarcodeFormat.QR_CODE, 150, 150, hints);
+            
+            
         MatrixToImageWriter.writeToFile(
             matrix,
             path.substring(path.lastIndexOf('.') + 1),
             new File(path));
+        
+        
+        
+        
+//        QRCode qrCode = Encoder.encode(data, ErrorCorrectionLevel.L, hints);
+//            // Step 2 - create a BufferedImage out of this array
+//int width = qrCode.getMatrix().getWidth();
+//int height = qrCode.getMatrix().getHeight();
+//BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+//int[] rgbArray = new int[width * height];
+//int i = 0;
+//for (int y = 0; y < height; y++) {
+//  for (int x = 0; x < width; x++) {
+//    rgbArray[i] = qrCode.getMatrix().get(x, y) > 0 ? 0xFFFFFF : 0x000000;
+//    i++;
+//} }
+//image.setRGB(0, 0, width, height, rgbArray, 0, width);
+//        
+//ImageIO.write(image, "png", new File("/home/jorge/Desktop/demo1.png"));
         
             
         }catch(Exception exc){

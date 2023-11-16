@@ -80,4 +80,23 @@ public class ProveedorServicio {
             throw new Exception(exc);
         }
     }
+    
+    
+    
+    public ProveedorDTO buscarProveedorPorRuc(String ruc) throws Exception {
+        try {
+            if(Objects.nonNull(ruc) && !ruc.isEmpty()){
+                Proveedor ent = dao.buscarProveedorPorRuc(ruc);
+                ProveedorDTO dto = ProveedorMapper.INSTANCE.entityToDto(ent);
+                return dto;
+            }
+            else{
+                return new ProveedorDTO();
+            }
+            
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
 }

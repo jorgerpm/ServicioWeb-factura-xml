@@ -2,7 +2,7 @@
 ${licenseFirst}
 </#if>
 ${licensePrefix}Proyecto API Rest (ServiciosWeb)
-${licensePrefix}IdebSystems Cia. Ltda. Derechos reservados. 2022
+${licensePrefix}IdebSystems Cia. Ltda. Derechos reservados. (C) ${date?date?string("yyyy")}
 ${licensePrefix}Prohibida la reproducción total o parcial de este producto
 <#if licenseLast??>
 ${licenseLast}

@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -57,6 +59,12 @@ public class ArchivoXml implements Serializable {
     private String asistentes;
     private String version;
     private Long idReembolso;
+    private String rucEmisor;
+    
+    @JoinColumn(name = "idReembolso", referencedColumnName = "id", 
+            insertable = false, updatable = false, nullable = true)
+    @ManyToOne
+    private DocumentoReembolsos reembolso;
 
     public Long getId() {
         return id;
@@ -250,6 +258,14 @@ public class ArchivoXml implements Serializable {
         this.version = version;
     }
 
+    public String getRucEmisor() {
+        return rucEmisor;
+    }
+
+    public void setRucEmisor(String rucEmisor) {
+        this.rucEmisor = rucEmisor;
+    }
+
     public Long getIdReembolso() {
         return idReembolso;
     }
@@ -257,5 +273,15 @@ public class ArchivoXml implements Serializable {
     public void setIdReembolso(Long idReembolso) {
         this.idReembolso = idReembolso;
     }
+
+    public DocumentoReembolsos getReembolso() {
+        return reembolso;
+    }
+
+    public void setReembolso(DocumentoReembolsos reembolso) {
+        this.reembolso = reembolso;
+    }
+
+    
 
 }

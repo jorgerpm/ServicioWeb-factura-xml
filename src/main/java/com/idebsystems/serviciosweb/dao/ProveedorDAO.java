@@ -116,4 +116,30 @@ public class ProveedorDAO  extends Persistencia {
             closeEntityManager();
         }
     }
+    
+    
+    public Proveedor buscarProveedorPorRuc(String ruc) throws Exception {
+        try {
+            getEntityManager();
+            
+            Query query = em.createQuery("FROM Proveedor r where r.ruc = :ruc");
+            query.setParameter("ruc", ruc);
+            
+            List<Proveedor> data = query.getResultList();
+            if(data.isEmpty()){
+                return new Proveedor();
+            }
+            else{
+                return data.get(0);
+            }
+
+       } catch (NoResultException exc) {
+            return new Proveedor();
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
 }

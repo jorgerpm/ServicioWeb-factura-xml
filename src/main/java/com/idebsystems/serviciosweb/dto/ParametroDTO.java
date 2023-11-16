@@ -14,6 +14,7 @@ public class ParametroDTO {
     private String valor;
     private long idEstado;
     private long idUsuarioModifica;
+    private UsuarioDTO usuario;
 
     public long getId() {
         return id;
@@ -53,6 +54,14 @@ public class ParametroDTO {
 
     public void setIdUsuarioModifica(long idUsuarioModifica) {
         this.idUsuarioModifica = idUsuarioModifica;
+    }
+
+    public UsuarioDTO getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UsuarioDTO usuario) {
+        this.usuario = usuario;
     }
 
     @Override

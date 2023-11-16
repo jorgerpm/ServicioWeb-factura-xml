@@ -6,10 +6,12 @@
 package com.idebsystems.serviciosweb.servicio;
 
 import com.idebsystems.serviciosweb.dao.DocumentoReembolsosDAO;
+import com.idebsystems.serviciosweb.dao.TipoReembolsoDAO;
 import com.idebsystems.serviciosweb.dao.UsuarioDAO;
 import com.idebsystems.serviciosweb.dto.DocumentoReembolsosDTO;
 import com.idebsystems.serviciosweb.dto.FirmaDigitalDTO;
 import com.idebsystems.serviciosweb.entities.DocumentoReembolsos;
+import com.idebsystems.serviciosweb.entities.TipoReembolso;
 import com.idebsystems.serviciosweb.entities.Usuario;
 import com.idebsystems.serviciosweb.mappers.DocumentoReembolsosMapper;
 import com.idebsystems.serviciosweb.mappers.UsuarioMapper;
@@ -32,14 +34,9 @@ public class DocumentoReembolsosServicio {
 
     private final DocumentoReembolsosDAO dao = new DocumentoReembolsosDAO();
 
-    public List<DocumentoReembolsosDTO> listarDocumentos(
-            Date fechaInicio,
-            Date fechaFinal,
-            Long idUsuarioCarga,
-            String estadoSistema,
-            int desde,
-            int hasta
-    ) throws Exception {
+    public List<DocumentoReembolsosDTO> listarDocumentos(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga,
+            String estadoSistema, int desde, int hasta, String numeroRC, String tipoReembolso, String numeroReembolso) throws Exception {
+        
         try {
             UsuarioDAO usdao = new UsuarioDAO();
             List<Usuario> uss = usdao.listarUsuarios();
@@ -53,11 +50,14 @@ public class DocumentoReembolsosServicio {
             List<DocumentoReembolsosDTO> lista = new ArrayList<>();
 
             List<Object> respuesta = dao.listarDocumentos(FechaUtil.fechaInicial(fechaInicio),
-                    FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, estadoSistema, desde, hasta, idAprobador);
+                    FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, estadoSistema, desde, hasta, idAprobador, numeroRC, tipoReembolso, numeroReembolso);
 
             //sacar los resultados retornados
             Integer totalRegistros = (Integer) respuesta.get(0);
             List<DocumentoReembolsos> data = (List<DocumentoReembolsos>) respuesta.get(1);
+            
+            TipoReembolsoDAO trdao = new TipoReembolsoDAO();
+            List<TipoReembolso> listTiposRem = trdao.listarTipoReembolso(null);
 
             data.forEach(obj -> {
                 DocumentoReembolsosDTO dto = DocumentoReembolsosMapper.INSTANCE.entityToDto(obj);
@@ -75,6 +75,8 @@ public class DocumentoReembolsosServicio {
                 
                 Usuario userAprob = uss.stream().filter(u -> Objects.equals(u.getId(), obj.getIdAprobador())).findAny().orElse(new Usuario());
                 dto.setAprobador(userAprob.getNombre());
+                
+                dto.setTipoReembolsoNombre(listTiposRem.stream().filter(tr -> tr.getId() == Long.parseLong(obj.getTipoReembolso())).findFirst().orElse(new TipoReembolso()).getTipo());
 
                 lista.add(dto);
             });
@@ -215,36 +217,6 @@ public class DocumentoReembolsosServicio {
             dto.setRespuesta(exc.getMessage().replace("java.lang.Exception:", ""));
             return dto;
 //            throw new Exception(exc);
-        }
-    }
-    
-
-    public DocumentoReembolsosDTO guardarDatosContabilidad(DocumentoReembolsosDTO dto) throws Exception {
-        try {
-            DocumentoReembolsos ent = dao.getDocumentosPorId(dto.getId());
-            
-            ent.setJustificativos(dto.getJustificativos());
-            ent.setBatchIngresoLiquidacion(dto.getBatchIngresoLiquidacion());
-            ent.setBatchDocumentoInterno(dto.getBatchDocumentoInterno());
-            ent.setP3(dto.getP3());
-            ent.setP4(dto.getP4());
-            ent.setP5(dto.getP5());
-            ent.setPhne(dto.getPhne());
-            ent.setCruce1(dto.getCruce1());
-            ent.setCruce2(dto.getCruce2());
-            ent.setTipoDocumento(dto.getTipoDocumento());
-            ent.setNumeroDocumento(dto.getNumeroDocumento());
-            ent.setNumeroRetencion(dto.getNumeroRetencion());
-
-            DocumentoReembolsos respuesta = dao.guardarDocumentoReembolsos(ent, "", null, false);
-            DocumentoReembolsosDTO objDto = DocumentoReembolsosMapper.INSTANCE.entityToDto(respuesta);
-            objDto.setRespuesta("OK");
-            
-            return objDto;
-            
-        } catch (Exception exc) {
-            LOGGER.log(Level.SEVERE, null, exc);
-            throw new Exception(exc);
         }
     }
     

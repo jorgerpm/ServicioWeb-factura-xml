@@ -41,15 +41,18 @@ public class DocumentoReembolsosREST {
             @QueryParam(value = "idUsuarioCarga") Long idUsuarioCarga,
             @QueryParam(value = "estadoSistema") String estadoSistema,
             @QueryParam(value = "desde") int desde,
-            @QueryParam(value = "hasta") int hasta
+            @QueryParam(value = "hasta") int hasta,
+            @QueryParam(value = "numeroRC") String numeroRC,
+            @QueryParam(value = "tipoReembolso") String tipoReembolso,
+            @QueryParam(value = "numeroReembolso") String numeroReembolso
     ) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}");
+            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", tipoReembolso);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date dateInit = sdf.parse(fechaInicio);
             Date dateFin = sdf.parse(fechaFinal);
             //buscar en la bdd los DocumentoReembolsos
-            return service.listarDocumentos(dateInit, dateFin, idUsuarioCarga, estadoSistema, desde, hasta);
+            return service.listarDocumentos(dateInit, dateFin, idUsuarioCarga, estadoSistema, desde, hasta, numeroRC, tipoReembolso, numeroReembolso);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);
@@ -93,7 +96,7 @@ public class DocumentoReembolsosREST {
     @Produces({MediaType.APPLICATION_JSON})
     public DocumentoReembolsosDTO aprobarDocumentoReembolsos(DocumentoReembolsosDTO dto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto.getClaveFirma());
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto.getClaveFirma());
             LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto.isTerceraFirma());
             //guardar en la bdd el DocumentoReembolsos
             return service.aprobarDocumentoReembolsos(dto, dto.getClaveFirma(), dto.isTerceraFirma());
@@ -102,24 +105,6 @@ public class DocumentoReembolsosREST {
             throw new Exception(exc);
         }
     }
-    
-    
-    
-    @POST
-    @Path("/guardarDatosContabilidad")
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    public DocumentoReembolsosDTO guardarDatosContabilidad(DocumentoReembolsosDTO dto) throws Exception {
-        try {
-//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", dto);
-            //guardar en la bdd el DocumentoReembolsos
-            return service.guardarDatosContabilidad(dto);
-        } catch (Exception exc) {
-            LOGGER.log(Level.SEVERE, null, exc);
-            throw new Exception(exc);
-        }
-    }
-    
     
     
     @POST

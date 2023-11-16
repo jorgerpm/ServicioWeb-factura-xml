@@ -154,6 +154,29 @@ public class ReporteServicio {
     public ReporteDTO generarReporteFirma(String reporte, String ids, String tiposGasto, String tipoReembolso, Long idUsuario,
             long idAprobador, String listaAsistentes, DocumentoReembolsosDTO reembDto, String claveFirma) throws Exception {
         try{
+            //aqui se procede a validar todo lo referente a la firma, si el usuario si tiene y si
+            //la clave enviada es la correcta
+            if(reporte.equalsIgnoreCase("SIFIRMA")){
+                FirmaDigitalServicio srvFD = new FirmaDigitalServicio();
+                String respVal = srvFD.validarTodoFirma(idUsuario, claveFirma);
+                if(!respVal.isBlank()){
+                    ReporteDTO rpdto = new ReporteDTO();
+                    rpdto.setRespuesta(respVal);
+                    return rpdto;
+                }
+            }
+            
+            //generar el numero de reembolso en base a la tabla tiporeembolo
+            //este solo para pasar al reporte, no es el definitivo
+            TipoReembolsoServicio trs = new TipoReembolsoServicio();
+            boolean actualizar = reporte.equalsIgnoreCase("SIFIRMA"); //si es true se actualiza el secuencial en la tabla tiporeembolso
+            long idTipoRem = Long.parseLong(tipoReembolso);
+            if(tipoReembolso.equalsIgnoreCase("5")){
+                idTipoRem = Long.parseLong(reembDto.getSeleccion());
+            }
+            String numeroReembolso = trs.generarNumeroReembolso(idTipoRem, actualizar);
+            
+            
             //aqui primero guardar los tipos de gasto por cada registro
             ArchivoXmlDAO xmldao = new ArchivoXmlDAO();
             xmldao.guardarTiposGasto(tiposGasto.split(","));
@@ -169,10 +192,11 @@ public class ReporteServicio {
             parameters.put("p_periodoViaje", reembDto.getPeriodoViaje());
             parameters.put("p_lugarViaje", reembDto.getLugarViaje());
             parameters.put("p_numeroRC", reembDto.getNumeroRC());
+            parameters.put("p_numeroReembolso", numeroReembolso);
             
             //segun el tipo de reembolso generar el formato pdf
             String nombreReporte = "rp_gastoreembolso";
-            if(tipoReembolso.equalsIgnoreCase("VIAJES")){
+            if(tipoReembolso.equalsIgnoreCase("4")){
                 nombreReporte = "rp_gastoviajes";
                 
                 //enviar los datos como parametros
@@ -182,7 +206,7 @@ public class ReporteServicio {
             else{
                 //enviar los datos como parametros
                 parameters.put("p_seleccion", reembDto.getSeleccion());
-                if(reembDto.getSeleccion().equalsIgnoreCase("JUSTIFICACIÓN FONDOS DE ATENCIÓN")){
+                if(reembDto.getSeleccion().equalsIgnoreCase("3")){
                     parameters.put("p_fondoEntregado", reembDto.getFondoEntregado());
                 }
             }
@@ -235,14 +259,13 @@ public class ReporteServicio {
                     ParametroDAO pdao = new ParametroDAO();
                     List<Parametro> params = pdao.listarParametros();
                     
-//                    Parametro purl = params.stream().filter(p -> p.getNombre().equalsIgnoreCase("URL_SISTEMA")).findAny().get();
                     Parametro pcarp = params.stream().filter(p -> p.getNombre().equalsIgnoreCase("CARPETA_REEMBOLSOS")).findAny().get();
                     
                     DocumentoReembolsos doc = new DocumentoReembolsos();
                     doc.setEstado("POR_AUTORIZAR");
     //                doc.setFechaAutoriza(fechaAutoriza);
                     doc.setFechaCarga(new Date());
-    //                doc.setId(idUsuario);
+    //                doc.setId(null);
     //                doc.setRazonRechazo(reporte);
     //                doc.setUsuarioAutoriza(reporte);
                     doc.setUsuarioCarga(idUsuario);
@@ -256,6 +279,10 @@ public class ReporteServicio {
                     doc.setObservaciones(reembDto.getObservaciones());
                     doc.setSeleccion(reembDto.getSeleccion());
                     doc.setNumeroRC(reembDto.getNumeroRC());
+                    doc.setNumeroReembolso(numeroReembolso);
+                    if(tipoReembolso.equalsIgnoreCase("5")){
+                        doc.setTipoReembolso(reembDto.getSeleccion());
+                    }
                     
                     //generar el numero del reembolso
                     //y abajo en el nombre del pdf en lugar del gettime poner el numero del reembolso

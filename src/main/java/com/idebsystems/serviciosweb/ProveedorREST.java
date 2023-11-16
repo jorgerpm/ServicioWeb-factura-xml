@@ -61,4 +61,19 @@ public class ProveedorREST {
             throw new Exception(exc);
         }
     }
+    
+    
+    @GET
+    @Path("/buscarProveedorPorRuc")
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public ProveedorDTO buscarProveedorPorRuc(@QueryParam(value = "ruc") String ruc) throws Exception {
+        try {
+            LOGGER.log(Level.INFO, "ruc: {0}", ruc);
+            return service.buscarProveedorPorRuc(ruc);
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        }
+    }
 }

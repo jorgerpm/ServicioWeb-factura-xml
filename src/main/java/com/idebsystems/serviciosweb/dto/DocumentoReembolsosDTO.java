@@ -33,19 +33,7 @@ public class DocumentoReembolsosDTO {
     private BigDecimal fondoEntregado;
     private String observaciones;
     private String seleccion;
-    //datos conta
-    private String justificativos;
-    private String batchIngresoLiquidacion;
-    private String batchDocumentoInterno;
-    private String p3;
-    private String p4;
-    private String p5;
-    private String phne;
-    private String cruce1;
-    private String cruce2;
-    private String tipoDocumento;
-    private String numeroDocumento;
-    private String numeroRetencion;
+    
     private String justificacionBase64;
     private String tipoJustificacionBase64;
     //
@@ -58,6 +46,8 @@ public class DocumentoReembolsosDTO {
     private String aprobador;
     private String usuarioProcesa;
     private Long fechaProcesaLong;
+    private String tipoReembolsoNombre;
+    private String numeroReembolso;
 
     public Long getId() {
         return id;
@@ -211,102 +201,6 @@ public class DocumentoReembolsosDTO {
         this.seleccion = seleccion;
     }
 
-    public String getJustificativos() {
-        return justificativos;
-    }
-
-    public void setJustificativos(String justificativos) {
-        this.justificativos = justificativos;
-    }
-
-    public String getBatchIngresoLiquidacion() {
-        return batchIngresoLiquidacion;
-    }
-
-    public void setBatchIngresoLiquidacion(String batchIngresoLiquidacion) {
-        this.batchIngresoLiquidacion = batchIngresoLiquidacion;
-    }
-
-    public String getBatchDocumentoInterno() {
-        return batchDocumentoInterno;
-    }
-
-    public void setBatchDocumentoInterno(String batchDocumentoInterno) {
-        this.batchDocumentoInterno = batchDocumentoInterno;
-    }
-
-    public String getP3() {
-        return p3;
-    }
-
-    public void setP3(String p3) {
-        this.p3 = p3;
-    }
-
-    public String getP4() {
-        return p4;
-    }
-
-    public void setP4(String p4) {
-        this.p4 = p4;
-    }
-
-    public String getP5() {
-        return p5;
-    }
-
-    public void setP5(String p5) {
-        this.p5 = p5;
-    }
-
-    public String getPhne() {
-        return phne;
-    }
-
-    public void setPhne(String phne) {
-        this.phne = phne;
-    }
-
-    public String getCruce1() {
-        return cruce1;
-    }
-
-    public void setCruce1(String cruce1) {
-        this.cruce1 = cruce1;
-    }
-
-    public String getCruce2() {
-        return cruce2;
-    }
-
-    public void setCruce2(String cruce2) {
-        this.cruce2 = cruce2;
-    }
-
-    public String getTipoDocumento() {
-        return tipoDocumento;
-    }
-
-    public void setTipoDocumento(String tipoDocumento) {
-        this.tipoDocumento = tipoDocumento;
-    }
-
-    public String getNumeroDocumento() {
-        return numeroDocumento;
-    }
-
-    public void setNumeroDocumento(String numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
-    }
-
-    public String getNumeroRetencion() {
-        return numeroRetencion;
-    }
-
-    public void setNumeroRetencion(String numeroRetencion) {
-        this.numeroRetencion = numeroRetencion;
-    }
-
     public String getTipoReembolso() {
         return tipoReembolso;
     }
@@ -393,6 +287,22 @@ public class DocumentoReembolsosDTO {
 
     public void setFechaProcesaLong(Long fechaProcesaLong) {
         this.fechaProcesaLong = fechaProcesaLong;
+    }
+
+    public String getTipoReembolsoNombre() {
+        return tipoReembolsoNombre;
+    }
+
+    public void setTipoReembolsoNombre(String tipoReembolsoNombre) {
+        this.tipoReembolsoNombre = tipoReembolsoNombre;
+    }
+
+    public String getNumeroReembolso() {
+        return numeroReembolso;
+    }
+
+    public void setNumeroReembolso(String numeroReembolso) {
+        this.numeroReembolso = numeroReembolso;
     }
 
     @Override
