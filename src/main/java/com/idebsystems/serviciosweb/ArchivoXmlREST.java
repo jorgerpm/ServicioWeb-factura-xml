@@ -237,7 +237,8 @@ public class ArchivoXmlREST {
     @Produces({MediaType.APPLICATION_JSON})
     public ArchivoXmlDTO guardarMiscelaneo(ArchivoXmlDTO dto) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "inicia guardarMiscelaneo: {0}");
+            LOGGER.log(Level.INFO, "inicia guardarMiscelaneo: {0}", dto.getFechaAutorizacion());
+            LOGGER.log(Level.INFO, "inicia guardarMiscelaneo: {0}", dto.getFechaEmision());
 
             dto = service.guardarMiscelaneo(dto);
             

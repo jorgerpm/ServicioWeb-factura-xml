@@ -86,7 +86,7 @@ public class TipoReembolsoServicio {
             
             TipoReembolso tr = dao.getTipoReembolsoPorId(id);
             long sec = tr.getSecuencial() + 1;
-            String numero = sec + "-" + tr.getNomenclatura();
+            String numero = tr.getNomenclatura() + "-" + sec;
             
             if(actualizar){
                 tr.setSecuencial(sec);

@@ -263,6 +263,8 @@ public class ArchivoXmlServicio {
                 //buscar el proveedor con el ruc del xml
                 String rucProveedor = jsonObjComp.getJSONObject(tag_xml).getJSONObject(TAG_INFO_TRIBUTARIO).get(TAG_RUC).toString();
                 ProveedorDTO dto = provSrv.buscarProveedorRuc(rucProveedor);
+                //ahora el ruc a quien emitieron
+//                String rucProveedor = jsonObjComp.getJSONObject(tag_xml).getJSONObject(tagInfoDoc).get(identificacionComprador).toString();
 //                LOGGER.log(Level.INFO, "id del provv: {0}", dto.getId());
                 data.setCodigoJDProveedor(dto.getCodigoJD());
 

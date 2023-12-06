@@ -11,6 +11,7 @@ import com.idebsystems.serviciosweb.dto.ArchivoXmlDTO;
 import com.idebsystems.serviciosweb.dto.FacturaFisicaDTO;
 import com.idebsystems.serviciosweb.entities.ArchivoXml;
 import com.idebsystems.serviciosweb.mappers.ArchivoXmlMapper;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -31,8 +32,9 @@ public class FacturaFisicaServicio {
     public FacturaFisicaDTO guardarFacturaFisica(FacturaFisicaDTO dto) throws Exception {
         try{
             //verificar si el numero de factura ya no esta registrada, es numero de factura y el proveeedor.
-            //la clave de acceso se arma asi, (rucproveedor + numerofactura) todo sin guiones
-            String claveacceso = dto.getRucProveedor() + dto.getNumeroFactura().replace("-", "");
+            //la clave de acceso se arma asi, (fecha + 01 + rucproveedor + numerofactura) todo sin guiones// para que sea lo mas parecido a la feicha tecnica sri
+            SimpleDateFormat sdf = new SimpleDateFormat("ddMMYYYY");
+            String claveacceso = sdf.format(dto.getFechaFactura()) + "01" + dto.getRucProveedor() + "2" + dto.getNumeroFactura().replace("-", "") + "0000000119";
             ArchivoXml archivoExiste = xmlDao.getArchivoXmlPorClaveAcceso(claveacceso);
             
             Long idFacturaFisica = null;

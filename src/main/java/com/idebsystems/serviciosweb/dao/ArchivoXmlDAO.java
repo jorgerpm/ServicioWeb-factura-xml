@@ -84,8 +84,8 @@ public class ArchivoXmlDAO extends Persistencia {
     }
     
     public List<Object> listarPorFecha(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
-            String claveAcceso, String ruc, String tipoDocumento, String estadoSistema,Integer desde, Integer hasta, 
-            boolean seleccionados, long idReembolso, String exportado, String rucEmisor) throws Exception {
+            String claveAcceso, String rucNombre, String tipoDocumento, String estadoSistema,Integer desde, Integer hasta, 
+            boolean seleccionados, long idReembolso, String exportado, String rucCliente) throws Exception {
         try {
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
@@ -109,8 +109,12 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(tipoDocumento) && !tipoDocumento.isBlank()){
                 sql += " AND ax.tipoDocumento = :tipoDocumento";
             }
-            if(Objects.nonNull(ruc) && !ruc.isBlank()){
-                sql += " AND ax.comprobante LIKE '%"+ruc.toUpperCase()+"%'";
+            if(Objects.nonNull(rucNombre) && !rucNombre.isBlank()){//este es el ruc o nombre del emisor
+                sql += " AND (ax.comprobante like '%ruc\":"+rucNombre.toUpperCase()+"%' "
+                        //este OR se hace porque en los miscelaneos y facturas fisicas se guarda ru":"333.... con todo el " al inicio delruc
+                        + "OR ax.comprobante like '%ruc\":\""+rucNombre.toUpperCase()+"%' " 
+                        + "OR ax.comprobante like '%razonSocial\":\""+rucNombre.toUpperCase()+"%') ";
+                
             }
             if(Objects.nonNull(estadoSistema) && !estadoSistema.isBlank()){
                 sql += " AND ax.estadoSistema = :estadoSistema";
@@ -118,8 +122,12 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(exportado) && !exportado.isBlank()){
                 sql += " AND ax.exportado = :exportado";
             }
-            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
-                sql += " AND ax.rucEmisor = :rucEmisor";
+            if(Objects.nonNull(rucCliente) && !rucCliente.isBlank()){//a quien emiten, es de las empresas y siempre viene solo el ruc
+                rucCliente = rucCliente.startsWith("0") ? "\""+rucCliente : rucCliente;
+                
+                sql += " AND (ax.comprobante like '%identificacionComprador\":"+rucCliente.toUpperCase()+"%' "//fact nd y nc
+                + "OR ax.comprobante like '%identificacionSujetoRetenido\":"+rucCliente.toUpperCase()+"%' "//retencion
+                + "OR ax.comprobante like '%identificacionProveedor\":"+rucCliente.toUpperCase()+"%')"; //liquidacion compra
             }
             
             sql += " order by ax.fechaEmision";
@@ -149,9 +157,9 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(exportado) && !exportado.isBlank()){
                 query.setParameter("exportado", Boolean.parseBoolean(exportado));
             }
-            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
-                query.setParameter("rucEmisor", rucEmisor);
-            }
+//            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
+//                query.setParameter("rucEmisor", rucEmisor);
+//            }
 
 
             //para obtener el total de los registros a buscar
@@ -297,8 +305,8 @@ public class ArchivoXmlDAO extends Persistencia {
     
     
     public List<Object> listarConDetalles(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
-            String claveAcceso, String ruc, String tipoDocumento, String estadoSistema, Integer desde, Integer hasta, 
-            boolean seleccionados, long idReembolso, String exportado, String rucEmisor) throws Exception {
+            String claveAcceso, String rucNombre, String tipoDocumento, String estadoSistema, Integer desde, Integer hasta, 
+            boolean seleccionados, long idReembolso, String exportado, String rucCliente) throws Exception {
         try {
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
@@ -322,8 +330,12 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(tipoDocumento) && !tipoDocumento.isBlank()){
                 sql += " AND a.tipoDocumento = ?tipoDocumento";
             }
-            if(Objects.nonNull(ruc) && !ruc.isBlank()){
-                sql += " AND a.comprobante like '%"+ruc.toUpperCase()+"%'";
+            if(Objects.nonNull(rucNombre) && !rucNombre.isBlank()){//este es el ruc o nombre del emisor
+                sql += " AND (a.comprobante like '%ruc\":"+rucNombre.toUpperCase()+"%' "
+                        //este OR se hace porque en los miscelaneos y facturas fisicas se guarda ru":"333.... con todo el " al inicio delruc
+                        + "OR ax.comprobante like '%ruc\":\""+rucNombre.toUpperCase()+"%' " 
+                        + "OR a.comprobante like '%razonSocial\":\""+rucNombre.toUpperCase()+"%') ";
+                
             }
             if(Objects.nonNull(estadoSistema) && !estadoSistema.isBlank()){
                 sql += " AND a.estadoSistema = ?estadoSistema";
@@ -331,8 +343,12 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(exportado) && !exportado.isBlank()){
                 sql += " AND a.exportado = ?exportado";
             }
-            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
-                sql += " AND a.rucEmisor = ?rucEmisor";
+            if(Objects.nonNull(rucCliente) && !rucCliente.isBlank()){
+                rucCliente = rucCliente.startsWith("0") ? "\""+rucCliente : rucCliente;
+                
+                sql += " AND (a.comprobante like '%identificacionComprador\":"+rucCliente.toUpperCase()+"%' "//fact nd y nc
+                + "OR a.comprobante like '%identificacionSujetoRetenido\":"+rucCliente.toUpperCase()+"%' "//retencion
+                + "OR a.comprobante like '%identificacionProveedor\":"+rucCliente.toUpperCase()+"%')"; //liquidacion compra
             }
             
             sql += " order by a.fechaEmision";
@@ -364,9 +380,9 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(exportado) && !exportado.isBlank()){
                 query.setParameter("exportado", Boolean.parseBoolean(exportado));
             }
-            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
-                query.setParameter("rucEmisor", rucEmisor);
-            }
+//            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
+//                query.setParameter("rucEmisor", rucEmisor);
+//            }
             
 
             //para obtener el total de los registros a buscar
