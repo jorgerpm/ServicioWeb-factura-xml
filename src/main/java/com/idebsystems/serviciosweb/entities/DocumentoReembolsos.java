@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -55,6 +57,9 @@ public class DocumentoReembolsos implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaProcesa;
     private String numeroReembolso;
+    
+    @OneToOne(mappedBy = "documentoReembolsos")
+    private LiquidacionCompra liquidacionCompra;
 
     public Long getId() {
         return id;
@@ -246,6 +251,14 @@ public class DocumentoReembolsos implements Serializable {
 
     public void setNumeroReembolso(String numeroReembolso) {
         this.numeroReembolso = numeroReembolso;
+    }
+
+    public LiquidacionCompra getLiquidacionCompra() {
+        return liquidacionCompra;
+    }
+
+    public void setLiquidacionCompra(LiquidacionCompra liquidacionCompra) {
+        this.liquidacionCompra = liquidacionCompra;
     }
 
     

@@ -26,6 +26,7 @@ public class RolDTO {
     private boolean bGuiaRemision;
     //
     private boolean datosContable;
+    private boolean cargaliquidacion;
     private long idUsuarioModifica;
     private Date fechaModifica;
     private UsuarioDTO usuario;
@@ -149,6 +150,14 @@ public class RolDTO {
 
     public void setListaIdEmpresas(String listaIdEmpresas) {
         this.listaIdEmpresas = listaIdEmpresas;
+    }
+
+    public boolean isCargaliquidacion() {
+        return cargaliquidacion;
+    }
+
+    public void setCargaliquidacion(boolean cargaliquidacion) {
+        this.cargaliquidacion = cargaliquidacion;
     }
 
     @Override

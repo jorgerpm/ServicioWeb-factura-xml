@@ -48,6 +48,8 @@ public class DocumentoReembolsosDTO {
     private Long fechaProcesaLong;
     private String tipoReembolsoNombre;
     private String numeroReembolso;
+    //
+    private LiquidacionCompraDTO liquidacionCompra;
 
     public Long getId() {
         return id;
@@ -303,6 +305,14 @@ public class DocumentoReembolsosDTO {
 
     public void setNumeroReembolso(String numeroReembolso) {
         this.numeroReembolso = numeroReembolso;
+    }
+
+    public LiquidacionCompraDTO getLiquidacionCompra() {
+        return liquidacionCompra;
+    }
+
+    public void setLiquidacionCompra(LiquidacionCompraDTO liquidacionCompra) {
+        this.liquidacionCompra = liquidacionCompra;
     }
 
     @Override

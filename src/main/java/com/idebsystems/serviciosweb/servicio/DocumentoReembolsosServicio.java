@@ -35,7 +35,8 @@ public class DocumentoReembolsosServicio {
     private final DocumentoReembolsosDAO dao = new DocumentoReembolsosDAO();
 
     public List<DocumentoReembolsosDTO> listarDocumentos(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga,
-            String estadoSistema, int desde, int hasta, String numeroRC, String tipoReembolso, String numeroReembolso) throws Exception {
+            String estadoSistema, int desde, int hasta, String numeroRC, String tipoReembolso, String numeroReembolso,
+            String numeroLC) throws Exception {
         
         try {
             UsuarioDAO usdao = new UsuarioDAO();
@@ -50,7 +51,8 @@ public class DocumentoReembolsosServicio {
             List<DocumentoReembolsosDTO> lista = new ArrayList<>();
 
             List<Object> respuesta = dao.listarDocumentos(FechaUtil.fechaInicial(fechaInicio),
-                    FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, estadoSistema, desde, hasta, idAprobador, numeroRC, tipoReembolso, numeroReembolso);
+                    FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, estadoSistema, desde, hasta, idAprobador, numeroRC, 
+                    tipoReembolso, numeroReembolso, numeroLC);
 
             //sacar los resultados retornados
             Integer totalRegistros = (Integer) respuesta.get(0);

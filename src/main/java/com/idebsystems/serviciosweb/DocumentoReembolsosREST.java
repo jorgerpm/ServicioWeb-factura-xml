@@ -44,7 +44,8 @@ public class DocumentoReembolsosREST {
             @QueryParam(value = "hasta") int hasta,
             @QueryParam(value = "numeroRC") String numeroRC,
             @QueryParam(value = "tipoReembolso") String tipoReembolso,
-            @QueryParam(value = "numeroReembolso") String numeroReembolso
+            @QueryParam(value = "numeroReembolso") String numeroReembolso,
+            @QueryParam(value = "numeroLC") String numeroLC
     ) throws Exception {
         try {
             LOGGER.log(Level.INFO, "entroooooooooooo: {0}", tipoReembolso);
@@ -52,7 +53,8 @@ public class DocumentoReembolsosREST {
             Date dateInit = sdf.parse(fechaInicio);
             Date dateFin = sdf.parse(fechaFinal);
             //buscar en la bdd los DocumentoReembolsos
-            return service.listarDocumentos(dateInit, dateFin, idUsuarioCarga, estadoSistema, desde, hasta, numeroRC, tipoReembolso, numeroReembolso);
+            return service.listarDocumentos(dateInit, dateFin, idUsuarioCarga, estadoSistema, desde, hasta, numeroRC, 
+                    tipoReembolso, numeroReembolso, numeroLC);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
             throw new Exception(exc);

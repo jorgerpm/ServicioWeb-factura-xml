@@ -42,6 +42,7 @@ public class Rol implements Serializable {
     @Column(name = "b_guia_remision")
     private boolean bGuiaRemision;
     private boolean datosContable;
+    private boolean cargaliquidacion;
     private long idUsuarioModifica;
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date fechaModifica;
@@ -148,6 +149,14 @@ public class Rol implements Serializable {
 
     public void setFechaModifica(Date fechaModifica) {
         this.fechaModifica = fechaModifica;
+    }
+
+    public boolean isCargaliquidacion() {
+        return cargaliquidacion;
+    }
+
+    public void setCargaliquidacion(boolean cargaliquidacion) {
+        this.cargaliquidacion = cargaliquidacion;
     }
 
 }

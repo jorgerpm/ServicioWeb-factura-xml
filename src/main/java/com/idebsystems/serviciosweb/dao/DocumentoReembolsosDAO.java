@@ -28,7 +28,7 @@ public class DocumentoReembolsosDAO extends Persistencia {
     
     public List<Object> listarDocumentos(Date fechaInicio, Date fechaFinal, Long usuarioCarga, 
             String estado, Integer desde, Integer hasta, Long idAprobador, String numeroRC, String tipoReembolso,
-            String numeroReembolso) throws Exception {
+            String numeroReembolso, String numeroLC) throws Exception {
         try {
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
@@ -58,6 +58,9 @@ public class DocumentoReembolsosDAO extends Persistencia {
                 if(Objects.nonNull(tipoReembolso) && !tipoReembolso.isBlank()){
                     sql += " AND d.tipoReembolso = :tipoReembolso";
                 }
+                if(Objects.nonNull(numeroLC) && !numeroLC.isBlank()){
+                    sql += " AND d.liquidacionCompra.numero = :numeroLC";
+                }
             }
             
             sql += " order by d.fechaCarga";
@@ -86,6 +89,9 @@ public class DocumentoReembolsosDAO extends Persistencia {
                 }
                 if(Objects.nonNull(tipoReembolso) && !tipoReembolso.isBlank()){
                     query.setParameter("tipoReembolso", tipoReembolso);
+                }
+                if(Objects.nonNull(numeroLC) && !numeroLC.isBlank()){
+                    query.setParameter("numeroLC", numeroLC);
                 }
             }
             
