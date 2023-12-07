@@ -78,7 +78,11 @@ public class DocumentoReembolsosServicio {
                 Usuario userAprob = uss.stream().filter(u -> Objects.equals(u.getId(), obj.getIdAprobador())).findAny().orElse(new Usuario());
                 dto.setAprobador(userAprob.getNombre());
                 
-                dto.setTipoReembolsoNombre(listTiposRem.stream().filter(tr -> tr.getId() == Long.parseLong(obj.getTipoReembolso())).findFirst().orElse(new TipoReembolso()).getTipo());
+                try{
+                    dto.setTipoReembolsoNombre(listTiposRem.stream().filter(tr -> tr.getId() == Long.parseLong(obj.getTipoReembolso())).findFirst().orElse(new TipoReembolso()).getTipo());
+                }catch(NumberFormatException nfe){
+                    dto.setTipoReembolsoNombre(obj.getTipoReembolso());
+                }
 
                 lista.add(dto);
             });
