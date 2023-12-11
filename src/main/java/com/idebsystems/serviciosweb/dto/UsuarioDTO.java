@@ -26,6 +26,9 @@ public class UsuarioDTO {
     private String respuesta;
     private int alertaFD;
     private String textoAlertaFD;
+    //para la aterta de las LC
+    private int alertaLC;
+    private String textoAlertaLC;
 
     public UsuarioDTO() {
     }
@@ -149,6 +152,21 @@ public class UsuarioDTO {
         this.textoAlertaFD = textoAlertaFD;
     }
 
+    public int getAlertaLC() {
+        return alertaLC;
+    }
+
+    public void setAlertaLC(int alertaLC) {
+        this.alertaLC = alertaLC;
+    }
+
+    public String getTextoAlertaLC() {
+        return textoAlertaLC;
+    }
+
+    public void setTextoAlertaLC(String textoAlertaLC) {
+        this.textoAlertaLC = textoAlertaLC;
+    }
     
     
     @Override

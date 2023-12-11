@@ -5,6 +5,7 @@
  */
 package com.idebsystems.serviciosweb.servicio;
 
+import com.idebsystems.serviciosweb.dao.LiquidacionCompraDAO;
 import com.idebsystems.serviciosweb.dao.ParametroDAO;
 import com.idebsystems.serviciosweb.dao.RolDAO;
 import com.idebsystems.serviciosweb.dao.UsuarioDAO;
@@ -79,19 +80,29 @@ public class UsuarioServicio {
                                 Calendar calFC = Calendar.getInstance();
                                 calFC.setTime(fechaCaduca);
                                 
-                                int disas = (calFC.get(Calendar.DAY_OF_YEAR) - cal.get(Calendar.DAY_OF_YEAR));
+                                int dias = (calFC.get(Calendar.DAY_OF_YEAR) - cal.get(Calendar.DAY_OF_YEAR));
                                 
-                                LOGGER.log(Level.INFO, "dias faltantes:: {0}", disas);
+                                LOGGER.log(Level.INFO, "dias faltantes:: {0}", dias);
                                 
                                 userDto.setAlertaFD(1);
-                                userDto.setTextoAlertaFD("Su firma digital caducar\u00e1 en " + disas + " d\u00edas.");
+                                userDto.setTextoAlertaFD("Su firma digital caducar\u00e1 en " + dias + " d\u00edas.");
                                 
-                                if(disas <= 0){
-                                    userDto.setTextoAlertaFD("Su firma digital ha caducado " + (-disas) + " d\u00edas atr\u00e1s.");
+                                if(dias <= 0){
+                                    userDto.setTextoAlertaFD("Su firma digital ha caducado " + (-dias) + " d\u00edas atr\u00e1s.");
                                 }
                             }
                             
                         }
+                        
+                        //para mostrar la alerta si este usuario tiene liquidaciones de compra en estado pendiente
+                        LiquidacionCompraDAO lcdao = new LiquidacionCompraDAO();
+                        boolean tieneLC = lcdao.tieneLiquidacionesPendientesUsuario(userDto.getId());
+                        if(tieneLC){
+                            userDto.setAlertaLC(1);
+                            userDto.setTextoAlertaLC("Tiene liquidaciones de compra pendientes por firmar.");
+                        }
+                        
+                        
                     }catch(Exception exc){
                         //si pasa error al obtener la firma, debe igual iniciar sesion
                     }

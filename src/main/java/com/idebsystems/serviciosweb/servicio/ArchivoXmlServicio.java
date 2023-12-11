@@ -362,6 +362,12 @@ public class ArchivoXmlServicio {
 //                    return "El archivo xml no tiene la etiqueta factura.";
 //                }
 
+                try{
+                    jsonObj.getJSONObject(tag_xml);
+                }catch(org.json.JSONException jex){
+                    throw new Exception("El xml cargado no es del tipo " + tag_xml);
+                }
+
                 jsonObj.getJSONObject(tag_xml).remove(TAG_SIGNATURE);
 
                 JSONObject objjson = new JSONObject();

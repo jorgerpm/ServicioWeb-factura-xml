@@ -77,7 +77,10 @@ public class ArchivoXmlREST {
             return new RespuestaDTO(resp);
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
-            throw new Exception(exc);
+            RespuestaDTO dto = new RespuestaDTO("");
+            dto.setRespuesta(exc.getMessage());
+            return dto;
+//            throw new Exception(exc);
         }
     }
 

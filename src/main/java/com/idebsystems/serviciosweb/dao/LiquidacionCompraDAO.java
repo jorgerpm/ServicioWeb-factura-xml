@@ -102,4 +102,29 @@ public class LiquidacionCompraDAO extends Persistencia {
         }
     }
     
+    
+    public boolean tieneLiquidacionesPendientesUsuario(Long idUsuarioCarga) throws Exception {
+        try {
+            getEntityManager();
+
+            Query query = em.createQuery("SELECT count(l.id) FROM LiquidacionCompra l INNER JOIN DocumentoReembolsos d ON l.idReembolso = d.id "
+                    + " WHERE l.estado = :estado AND d.usuarioCarga = :idUsuarioCarga ");
+            
+            query.setParameter("estado", "PENDIENTE");
+            query.setParameter("idUsuarioCarga", idUsuarioCarga);
+            
+            List<LiquidacionCompra> data = query.getResultList();
+            
+            return !data.isEmpty();
+
+       } catch (NoResultException exc) {
+            return false;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
+    
 }

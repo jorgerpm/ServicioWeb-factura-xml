@@ -11,6 +11,7 @@ import com.idebsystems.serviciosweb.dao.UsuarioDAO;
 import com.idebsystems.serviciosweb.dto.UsuarioDTO;
 import com.idebsystems.serviciosweb.entities.ArchivoXml;
 import com.idebsystems.serviciosweb.entities.DocumentoReembolsos;
+import com.idebsystems.serviciosweb.entities.LiquidacionCompra;
 import com.idebsystems.serviciosweb.entities.Parametro;
 import com.idebsystems.serviciosweb.entities.TipoReembolso;
 import com.idebsystems.serviciosweb.entities.Usuario;
@@ -274,7 +275,7 @@ public class CorreoServicio {
                     
                     String asuntoMail = pasunto.getValor();
                     asuntoMail = asuntoMail.replace("[tipoReembolso]", tirem.getTipo());
-                    asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
+                    asuntoMail = asuntoMail.replace("[numero]", doc.getNumeroReembolso());
                     
                     //transformar el mensaje con los datos
                     String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
@@ -286,7 +287,7 @@ public class CorreoServicio {
                     mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
                     mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
                     mensajeText = mensajeText.replace("[tipoReembolso]", tirem.getTipo());
-                    mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
+                    mensajeText = mensajeText.replace("[numero]", doc.getNumeroReembolso());
 
                     //esta parte es para controlar si el correo se envia al jefe del usuario, que es el aporbador , o se envia 
                     //al contador que es los correos en los parametros
@@ -336,7 +337,7 @@ public class CorreoServicio {
                     String asuntoMail = pasunto.getValor();
                     asuntoMail = asuntoMail.replace("[tipoReembolso]", tirem.getTipo());
                     asuntoMail = asuntoMail.replace("[estado]", doc.getEstado());
-                    asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
+                    asuntoMail = asuntoMail.replace("[numero]", doc.getNumeroReembolso());
                     
                     //transformar el mensaje con los datos
                     String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
@@ -348,7 +349,7 @@ public class CorreoServicio {
                     mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
                     mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
                     mensajeText = mensajeText.replace("[tipoReembolso]", tirem.getTipo());
-                    mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
+                    mensajeText = mensajeText.replace("[numero]", doc.getNumeroReembolso());
                     
 
                     
@@ -417,13 +418,13 @@ public class CorreoServicio {
             mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
             mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
             mensajeText = mensajeText.replace("[tipoReembolso]", tirem.getTipo());
-            mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
+            mensajeText = mensajeText.replace("[numero]", doc.getNumeroReembolso());
             
 
             String asuntoMail = pasunto.getValor();
             asuntoMail = asuntoMail.replace("[tipoReembolso]", tirem.getTipo());
             asuntoMail = asuntoMail.replace("[estado]", doc.getEstado());
-            asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
+            asuntoMail = asuntoMail.replace("[numero]", doc.getNumeroReembolso());
             
             //generar el pdf a adjuntar     
             File fileCot = File.createTempFile("reembolso",".pdf");
@@ -473,14 +474,14 @@ public class CorreoServicio {
             mensajeText = mensajeText.replace("[usuarioAprueba]", Objects.nonNull(doc.getUsuarioAutoriza()) ? doc.getUsuarioAutoriza() : "");
             mensajeText = mensajeText.replace("[razonRechazo]", Objects.nonNull(doc.getRazonRechazo()) ? doc.getRazonRechazo() : "");
             mensajeText = mensajeText.replace("[tipoReembolso]", tirem.getTipo());
-            mensajeText = mensajeText.replace("[numero]", doc.getId()+"");
+            mensajeText = mensajeText.replace("[numero]", doc.getNumeroReembolso());
             
             
             //asunto del correo
             String asuntoMail = pasunto.getValor();
             asuntoMail = asuntoMail.replace("[tipoReembolso]", tirem.getTipo());
             asuntoMail = asuntoMail.replace("[estado]", doc.getEstado());
-            asuntoMail = asuntoMail.replace("[numero]", doc.getId()+"");
+            asuntoMail = asuntoMail.replace("[numero]", doc.getNumeroReembolso());
             
             //generar el archivo a adjuntar
             LOGGER.log(Level.INFO, "el tipo: {0}", doc.getTipoJustificacionBase64());
@@ -508,7 +509,68 @@ public class CorreoServicio {
 
         } catch (Exception exc) {
             LOGGER.log(Level.SEVERE, null, exc);
-            throw new Exception(exc);
+            throw new Exception("No se pudo enviar el correo, verifique los parámetros del correo. " + exc.getMessage().replace("java.lang.NumberFormatException", ""));
+        }
+    }
+    
+    
+    public void enviaCorreoCargaLiquidacion(Long idUsuario, DocumentoReembolsos doc, LiquidacionCompra lc)  {
+        try {
+            Thread correo = new Thread(() -> {
+                try {
+                    //buscar el usuario con el iduser
+                    UsuarioDAO userDao = new UsuarioDAO();
+                    Usuario user = userDao.buscarUsuarioPorId(idUsuario);
+                    
+                    //consultar los prametros del correo desde la base de datos.
+                    ParametroDAO paramDao = new ParametroDAO();
+                    List<Parametro> listaParams = paramDao.listarParametros();
+                    
+//                    List<Parametro> paramsMail = listaParams.stream().filter(p -> p.getNombre().contains("MAIL")).collect(Collectors.toList());
+                    
+                    Parametro pasunto = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("ASUNTOMAIL_CARGA_LIQUIDACION")).findAny().get();
+                    Parametro paramMsm = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("MENSAJEMAIL_CARGA_LIQUIDACION")).findAny().get();
+//                    Parametro pdestino = listaParams.stream().filter(p -> p.getNombre().equalsIgnoreCase("DESTINOMAIL_LIQUIDACION")).findAny().get();   
+            
+                    //generar el pdf a adjuntar
+                    
+//                    File fileCot = File.createTempFile("reembolso",".pdf");
+//                    FileOutputStream fis = new FileOutputStream(fileCot);
+//                    fis.write(Base64.getDecoder().decode(pdfBase64));
+//                    fis.close();
+
+//                    List<File> archivosAdjuntos = new ArrayList<>();
+//                    archivosAdjuntos.add(fileCot);
+                    
+                    //obtener los tipos de reembolso en base al id
+                    TipoReembolsoDAO trdao = new TipoReembolsoDAO();
+                    TipoReembolso tirem = trdao.getTipoReembolsoPorId(Long.parseLong(doc.getTipoReembolso()));
+                    
+                    String asuntoMail = pasunto.getValor();
+                    asuntoMail = asuntoMail.replace("[numero]", lc.getNumero());
+                    
+                    //transformar el mensaje con los datos
+                    String mensajeText = paramMsm.getValor().replace("[usuario]", user.getNombre());
+                    mensajeText = mensajeText.replace("[estado]", lc.getEstado());
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+                    mensajeText = mensajeText.replace("[fechaCarga]", sdf.format(lc.getFechaModifica()));
+                    mensajeText = mensajeText.replace("[tipoReembolso]", tirem.getTipo());
+                    mensajeText = mensajeText.replace("[numeroReembolso]", doc.getNumeroReembolso());
+                    mensajeText = mensajeText.replace("[numero]", lc.getNumero());
+                    
+                    
+                    enviarCorreo(user.getCorreo(), asuntoMail, mensajeText, null/*archivosAdjuntos*/);
+                    
+                } catch (Exception exc) {
+                    LOGGER.log(Level.SEVERE, null, exc);
+                }
+            });
+
+            correo.start();
+
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+//            throw new Exception(exc);
         }
     }
 }

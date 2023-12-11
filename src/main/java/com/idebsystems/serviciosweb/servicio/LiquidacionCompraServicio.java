@@ -5,9 +5,11 @@
  */
 package com.idebsystems.serviciosweb.servicio;
 
+import com.idebsystems.serviciosweb.dao.DocumentoReembolsosDAO;
 import com.idebsystems.serviciosweb.dao.LiquidacionCompraDAO;
 import com.idebsystems.serviciosweb.dto.FirmaDigitalDTO;
 import com.idebsystems.serviciosweb.dto.LiquidacionCompraDTO;
+import com.idebsystems.serviciosweb.entities.DocumentoReembolsos;
 import com.idebsystems.serviciosweb.entities.LiquidacionCompra;
 import com.idebsystems.serviciosweb.mappers.LiquidacionCompraMapper;
 import java.util.Base64;
@@ -41,6 +43,12 @@ public class LiquidacionCompraServicio {
             
             dto = LiquidacionCompraMapper.INSTANCE.entityToDto(ent);
             dto.setRespuesta("OK");
+            
+            //emviar el correo al usuario que cargo el reembolso
+            DocumentoReembolsosDAO remdao = new DocumentoReembolsosDAO();
+            DocumentoReembolsos dr = remdao.getDocumentosPorId(dto.getIdReembolso());
+            CorreoServicio correo = new CorreoServicio();
+            correo.enviaCorreoCargaLiquidacion(dr.getUsuarioCarga(), dr, ent);
             
             return dto;
             
