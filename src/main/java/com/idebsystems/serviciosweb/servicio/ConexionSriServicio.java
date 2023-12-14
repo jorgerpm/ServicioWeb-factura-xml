@@ -136,7 +136,7 @@ public class ConexionSriServicio {
                     + "   </soapenv:Body>\n"
                     + "</soapenv:Envelope>";
 
-            System.out.println("va a llamar con claveAcceso: " + claveAcceso);
+            LOGGER.log(Level.INFO, "va a llamar con claveAcceso: {0}", claveAcceso);
 
             byte[] buffer = new byte[xmlInput.length()];
             buffer = xmlInput.getBytes();
