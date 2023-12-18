@@ -5,6 +5,7 @@
  */
 package com.idebsystems.serviciosweb.servicio;
 
+import com.idebsystems.serviciosweb.dao.DocumentoReembolsosDAO;
 import com.idebsystems.serviciosweb.dao.LiquidacionCompraDAO;
 import com.idebsystems.serviciosweb.dao.ParametroDAO;
 import com.idebsystems.serviciosweb.dao.RolDAO;
@@ -93,19 +94,55 @@ public class UsuarioServicio {
                             }
                             
                         }
-                        
-                        //para mostrar la alerta si este usuario tiene liquidaciones de compra en estado pendiente
-                        LiquidacionCompraDAO lcdao = new LiquidacionCompraDAO();
-                        boolean tieneLC = lcdao.tieneLiquidacionesPendientesUsuario(userDto.getId());
-                        if(tieneLC){
-                            userDto.setAlertaLC(1);
-                            userDto.setTextoAlertaLC("Tiene liquidaciones de compra pendientes por firmar.");
-                        }
-                        
-                        
                     }catch(Exception exc){
                         //si pasa error al obtener la firma, debe igual iniciar sesion
                     }
+                        
+                    //para mostrar la alerta si este usuario tiene liquidaciones de compra en estado pendiente
+                    LiquidacionCompraDAO lcdao = new LiquidacionCompraDAO();
+                    boolean tieneLC = lcdao.tieneLiquidacionesPendientesUsuario(userDto.getId());
+                    if(tieneLC){
+                        userDto.setAlertaLC(1);
+                        userDto.setTextoAlertaLC("Tiene liquidaciones de compra pendientes por firmar.");
+                    }
+                    else{
+                        userDto.setAlertaLC(0);
+                        userDto.setTextoAlertaLC(null);
+                    }
+
+                    //aca valida si tiene reembolsos POR_AUTORIZAR, se debe validar por aprobador
+                    //y tambien validar por los contador y auxiliar
+                    ParametroDAO pdao = new ParametroDAO();
+                    Parametro ptiempo = pdao.buscarParametroPorNombre("TIEMPO_ALERTA_REEMBOLSO_PENDIENTE");
+                    DocumentoReembolsosDAO reemdao = new DocumentoReembolsosDAO();
+                    boolean porAutorizar = reemdao.tieneDocumentosPorAprobarUsuario(userDto.getId(), ptiempo.getValor());
+                    LOGGER.log(Level.INFO, "porAutorizar1 {0}", porAutorizar);
+                    if(porAutorizar){
+                        userDto.setAlertaRPA(1);
+                        userDto.setTextoAlertaRPA("Tiene reembolsos pendientes por aprobar.");
+                    }
+                    else{
+                        //si el rol es contador o auxiliar
+                        LOGGER.log(Level.INFO, "esrol {0}", userDto.getIdRol());
+                        if(userDto.getIdRol() == 4 || userDto.getIdRol() == 5){
+                            porAutorizar = reemdao.tieneDocumentosPorAprobarContador(ptiempo.getValor());
+                            LOGGER.log(Level.INFO, "porAutorizar2 {0}", porAutorizar);
+                            if(porAutorizar){
+                                userDto.setAlertaRPA(1);
+                                userDto.setTextoAlertaRPA("Tiene reembolsos pendientes por aprobar.");
+                            }
+                            else{
+                                userDto.setAlertaRPA(0);
+                                userDto.setTextoAlertaRPA(null);
+                            }
+                        }
+                        else{
+                            userDto.setAlertaRPA(0);
+                            userDto.setTextoAlertaRPA(null);
+                        }
+                    }
+                    //hasta aca
+                    
                 }
             } else {
                 return new UsuarioDTO("OK");

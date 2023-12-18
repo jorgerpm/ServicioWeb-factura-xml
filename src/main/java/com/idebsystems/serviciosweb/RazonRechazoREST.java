@@ -35,6 +35,7 @@ public class RazonRechazoREST {
     @Produces({MediaType.APPLICATION_JSON})
     public List<RazonRechazoDTO> listarRazonesRechazo(@QueryParam(value = "estado") boolean estado) throws Exception {
         try {
+            LOGGER.log(Level.INFO, "estado: {0}", estado);
             //buscar en la bdd los parametroes
             return service.listarRazonesRechazo(estado);
         } catch (Exception exc) {

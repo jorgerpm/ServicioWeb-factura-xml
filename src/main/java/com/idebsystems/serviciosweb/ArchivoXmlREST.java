@@ -8,6 +8,7 @@ package com.idebsystems.serviciosweb;
 import com.idebsystems.serviciosweb.dto.AnularArchivoXmlDTO;
 import com.idebsystems.serviciosweb.dto.ArchivoSriDTO;
 import com.idebsystems.serviciosweb.dto.ArchivoXmlDTO;
+import com.idebsystems.serviciosweb.dto.BuscadorArchivoXml;
 import com.idebsystems.serviciosweb.dto.RespuestaDTO;
 import com.idebsystems.serviciosweb.servicio.ArchivoXmlServicio;
 import java.text.SimpleDateFormat;
@@ -99,52 +100,43 @@ public class ArchivoXmlREST {
         }
     }
 
-    @GET
+//    @GET
+    @POST
     @Path("/listarPorFecha")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public List<ArchivoXmlDTO> listarPorFecha(@QueryParam(value = "fechaInicio") String fechaInicio,
-            @QueryParam(value = "fechaFinal") String fechaFinal,
-            @QueryParam(value = "idUsuarioCarga") Long idUsuarioCarga,
-            
-            @QueryParam(value = "claveacceso") String claveAcceso,
-            @QueryParam(value = "ruc") String ruc,
-            @QueryParam(value = "tipodoc") String tipoDocumento,
-            @QueryParam(value = "estadoSistema") String estadoSistema,
-            
-            @QueryParam(value = "desde") int desde,
-            @QueryParam(value = "hasta") int hasta,
-            @QueryParam(value = "seleccionados") boolean seleccionados,
-            @QueryParam(value = "conDetalles") boolean conDetalles,
-            @QueryParam(value = "idReembolso") long idReembolso,
-            @QueryParam(value = "exportado") String exportado,
-            @QueryParam(value = "rucEmpresa") String rucEmpresa) throws Exception {
+    public List<ArchivoXmlDTO> listarPorFecha(BuscadorArchivoXml buscador) throws Exception {
+//    public List<ArchivoXmlDTO> listarPorFecha(@QueryParam(value = "fechaInicio") String fechaInicio,
+//            @QueryParam(value = "fechaFinal") String fechaFinal,
+//            @QueryParam(value = "idUsuarioCarga") Long idUsuarioCarga,
+//            
+//            @QueryParam(value = "claveacceso") String claveAcceso,
+//            @QueryParam(value = "ruc") String ruc,
+//            @QueryParam(value = "tipodoc") String tipoDocumento,
+//            @QueryParam(value = "estadoSistema") String estadoSistema,
+//            
+//            @QueryParam(value = "desde") int desde,
+//            @QueryParam(value = "hasta") int hasta,
+//            @QueryParam(value = "seleccionados") boolean seleccionados,
+//            @QueryParam(value = "conDetalles") boolean conDetalles,
+//            @QueryParam(value = "idReembolso") long idReembolso,
+//            @QueryParam(value = "exportado") String exportado,
+//            @QueryParam(value = "rucEmpresa") String rucEmpresa,
+//            @QueryParam(value = "idRolSesion") Long idRolSesion) throws Exception {
         try {
-//            LOGGER.log(Level.INFO, "fechaInicio: {0}", fechaInicio);
-//            LOGGER.log(Level.INFO, "fechaFinal: {0}", fechaFinal);
-//            LOGGER.log(Level.INFO, "idUsuarioCarga: {0}", idUsuarioCarga);
-//            
-//            LOGGER.log(Level.INFO, "claveAcceso: {0}", claveAcceso);
-//            LOGGER.log(Level.INFO, "ruc: {0}", ruc);
-//            LOGGER.log(Level.INFO, "tipoDocumento: {0}", tipoDocumento);
-//            LOGGER.log(Level.INFO, "estadoSistema: {0}", estadoSistema);
-//            
-//            LOGGER.log(Level.INFO, "desde: {0}", desde);
-//            LOGGER.log(Level.INFO, "hasta: {0}", hasta);
-//            LOGGER.log(Level.INFO, "seleccionados: {0}", seleccionados);
-            LOGGER.log(Level.INFO, "rucEmpresa: {0}", rucEmpresa);
+//            LOGGER.log(Level.INFO, "buscador: {0}", buscador);
             
-            
-            //Long variable = new Date().getTime();
-//            LOGGER.log(Level.INFO, String.valueOf(variable));
+//            LOGGER.log(Level.INFO, "buscador.getClavesSeleccionadas: {0}", buscador.getClavesSeleccionadas());
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date dateInit = sdf.parse(fechaInicio);
-            Date dateFin = sdf.parse(fechaFinal);
+            Date dateInit = sdf.parse(buscador.getFechaInicio());
+            Date dateFin = sdf.parse(buscador.getFechaFinal());
             //buscar en la bdd los roles
-            List<ArchivoXmlDTO> listaArchivo = service.listarPorFecha(dateInit, dateFin, idUsuarioCarga, 
-                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, conDetalles, 
-                    idReembolso, exportado, rucEmpresa);
+            List<ArchivoXmlDTO> listaArchivo = service.listarPorFecha(dateInit, dateFin, buscador.getIdUsuarioCarga(), 
+                    buscador.getClaveAcceso(), buscador.getRuc(), buscador.getTipoDocumento(), buscador.getEstadoSistema(), 
+                    buscador.getDesde(), buscador.getHasta(), buscador.isSeleccionados(), buscador.isConDetalles(), 
+                    buscador.getIdReembolso(), buscador.getExportado(), buscador.getRucEmpresa(), buscador.getIdRolSesion(),
+                    buscador.getClavesSeleccionadas());
 //            LOGGER.log(Level.INFO, "tamaño: {0}", listaArchivo);
 
             return listaArchivo;

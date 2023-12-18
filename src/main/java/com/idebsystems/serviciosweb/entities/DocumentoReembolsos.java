@@ -57,6 +57,8 @@ public class DocumentoReembolsos implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date fechaProcesa;
     private String numeroReembolso;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaAlerta;
     
     @OneToOne(mappedBy = "documentoReembolsos")
     private LiquidacionCompra liquidacionCompra;
@@ -259,6 +261,14 @@ public class DocumentoReembolsos implements Serializable {
 
     public void setLiquidacionCompra(LiquidacionCompra liquidacionCompra) {
         this.liquidacionCompra = liquidacionCompra;
+    }
+
+    public Date getFechaAlerta() {
+        return fechaAlerta;
+    }
+
+    public void setFechaAlerta(Date fechaAlerta) {
+        this.fechaAlerta = fechaAlerta;
     }
 
     

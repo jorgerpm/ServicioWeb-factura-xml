@@ -113,9 +113,14 @@ public class LiquidacionCompraDAO extends Persistencia {
             query.setParameter("estado", "PENDIENTE");
             query.setParameter("idUsuarioCarga", idUsuarioCarga);
             
-            List<LiquidacionCompra> data = query.getResultList();
+            List<Long> data = query.getResultList();
             
-            return !data.isEmpty();
+            if(data.isEmpty()){
+                return false;
+            }
+            else{
+                return Objects.nonNull(data.get(0)) && data.get(0) > 0;
+            }
 
        } catch (NoResultException exc) {
             return false;

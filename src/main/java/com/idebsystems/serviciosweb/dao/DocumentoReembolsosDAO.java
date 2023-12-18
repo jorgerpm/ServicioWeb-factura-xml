@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
@@ -212,6 +213,99 @@ public class DocumentoReembolsosDAO extends Persistencia {
             throw new Exception(exc);
         } finally {
             closeEntityManager();
+        }
+    }
+    
+    
+    public boolean tieneDocumentosPorAprobarUsuario(Long idUsuarioAprobador, String ptiempo) throws Exception {
+        try {
+            getEntityManager();
+
+            Query query = em.createNativeQuery("Select d.id FROM DocumentoReembolsos d "
+                    + " WHERE d.idAprobador = ?idUsuario AND d.estado = ?estado"
+                    + " AND (d.fechaAlerta is null or (d.fechaAlerta + interval '"+ptiempo+" hour') <= now())");
+            
+            query.setParameter("idUsuario", idUsuarioAprobador);
+            query.setParameter("estado", "POR_AUTORIZAR");
+
+            List<Long> lista = query.getResultList();
+
+            if(lista.isEmpty()){
+                return false;
+            }
+            else{
+                lista.forEach(idReem -> {actualizarFechaAlerta(idReem, em);});
+                return true;
+            }
+
+       } catch (NoResultException exc) {
+            return false;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
+    
+    /**
+     * este metod busca los reembolsos pendientes para el rol contador y el rol auxiliar
+     * @param ptiempo 
+     * @throws Exception
+     * @return 
+     */
+    public boolean tieneDocumentosPorAprobarContador(String ptiempo) throws Exception {
+        try {
+            getEntityManager();
+
+            Query query1 = em.createNativeQuery("Select d.id FROM DocumentoReembolsos d "
+                    + " WHERE d.estado = ?estadouno AND d.tipoReembolso = '4' "
+                    + " AND (d.fechaAlerta is null or (d.fechaAlerta + interval '"+ptiempo+" hour') <= now())"
+                    + " union "
+                    + "Select d.id FROM DocumentoReembolsos d "
+                    + " WHERE d.estado = ?estadodos AND d.tipoReembolso IN ('1','2','3') "
+                    + " AND (d.fechaAlerta is null or (d.fechaAlerta + interval '"+ptiempo+" hour') <= now())");
+            
+            query1.setParameter("estadouno", "POR_AUTORIZAR");
+            query1.setParameter("estadodos", "APROBADO");
+
+            List<Long> lista1 = query1.getResultList();
+            
+            if(lista1.isEmpty()){
+                return false;
+            }
+            else{
+                lista1.forEach(idReem -> {actualizarFechaAlerta(idReem, em);});
+                return true;
+            }
+
+       } catch (NoResultException exc) {
+            return false;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
+    
+    
+    public void actualizarFechaAlerta(Long idReembolso, EntityManager em) {
+        try {
+            //aqui no se abre el entitymm
+            em.getTransaction().begin();
+
+            DocumentoReembolsos dr = em.find(DocumentoReembolsos.class, idReembolso);
+            dr.setFechaAlerta(new Date());
+            em.merge(dr); //update
+
+            em.getTransaction().commit();
+        
+        } catch (Exception exc) {
+            rollbackTransaction();
+            LOGGER.log(Level.SEVERE, null, exc);
+        } finally {
+            //aqui no se cierra el ent
         }
     }
 }

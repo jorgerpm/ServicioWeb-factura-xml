@@ -29,6 +29,9 @@ public class UsuarioDTO {
     //para la aterta de las LC
     private int alertaLC;
     private String textoAlertaLC;
+    //para alertas de reembolsos por aprobar
+    private int alertaRPA;
+    private String textoAlertaRPA;
 
     public UsuarioDTO() {
     }
@@ -166,6 +169,22 @@ public class UsuarioDTO {
 
     public void setTextoAlertaLC(String textoAlertaLC) {
         this.textoAlertaLC = textoAlertaLC;
+    }
+
+    public int getAlertaRPA() {
+        return alertaRPA;
+    }
+
+    public void setAlertaRPA(int alertaRPA) {
+        this.alertaRPA = alertaRPA;
+    }
+
+    public String getTextoAlertaRPA() {
+        return textoAlertaRPA;
+    }
+
+    public void setTextoAlertaRPA(String textoAlertaRPA) {
+        this.textoAlertaRPA = textoAlertaRPA;
     }
     
     

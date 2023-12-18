@@ -8,6 +8,7 @@ package com.idebsystems.serviciosweb.servicio;
 import com.google.gson.Gson;
 import com.idebsystems.serviciosweb.dao.ArchivoXmlDAO;
 import com.idebsystems.serviciosweb.dao.ParametroDAO;
+import com.idebsystems.serviciosweb.dao.RolDAO;
 import com.idebsystems.serviciosweb.dao.TipoReembolsoDAO;
 import com.idebsystems.serviciosweb.dao.UsuarioDAO;
 import com.idebsystems.serviciosweb.dto.AnularArchivoXmlDTO;
@@ -17,6 +18,7 @@ import com.idebsystems.serviciosweb.dto.ProveedorDTO;
 import com.idebsystems.serviciosweb.dto.ReporteDTO;
 import com.idebsystems.serviciosweb.entities.ArchivoXml;
 import com.idebsystems.serviciosweb.entities.Parametro;
+import com.idebsystems.serviciosweb.entities.Rol;
 import com.idebsystems.serviciosweb.entities.TipoReembolso;
 import com.idebsystems.serviciosweb.entities.Usuario;
 import com.idebsystems.serviciosweb.mappers.ArchivoXmlMapper;
@@ -437,20 +439,22 @@ public class ArchivoXmlServicio {
     public List<ArchivoXmlDTO> listarPorFecha(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
             String claveAcceso, String ruc, String tipoDocumento, String estadoSistema,
             Integer desde, Integer hasta, boolean seleccionados, boolean conDetalles, long idReembolso,
-            String exportado, String rucEmpresa) throws Exception {
+            String exportado, String rucEmpresa, Long idRolSesion, List<String> clavesSeleccionadas) throws Exception {
         try {
-
+            
             final List<ArchivoXmlDTO> listaArchivoXmlDto = new ArrayList();
 
             List<Object> respuesta;
             
             if(conDetalles){
                 respuesta = dao.listarConDetalles(FechaUtil.fechaInicial(fechaInicio), FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, 
-                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso, exportado, rucEmpresa);
+                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso, exportado, rucEmpresa,
+                    idRolSesion, clavesSeleccionadas);
             }
             else{
                 respuesta = dao.listarPorFecha(FechaUtil.fechaInicial(fechaInicio), FechaUtil.fechaFinal(fechaFinal), idUsuarioCarga, 
-                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso, exportado, rucEmpresa);
+                    claveAcceso, ruc, tipoDocumento, estadoSistema, desde, hasta, seleccionados, idReembolso, exportado, rucEmpresa, 
+                    idRolSesion, clavesSeleccionadas);
             }
 
             //sacar los resultados retornados
@@ -500,8 +504,12 @@ public class ArchivoXmlServicio {
                     if(archivoXml.getReembolso() != null){
 //                        LOGGER.log(Level.INFO, "archivoXml.getNumeroReembolso(): {0}", archivoXml.getReembolso().getNumeroReembolso());
                         archivoXmlDto.setNumeroReembolso(archivoXml.getReembolso().getNumeroReembolso());
-                        TipoReembolso entTR = listTiposReem.stream().filter(tr -> tr.getId() == Long.parseLong(archivoXml.getReembolso().getTipoReembolso())).findAny().orElse(new TipoReembolso());
-                        archivoXmlDto.setTipoReembolso(entTR.getTipo());
+                        try{
+                            TipoReembolso entTR = listTiposReem.stream().filter(tr -> tr.getId() == Long.parseLong(archivoXml.getReembolso().getTipoReembolso())).findAny().orElse(new TipoReembolso());
+                            archivoXmlDto.setTipoReembolso(entTR.getTipo());
+                        }catch(Exception exc){
+                            archivoXmlDto.setTipoReembolso(archivoXml.getReembolso().getTipoReembolso());
+                        }
                     }
                     
                     listaArchivoXmlDto.add(archivoXmlDto);

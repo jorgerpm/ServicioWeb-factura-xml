@@ -7,6 +7,7 @@ package com.idebsystems.serviciosweb.dao;
 
 import com.idebsystems.serviciosweb.dto.ArchivoXmlDTO;
 import com.idebsystems.serviciosweb.entities.ArchivoXml;
+import com.idebsystems.serviciosweb.entities.Rol;
 import com.idebsystems.serviciosweb.entities.Usuario;
 import com.idebsystems.serviciosweb.servicio.ArchivoXmlServicio;
 import com.idebsystems.serviciosweb.util.Persistencia;
@@ -83,10 +84,14 @@ public class ArchivoXmlDAO extends Persistencia {
         }
     }
     
-    public List<Object> listarPorFecha(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
-            String claveAcceso, String rucNombre, String tipoDocumento, String estadoSistema,Integer desde, Integer hasta, 
-            boolean seleccionados, long idReembolso, String exportado, String rucCliente) throws Exception {
+    public List<Object> listarPorFecha(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, String claveAcceso, 
+            String rucNombre, String tipoDocumento, String estadoSistema,Integer desde, Integer hasta, boolean seleccionados, 
+            long idReembolso, String exportado, String rucCliente, Long idRolSesion, List<String> clavesSeleccionadas) throws Exception {
         try {
+            //aqui se debe quitar los documentos que el usuarioSesion no puede buscar segun su rol
+            RolDAO rolDao = new RolDAO();
+            Rol rol = rolDao.buscarRolPorId(idRolSesion);
+            
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
 
@@ -109,6 +114,20 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(tipoDocumento) && !tipoDocumento.isBlank()){
                 sql += " AND ax.tipoDocumento = :tipoDocumento";
             }
+            else{
+                String tx = "(";
+                tx += rol.isbFactura() ? "'01','NV','MS'," : "";
+                tx += rol.isbGuiaRemision() ? "'06'," : "";
+                tx += rol.isbNotaCredito() ? "'04'," : "";
+                tx += rol.isbNotaDebito() ? "'05'," : "";
+                tx += rol.isbRetencion() ? "'07'," : "" ;
+                tx += ")";
+                tx = tx.replace(",)", ")");
+                
+                sql += " AND ax.tipoDocumento IN "+tx+"";
+//                System.out.println("tipodoc:: " + sql);
+            }
+            
             if(Objects.nonNull(rucNombre) && !rucNombre.isBlank()){//este es el ruc o nombre del emisor
                 sql += " AND (ax.comprobante like '%ruc\":"+rucNombre.toUpperCase()+"%' "
                         //este OR se hace porque en los miscelaneos y facturas fisicas se guarda ru":"333.... con todo el " al inicio delruc
@@ -128,6 +147,10 @@ public class ArchivoXmlDAO extends Persistencia {
                 sql += " AND (ax.comprobante like '%identificacionComprador\":"+rucCliente.toUpperCase()+"%' "//fact nd y nc
                 + "OR ax.comprobante like '%identificacionSujetoRetenido\":"+rucCliente.toUpperCase()+"%' "//retencion
                 + "OR ax.comprobante like '%identificacionProveedor\":"+rucCliente.toUpperCase()+"%')"; //liquidacion compra
+            }
+            //para cuando exporta seleccionados
+            if(seleccionados){
+                sql += " AND ax.claveAcceso IN :clavesAcceso ";
             }
             
             sql += " order by ax.fechaEmision";
@@ -160,6 +183,10 @@ public class ArchivoXmlDAO extends Persistencia {
 //            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
 //                query.setParameter("rucEmisor", rucEmisor);
 //            }
+            //para cuando exporta seleccionados
+            if(seleccionados){
+                query.setParameter("clavesAcceso", clavesSeleccionadas);
+            }
 
 
             //para obtener el total de los registros a buscar
@@ -184,15 +211,15 @@ public class ArchivoXmlDAO extends Persistencia {
 
             //aqui si el valor de "hasta" es mayor a mil, se los debe marcar como que fueron exportados.
             //esta parte es asi porque se les llama para exportar a excel, y aqui se les debe marcar
-//            if(hasta > 1000 && !seleccionados){
-//                em.getTransaction().begin();
-//                for(ArchivoXml xml : listaPorFecha) {
-//                    LOGGER.log(Level.INFO, "se va a actualizar el exportado a true {0}", xml.getId());
-//                    xml.setExportado(true);
-//                    em.merge(xml);
-//                }
-//                em.getTransaction().commit();
-//            }
+            if(hasta > 1000 /*&& !seleccionados*/) {
+                em.getTransaction().begin();
+                for(ArchivoXml xml : listaPorFecha) {
+                    LOGGER.log(Level.INFO, "se va a actualizar el exportado a true {0}", xml.getId());
+                    xml.setExportado(true);
+                    em.merge(xml);
+                }
+                em.getTransaction().commit();
+            }
 
             return respuesta;
 
@@ -304,10 +331,14 @@ public class ArchivoXmlDAO extends Persistencia {
     
     
     
-    public List<Object> listarConDetalles(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, 
-            String claveAcceso, String rucNombre, String tipoDocumento, String estadoSistema, Integer desde, Integer hasta, 
-            boolean seleccionados, long idReembolso, String exportado, String rucCliente) throws Exception {
+    public List<Object> listarConDetalles(Date fechaInicio, Date fechaFinal, Long idUsuarioCarga, String claveAcceso, 
+            String rucNombre, String tipoDocumento, String estadoSistema, Integer desde, Integer hasta, boolean seleccionados, 
+            long idReembolso, String exportado, String rucCliente, Long idRolSesion, List<String> clavesSeleccionadas) throws Exception {
         try {
+            //aqui se debe quitar los documentos que el usuarioSesion no puede buscar segun su rol
+            RolDAO rolDao = new RolDAO();
+            Rol rol = rolDao.buscarRolPorId(idRolSesion);
+            
             List<Object> respuesta = new ArrayList<>();
             getEntityManager();
 
@@ -330,6 +361,20 @@ public class ArchivoXmlDAO extends Persistencia {
             if(Objects.nonNull(tipoDocumento) && !tipoDocumento.isBlank()){
                 sql += " AND a.tipoDocumento = ?tipoDocumento";
             }
+            else{
+                String tx = "(";
+                tx += rol.isbFactura() ? "'01','NV','MS'," : "";
+                tx += rol.isbGuiaRemision() ? "'06'," : "";
+                tx += rol.isbNotaCredito() ? "'04'," : "";
+                tx += rol.isbNotaDebito() ? "'05'," : "";
+                tx += rol.isbRetencion() ? "'07'," : "" ;
+                tx += ")";
+                tx = tx.replace(",)", ")");
+                
+                sql += " AND a.tipoDocumento IN "+tx+"";
+//                System.out.println("tipodoc:: " + sql);
+            }
+            
             if(Objects.nonNull(rucNombre) && !rucNombre.isBlank()){//este es el ruc o nombre del emisor
                 sql += " AND (a.comprobante like '%ruc\":"+rucNombre.toUpperCase()+"%' "
                         //este OR se hace porque en los miscelaneos y facturas fisicas se guarda ru":"333.... con todo el " al inicio delruc
@@ -350,10 +395,17 @@ public class ArchivoXmlDAO extends Persistencia {
                 + "OR a.comprobante like '%identificacionSujetoRetenido\":"+rucCliente.toUpperCase()+"%' "//retencion
                 + "OR a.comprobante like '%identificacionProveedor\":"+rucCliente.toUpperCase()+"%')"; //liquidacion compra
             }
+            //para cuando exporta seleccionados
+            if(seleccionados){
+                final StringBuilder aux = new StringBuilder("(");
+                clavesSeleccionadas.forEach(ca -> {aux.append("'").append(ca).append("',");});
+                aux.append(")");
+                sql += " AND a.claveAcceso IN "+aux.toString().replace(",)", ")");
+            }
             
             sql += " order by a.fechaEmision";
             
-            LOGGER.log(Level.INFO, "el sql: {0}", sql);
+//            LOGGER.log(Level.INFO, "el sql: {0}", sql);
             
             Query query = em.createNativeQuery(sql);
                     
@@ -382,6 +434,10 @@ public class ArchivoXmlDAO extends Persistencia {
             }
 //            if(Objects.nonNull(rucEmisor) && !rucEmisor.isBlank()){
 //                query.setParameter("rucEmisor", rucEmisor);
+//            }
+            //para cuando exporta seleccionados
+//            if(seleccionados){
+//                query.setParameter("clavesAcceso", clavesSeleccionadas);
 //            }
             
 
@@ -459,7 +515,7 @@ public class ArchivoXmlDAO extends Persistencia {
 
             //aqui si el valor de "hasta" es mayor a mil, se los debe marcar como que fueron exportados.
             //esta parte es asi porque se les llama para exportar a excel, y aqui se les debe marcar
-            if(hasta > 1000 && !seleccionados){
+            if(hasta > 1000 /*&& !seleccionados*/){
                 em.getTransaction().begin();
                 for(ArchivoXmlDTO dto : listaPorFecha) {
                     LOGGER.log(Level.INFO, "se va a actualizar el exportado a true {0}", dto.getId());
