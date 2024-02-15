@@ -308,4 +308,32 @@ public class DocumentoReembolsosDAO extends Persistencia {
             //aqui no se cierra el ent
         }
     }
+    
+    public DocumentoReembolsos getDocumentoPorIdsXmlPorAutorizar(String idsXml) throws Exception {
+        try {
+            getEntityManager();
+
+            Query query = em.createQuery("SELECT d FROM DocumentoReembolsos d WHERE d.estado = :estado AND d.idsXml = :idsXml");
+            
+            query.setParameter("estado", "POR_AUTORIZAR");
+            query.setParameter("idsXml", idsXml);
+            
+            List<DocumentoReembolsos> data = query.getResultList();
+            
+            if(data.isEmpty()){
+                return null;
+            }
+            else{
+               return data.get(0);
+            }
+
+       } catch (NoResultException exc) {
+            return null;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
 }

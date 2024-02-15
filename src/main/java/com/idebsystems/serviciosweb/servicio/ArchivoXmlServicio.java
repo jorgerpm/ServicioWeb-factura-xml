@@ -909,6 +909,26 @@ public class ArchivoXmlServicio {
                 
             ArchivoXml ent = ArchivoXmlMapper.INSTANCE.dtoToEntity(dto);
             
+            //aqui se debe obtener el total de los documentos de tipo miscelaneos MS
+            //para generar el secuencial
+            String secuencial = dao.getSecuenciaSiguienteMiscelaneos(ent.getNumeroAutorizacion());
+            
+            int inicio = ent.getComprobante().indexOf(",\"secuencial\":\"") + 15;
+            String random = ent.getComprobante().substring(inicio, (inicio + 9));
+            LOGGER.log(Level.INFO, "el random es: {0}", random);
+            String repl = ent.getComprobante().replace(",\"secuencial\":\""+random, ",\"secuencial\":\""+secuencial);
+            ent.setComprobante(repl);
+            
+            //modificar la clave de acceso
+            String claveAux = ent.getClaveAcceso();
+            String arg1 = ent.getClaveAcceso().split("MS")[2];
+            ent.setClaveAcceso(ent.getClaveAcceso().replace(arg1, secuencial+""));
+            ent.setComprobante(ent.getComprobante().replace("{\"claveAcceso\":\""+claveAux, "{\"claveAcceso\":\""+ent.getClaveAcceso()));
+            
+            //modificar el numero de autorizacion
+            ent.setNumeroAutorizacion(ent.getClaveAcceso());
+            //todo esto hasta aca
+                    
             String resp = dao.guardarDatosArchivo(ent);
             
             dto = ArchivoXmlMapper.INSTANCE.entityToDto(ent);

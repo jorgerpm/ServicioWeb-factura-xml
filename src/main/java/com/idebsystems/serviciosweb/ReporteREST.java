@@ -93,14 +93,14 @@ public class ReporteREST {
             @QueryParam(value = "numeroRC") String numeroRC
     ) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "reporte: {0}", reporte);
-            LOGGER.log(Level.INFO, "ids: {0}", ids);
-            LOGGER.log(Level.INFO, "tiposGasto: {0}", tiposGasto);
-            LOGGER.log(Level.INFO, "tipoReembolso: {0}", tipoReembolso);
-            LOGGER.log(Level.INFO, "idUsuario: {0}", idUsuario);
-            LOGGER.log(Level.INFO, "idAprobador: {0}", idAprobador);
-            LOGGER.log(Level.INFO, "claveFirma: {0}", claveFirma);
-            LOGGER.log(Level.INFO, "numeroRC: {0}", numeroRC);
+//            LOGGER.log(Level.INFO, "reporte: {0}", reporte);
+//            LOGGER.log(Level.INFO, "ids: {0}", ids);
+//            LOGGER.log(Level.INFO, "tiposGasto: {0}", tiposGasto);
+//            LOGGER.log(Level.INFO, "tipoReembolso: {0}", tipoReembolso);
+//            LOGGER.log(Level.INFO, "idUsuario: {0}", idUsuario);
+//            LOGGER.log(Level.INFO, "idAprobador: {0}", idAprobador);
+//            LOGGER.log(Level.INFO, "claveFirma: {0}", claveFirma);
+//            LOGGER.log(Level.INFO, "numeroRC: {0}", numeroRC);
             
             DocumentoReembolsosDTO reembDto = new DocumentoReembolsosDTO();
             reembDto.setMotivoViaje(motivoViaje);

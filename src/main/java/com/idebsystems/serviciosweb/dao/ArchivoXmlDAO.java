@@ -673,4 +673,50 @@ public class ArchivoXmlDAO extends Persistencia {
             return "";
         }
     }
+    
+    
+    
+    public String getSecuenciaSiguienteMiscelaneos(String numeroAutorizacionActual) throws Exception {
+        try {
+            getEntityManager();
+
+            Query query = em.createQuery("SELECT count(r) FROM ArchivoXml r WHERE r.tipoDocumento = 'MS'");
+
+            List<Long> data = query.getResultList();
+            
+            String secuencial;
+                    
+            if(!data.isEmpty()){
+                secuencial = String.valueOf(data.get(0)+1);
+                while(secuencial.length() < 9){
+                    secuencial = "0" + secuencial;
+                }
+            }
+            else{
+                secuencial = "000000001";
+            }
+            
+            //aqui validar si ya existe el mismo numero de autorizacion
+            String aux = numeroAutorizacionActual.replace(numeroAutorizacionActual.split("MS")[2], "");
+            numeroAutorizacionActual = aux + secuencial;
+            while(getArchivoXmlPorClaveAcceso(numeroAutorizacionActual) != null){
+                
+                secuencial = String.valueOf(Long.parseLong(secuencial) + 1);
+                while(secuencial.length() < 9){
+                    secuencial = "0" + secuencial;
+                }
+                numeroAutorizacionActual = aux + secuencial;
+            }
+            
+            return secuencial;
+
+       } catch (NoResultException exc) {
+            return null;
+        } catch (Exception exc) {
+            LOGGER.log(Level.SEVERE, null, exc);
+            throw new Exception(exc);
+        } finally {
+            closeEntityManager();
+        }
+    }
 }

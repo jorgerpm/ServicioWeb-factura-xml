@@ -48,7 +48,7 @@ public class DocumentoReembolsosREST {
             @QueryParam(value = "numeroLC") String numeroLC
     ) throws Exception {
         try {
-            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", tipoReembolso);
+//            LOGGER.log(Level.INFO, "entroooooooooooo: {0}", tipoReembolso);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date dateInit = sdf.parse(fechaInicio);
             Date dateFin = sdf.parse(fechaFinal);

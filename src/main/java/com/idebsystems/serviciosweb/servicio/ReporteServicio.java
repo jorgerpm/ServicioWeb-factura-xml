@@ -17,7 +17,6 @@ import com.idebsystems.serviciosweb.entities.DocumentoReembolsos;
 import com.idebsystems.serviciosweb.entities.Parametro;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -174,7 +173,19 @@ public class ReporteServicio {
             if(tipoReembolso.equalsIgnoreCase("5")){
                 idTipoRem = Long.parseLong(reembDto.getSeleccion());
             }
-            String numeroReembolso = trs.generarNumeroReembolso(idTipoRem, actualizar);
+            
+            //genera el numero de reembolos si no existe todavia el documento en autorizado y con los mismos isdxml
+            String numeroReembolso;
+            
+            //para evitar que se duplique un mismo documentoreembolso, como cuando se duplico el usuario xxx en febrero
+            DocumentoReembolsosDAO docdao = new DocumentoReembolsosDAO();
+            DocumentoReembolsos existeDoc = docdao.getDocumentoPorIdsXmlPorAutorizar(ids);
+            if(existeDoc != null){
+                numeroReembolso = existeDoc.getNumeroReembolso();
+            }
+            else{
+                numeroReembolso = trs.generarNumeroReembolso(idTipoRem, actualizar);
+            }
             
             
             //aqui primero guardar los tipos de gasto por cada registro
@@ -296,7 +307,12 @@ public class ReporteServicio {
                     
                     rpdto.setPathArchivo(doc.getPathArchivo());
                     
-                    DocumentoReembolsosDAO docdao = new DocumentoReembolsosDAO();
+                       
+                    //para evitar que se duplique un mismo documentoreembolso, como cuando se duplico el usuario xxx en febrero
+                    if(existeDoc != null){
+                        doc.setId(existeDoc.getId());
+                    }
+                    
                     docdao.guardarDocumentoReembolsos(doc, ids, idUsuario, true);
                     
                     //aqui enviar el correo de que se genero el nuevo reembolso
@@ -304,7 +320,7 @@ public class ReporteServicio {
                     remsrv.enviarCorreoNuevoReembolso(idUsuario, repobase64, doc);
                     
                     
-                }                
+                }
                 
                 rpdto.setReporteBase64(repobase64);
                 rpdto.setRespuesta("OK");
